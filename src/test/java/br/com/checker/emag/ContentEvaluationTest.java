@@ -179,10 +179,44 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation23()).check();
 		
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","23",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertEquals("Should return Recommendation 22","23",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
+		assertEquals("Should return Recommendation 23","23",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 23","23",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
 		assertTrue("Recommendation 23 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 		assertTrue("Recommendation 23 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
+	}
+	
+	@Test
+	public void shouldCheckRecomendation24(){
+		
+		StringBuilder html = new StringBuilder("<html> ");
+		   html.append("<table>\n");
+		   html.append("<thead>\n");
+		   html.append("</thead>\n");
+		   html.append("<tbody>\n");
+		   html.append("<tr><td id=\"id\" headers=\"headers\" scope=\"scope\"></td></tr>\n");
+		   html.append("</tbody\n>");
+		   html.append("<tfoot>\n");
+		   html.append("</tfoot>\n");
+		   html.append("</table>\n");
+		   
+		   html.append("<table summary=\"sumary\">\n");
+		   html.append("<th>\n");
+		   html.append("<td></td>\n");
+		   html.append("</th>\n");
+		   html.append("</table>\n");
+		   
+		   html.append("</html>\n");
+
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+													.with(content().recommendation24()).check();
+		
+		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 24 occurrence","24",ocorrencia.getCode());
+			assertTrue("Recommendation 24 should be ERROR",ocorrencia.isError());
+		}
+
 	}
 	
 	

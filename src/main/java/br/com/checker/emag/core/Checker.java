@@ -88,8 +88,10 @@ public class Checker {
 												.setIsError(entryGroupedOccurrence.getKey().isError);
 										
 				
-				for(Occurrence occurrence : entryGroupedOccurrence.getValue())
+				for(Occurrence occurrence : entryGroupedOccurrence.getValue()){
 					builder.addLine(occurrence.getLine());
+					builder.addSourceCode(occurrence);
+				}
 				
 				list.add(builder.build());
 					

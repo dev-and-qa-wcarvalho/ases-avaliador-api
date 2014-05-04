@@ -12,11 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurrence> {
 	
-	private static final String EMPTY_LINES = "---"; 
+	public static final String EMPTY_LINES = "---"; 
 	
 	private String checkPoint;
 	private boolean isError;
 	private Set<Integer> lines;
+	private String sourceCode;
 	private OccurrenceClassification type;
 	private Map<String, String> mapDescription = new HashMap<String, String>();
 	
@@ -37,7 +38,7 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	        mapDescription.put("14","N\u00E3o devem ser utilizados efeitos visuais piscantes, intermitentes ou cintilantes. Em pessoas com epilepsia fotosensitiva, o cintilar ou piscar pode desencadear um ataque epil\u00E9tico. A exig\u00EAncia dessa diretriz aplica-se tamb\u00E9m para propaganda de terceiros inserida na p\u00E1gina.\nAs tags blink e marquee n\u00E3o devem ser utilizadas, mesmo em um documento escrito em XHTML personalizado.");
 	        mapDescription.put("15","Conte\u00FAdos que \u201Cse movem\u201D, rolagens, movimenta\u00E7\u00F5es em geral ou anima\u00E7\u00F5es n\u00E3o devem ser disparadas automaticamente sem o controle do usu\u00E1rio, mesmo em propagandas na p\u00E1gina. Ao usu\u00E1rio deve ser repassado o controle sobre essas movimenta\u00E7\u00F5es (quer seja por escolha de prefer\u00EAncia de visualiza\u00E7\u00E3o da p\u00E1gina, quer por outro m\u00E9todo qualquer acess\u00EDvel a usu\u00E1rio com defici\u00EAncia). Al\u00E9m disso, o usu\u00E1rio deve ser capaz de parar e reiniciar conte\u00FAdos que se movem, sem exce\u00E7\u00E3o. A velocidade desses conte\u00FAdos tamb\u00E9m deve ser pass\u00EDvel de controle pelo usu\u00E1rio, a menos que a implementa\u00E7\u00E3o de mecanismo para alterar a velocidade seja uma tarefa de dif\u00EDcil execu\u00E7\u00E3o (se for necess\u00E1rio realizar uma escolha baseando-se nas limita\u00E7\u00F5es, prefira implementar mecanismos para reduzir a velocidade dos conte\u00FAdo no lugar de aumentar).");
 	        mapDescription.put("16","Deve-se identificar o principal idioma utilizado nos documentos. A identifica\u00E7\u00E3o \u00E9 feita por meio do atributo lang do HTML e, para documentos XHTML, \u00E9 utilizado o xml:lang.");
-	        mapDescription.put("17","O t\u00EDtulo da p\u00E1gina deve ser descritivo e informativo, j\u00E1 que essa informa\u00E7\u00E3o ser\u00E1 a primeira lida pelo leitor de tela, quando o usu\u00E1rio acessar a p\u00E1gina. O t\u00EDtulo \u00E9 informado pela tag <title>.");
+	        mapDescription.put("17","O t\u00EDtulo da p\u00E1gina deve ser descritivo e informativo, j\u00E1 que essa informa\u00E7\u00E3o ser\u00E1 a primeira lida pelo leitor de tela, quando o usu\u00E1rio acessar a p\u00E1gina. O t\u00EDtulo \u00E9 informado pela tag &lt;title&gt;.");
 	        mapDescription.put("18","Dever\u00E1 ser fornecido um mecanismo que permita ao usu\u00E1rio orientar-se dentro de um conjunto de p\u00E1ginas, permitindo que ele saiba onde est\u00E1 no momento. Assim, dever\u00E3o ser utilizados breadcrumbs, que s\u00E3o links naveg\u00E1veis em forma de lista hier\u00E1rquica que permitem que o usu\u00E1rio saiba qual o caminho percorrido at\u00E9 chegar \u00E0 p\u00E1gina em que se encontra no momento.");
 	        mapDescription.put("19","Deve-se identificar claramente o destino de cada link, informando, inclusive, se o link remete a outro s\u00EDtio. Al\u00E9m disso, \u00E9 preciso que o texto do link fa\u00E7a sentido mesmo quando isolado do contexto da p\u00E1gina.\n\u00C9 preciso tomar cuidado para n\u00E3o utilizar o mesmo t\u00EDtulo para dois ou mais links que apontem para destinos diferentes.");
 	        mapDescription.put("20","Deve ser fornecida uma descri\u00E7\u00E3o para as imagens da p\u00E1gina, utilizando-se o atributo alt. Imagens que n\u00E3o transmitem conte\u00FAdo, ou seja, imagens decorativas, devem ser inseridas por CSS.");
@@ -70,12 +71,17 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	}
 	
 	private SummarizedOccurrence(String checkPoint, boolean isError, Set<Integer> lines,
-			OccurrenceClassification type) {
+			OccurrenceClassification type,String sourceCode) {
 		
 		this.checkPoint = checkPoint;
 		this.isError = isError;
 		this.lines = lines;
 		this.type = type;
+		this.sourceCode = sourceCode;
+		
+		this.sourceCode = this.sourceCode.replaceAll("<", "&lt;");
+		this.sourceCode = this.sourceCode.replaceAll(">", "&gt;");
+		this.sourceCode = this.sourceCode.replaceAll(" ", "&nbsp");
 	}
 	
 	public static class Builder{
@@ -83,6 +89,7 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 		private String checkPoint;
 		private boolean isError;
 		private Set<Integer> lines = new HashSet<Integer>();
+		private StringBuilder sourceCode = new StringBuilder();
 		private OccurrenceClassification type;
 		
 		public Builder setCheckPoint(String checkPoint) {
@@ -108,8 +115,14 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 			return this;
 		}
 		
+		public Builder addSourceCode(Occurrence occurrence) {
+			this.sourceCode.append(occurrence.getLine()+": " +occurrence.getTag()+ "\n");
+			
+			return this;
+		}
+		
 		public SummarizedOccurrence build() {
-			return new SummarizedOccurrence(this.checkPoint, this.isError, this.lines,this.type);
+			return new SummarizedOccurrence(this.checkPoint, this.isError, this.lines,this.type, this.sourceCode.toString());
 		}
 	}
 	
@@ -128,6 +141,34 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	public String getDescription() { return this.mapDescription.get(this.getCheckPoint()); }
 
 	public int compareTo(SummarizedOccurrence other) { return Integer.valueOf(checkPoint).compareTo(Integer.valueOf(other.getCheckPoint())); }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((checkPoint == null) ? 0 : checkPoint.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SummarizedOccurrence other = (SummarizedOccurrence) obj;
+		if (checkPoint == null) {
+			if (other.checkPoint != null)
+				return false;
+		} else if (!checkPoint.equals(other.checkPoint))
+			return false;
+		return true;
+	}
+	
+	
 	
 	
 }
