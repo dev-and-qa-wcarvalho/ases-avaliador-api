@@ -95,7 +95,7 @@ public class MarkEvaluation extends Evaluation {
 	
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("2", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK,null));
+		occurrences.add(new Occurrence("2", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK));
 		
 		return occurrences;
 	}
