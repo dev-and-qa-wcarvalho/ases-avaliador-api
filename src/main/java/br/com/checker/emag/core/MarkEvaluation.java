@@ -88,14 +88,14 @@ public class MarkEvaluation extends Evaluation {
 		Tag docType = getDocument().getFirstStartTag(StartTagType.DOCTYPE_DECLARATION);
 		
 		if (docType == null || !docType.toString().contains("http"))
-			occurrences.add(this.buildOccurrence("1", true,"doctype",getDocument().getFirstElement()));
+			occurrences.add(this.buildOccurrence("1", true,"doctype",getDocument().getFirstElement(),"1"));
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("2", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK));
+		occurrences.add(new Occurrence("2", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK,null));
 		
 		return occurrences;
 	}
@@ -303,8 +303,14 @@ public class MarkEvaluation extends Evaluation {
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK,criterio);
+	}
+	
+	private Occurrence buildOccurrence(String code, boolean error,
 			String tag, Element element) {
-		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK);
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK,null);
 	}
  	
 	public OccurrenceClassification type () { return OccurrenceClassification.MARK;}

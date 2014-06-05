@@ -12,25 +12,44 @@ public @Getter class Occurrence {
 	private boolean error;
 	private String tag;
 	private OccurrenceClassification type;
+	private String criterio;
 	
 	public Occurrence(int line, int column, String code, boolean error,
 			String tag,
-			OccurrenceClassification type) {
+			OccurrenceClassification type,
+			String criterio) {
 		this.line = line;
 		this.column = column;
 		this.code = code;
 		this.error = error;
 		this.tag = tag;
 		this.type = type;
+		this.criterio = criterio;
+	}
+	
+	
+	public Occurrence(int line, int column, String code, boolean error,
+			String tag,
+			OccurrenceClassification type) {
+		this(line, column, code, error, tag,type, null);
+	}
+	
+	public Occurrence(String code, boolean error,
+			String tag,
+			OccurrenceClassification type,
+			String criterio) {
+		this.code = code;
+		this.error = error;
+		this.tag = tag;
+		this.type = type;
+		this.criterio = criterio;
 	}
 	
 	public Occurrence(String code, boolean error,
 			String tag,
 			OccurrenceClassification type) {
-		this.code = code;
-		this.error = error;
-		this.tag = tag;
-		this.type = type;
+		
+		this(code, error, tag, type,null);
 	}
 	
 	
