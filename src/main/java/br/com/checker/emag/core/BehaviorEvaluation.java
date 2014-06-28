@@ -92,7 +92,7 @@ public class BehaviorEvaluation extends Evaluation{
 			Attribute httpEquiv = element.getAttributes().get("http-equiv");
 			
 			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue())) {
-				occurrences.add(this.buildOccurrence("11", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("11", true, element.toString(), element, "1"));
 				temMetaRefresh = true;
 			}
 		}
@@ -111,7 +111,7 @@ public class BehaviorEvaluation extends Evaluation{
 			Attribute httpEquiv = element.getAttributes().get("http-equiv");
 			
 			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue())) {
-				occurrences.add(this.buildOccurrence("12", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("12", true, element.toString(), element, "1"));
 				temMetaRefresh = true;
 			}
 		}
@@ -143,7 +143,7 @@ public class BehaviorEvaluation extends Evaluation{
 		}
 		
 		if (!hasBlink && !hasMarquee)
-			occurrences.add(new Occurrence("14", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+			occurrences.add(new Occurrence("14", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR,"1"));
 		
 		return occurrences;
 	}
@@ -152,6 +152,12 @@ public class BehaviorEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		occurrences.add(new Occurrence("15", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
 		return occurrences;
+	}
+	
+	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.BEHAVIOR,criterio);
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,

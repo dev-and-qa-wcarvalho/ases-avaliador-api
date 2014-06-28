@@ -102,42 +102,64 @@ public class MarkEvaluation extends Evaluation {
 	
 	private List<Occurrence> checkRecommendation3() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		int cont = 0;
+		int cont = 0, niveis = 0;
+		
 
 		for (Element element : getDocument().getAllElements("h1")){
-			if(cont>0)
-				occurrences.add(this.buildOccurrence("3", false,element.toString(), element));
-			else
+			if(cont>0){
+				occurrences.add(this.buildOccurrence("3", false,element.toString(), element, "3"));
+			}else
 				cont++;
 		}
 	
 		for (Element elemento2 : getDocument().getAllElements("h2")){
 			if(getDocument().getAllElements("h1").size()<1)
-				occurrences.add(this.buildOccurrence("3", false, elemento2.toString(), elemento2));
+				occurrences.add(this.buildOccurrence("3", true, elemento2.toString(), elemento2,"2")); niveis++;
 		}
 		
 		for (Element elemento3 : getDocument().getAllElements("h3")){
 			if(getDocument().getAllElements("h2").size()<1)
-				occurrences.add(this.buildOccurrence("3", false, elemento3.toString(), elemento3));
+				occurrences.add(this.buildOccurrence("3", true, elemento3.toString(), elemento3, "2")); niveis++;
 		}
 		
 		for (Element elemento4 : getDocument().getAllElements("h4")){
 			if(getDocument().getAllElements("h3").size()<1)
-				occurrences.add(this.buildOccurrence("3", false, elemento4.toString(), elemento4));
+				occurrences.add(this.buildOccurrence("3", true, elemento4.toString(), elemento4, "2")); niveis++;
 		}
 		
 		for (Element elemento5 : getDocument().getAllElements("h5")){
 			if(getDocument().getAllElements("h4").size()<1)
-				occurrences.add(this.buildOccurrence("3", false,elemento5.toString(), elemento5));
+				occurrences.add(this.buildOccurrence("3", true,elemento5.toString(), elemento5, "2")); niveis++;
 		}
 		
 		for (Element elemento6 : getDocument().getAllElements("h6")){
 			if(getDocument().getAllElements("h5").size()<1)
-				occurrences.add(this.buildOccurrence("3", false, elemento6.toString(), elemento6));
+				occurrences.add(this.buildOccurrence("3", true, elemento6.toString(), elemento6, "2")); niveis++;
 		}
+		
+		for (Element element : getDocument().getAllElements("h1")){
+			if(cont==1 && niveis==0)
+				occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "3"));
+		}
+		
+		String[] tags = {"h1","h2","h3","h4","h5","h6"};
+		
+		int contTags = 0;
+		
+		for (String string : tags) {
+			if(getDocument().getAllElements(string).size() > 0)
+				contTags++;
+		}
+		
+		if(contTags==0){
+			Element element = getDocument().getFirstElement("html");
+			occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "1"));
+		}	
+				
 		return occurrences;
 	}
 	
+	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
 	private List<Occurrence> checkRecommendation4() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
@@ -172,6 +194,7 @@ public class MarkEvaluation extends Evaluation {
 	}
 	
 	
+	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
 	private List<Occurrence> checkRecommendation5() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
@@ -220,6 +243,7 @@ public class MarkEvaluation extends Evaluation {
 		return occurrences;
 	}
 	
+	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
 	public List<Occurrence> checkRecommendation6() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
@@ -240,8 +264,15 @@ public class MarkEvaluation extends Evaluation {
 	
 	public List<Occurrence> checkRecommendation7() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		
 		for (Element table : getDocument().getAllElements("table"))
-			occurrences.add(this.buildOccurrence("7", false, table.toString(), table));
+			occurrences.add(this.buildOccurrence("7", true, table.toString(), table, "1"));
+		
+		for (Element table : getDocument().getAllElements("table")){
+			Element form = table.getFirstElement("form");
+			if(form != null)
+				occurrences.add(this.buildOccurrence("7", true, form.toString(), form, "2"));
+		}
 		
 		return occurrences;
 	}
@@ -256,7 +287,7 @@ public class MarkEvaluation extends Evaluation {
 				continue;
 			
 			if (link != null && element.getStartTag().toString().contains("<a")) 
-				occurrences.add(this.buildOccurrence("8", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("8", true, link.toString(), link, "1"));
 			else
 				link = null;
 			
@@ -264,6 +295,9 @@ public class MarkEvaluation extends Evaluation {
 				link = element;
 			else
 				link = null;
+			
+			
+			
 		}
 		return occurrences;
 	}
@@ -276,7 +310,7 @@ public class MarkEvaluation extends Evaluation {
 			
 			if(link.toString().contains("_blank")){
 				hasBlankLink = true;
-				occurrences.add(this.buildOccurrence("9", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("9", true, link.toString(), link, "1"));
 			}
 		}
 		

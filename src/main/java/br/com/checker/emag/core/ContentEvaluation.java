@@ -1,7 +1,10 @@
 package br.com.checker.emag.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -104,11 +107,11 @@ public class ContentEvaluation extends Evaluation{
 			Attribute xmlLang = html.getAttributes().get("xml:lang");
 			
 			if (lang == null && xmlLang == null) {
-				occurrences.add(this.buildOccurrence("16", true, html.toString(), html));
+				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "1"));
 			} else if (lang != null && lang.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("16", true, html.toString(), html));
+				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "2"));
 			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) {
-				occurrences.add(buildOccurrence("16", true, html.toString(), html));
+				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "2"));
 			}
 		}
 		
@@ -126,9 +129,9 @@ public class ContentEvaluation extends Evaluation{
 		
 			Element title = head.getFirstElement("title");
 			if (title == null) {
-				occurrences.add(buildOccurrence("17", true, head.toString(), head));
+				occurrences.add(this.buildOccurrence("17", true, head.toString(), head, "1"));
 			} else if (title.isEmpty()) {
-				occurrences.add(buildOccurrence("17", true, title.toString(), title));
+				occurrences.add(buildOccurrence("17", true, title.toString(), title, "1"));
 			}
 		}
 		
@@ -143,15 +146,17 @@ public class ContentEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation19() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
+		Map<String, String> descricaoLink = new HashMap<String, String>();
+				
 		for (Element a : getDocument().getAllElements("a")) {
 			Attribute href = a.getAttributes().get("href");
 			Attribute name = a.getAttributes().get("name");
+			Attribute title = a.getAttributes().get("title");
 			Attribute id = a.getAttributes().get("id");
-			
+			String descricao = StringUtils.substringBetween(a.toString(), ">", "<").trim();
+				
 			if (href == null && name == null && id == null) {
-				occurrences.add(buildOccurrence("19", true, a.toString(), a));
-			
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "2"));
 			
 			} else if(name != null){
 				String nameValue = name.getValue();
@@ -171,21 +176,81 @@ public class ContentEvaluation extends Evaluation{
 				}
 				
 				if(!nameContemHref)
-					occurrences.add(buildOccurrence("19", true, a.toString(), a));
+					occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "1"));
+				
 			}
 			
+
+			if(!descricaoLink.containsKey(descricao) && !descricao.equals("")){
+				descricaoLink.put(descricao, href.toString());
+				
+			}else{
+				
+				if(!href.toString().equals(descricaoLink.get(descricao))){
+					occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "11"));
+				}
+				
+				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "13"));
+			}
+			
+			if(name == null && title == null && descricao == null && a.getAllElements("img") == null)
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "3"));
+					
+			if(title == null)
+				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "12"));
+			
+			if(name == null && title != null)
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "4"));
+			
+			if(a.getAttributeValue("alt")== null && a.getAllElements("img") != null)
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "5"));
+		
+			if(Pattern.compile("(clique aqui|leia mais|veja aqui)", Pattern.CASE_INSENSITIVE).matcher(a.toString()).find())
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "6"));
+			
+			if(descricao.length() > 60)
+				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "14"));
 			
 		}
-		
+				
 		return occurrences;
+				
 	}
 	
 	private List<Occurrence> checkRecommendation20() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		Map<String, String> descricaoImg = new HashMap<String, String>();
+		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
+			Attribute src = img.getAttributes().get("src");
+			Attribute title = img.getAttributes().get("title");
+			
 			if (alt == null || StringUtils.isEmpty(alt.getValue()))
-				occurrences.add(buildOccurrence("20", true, img.toString(), img));
+				occurrences.add(this.buildOccurrence("20", true, img.toString(), img, "1"));
+			
+			if(Pattern.compile("(alt|descrição|imagem)", Pattern.CASE_INSENSITIVE).matcher(img.toString()).find())
+				occurrences.add(this.buildOccurrence("20", true, img.toString(), img, "2"));
+			
+			if(alt != null){
+				if(!descricaoImg.containsKey(alt.toString()))
+					descricaoImg.put(alt.toString(), src.toString());
+				else
+					if(!src.toString().equals(descricaoImg.get(alt.toString())))
+						occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "4"));
+				
+				String altDesc = StringUtils.substringBetween(alt.toString(), "alt=\"", "\"").trim();
+				
+				if(title != null){
+					String titleDesc = StringUtils.substringBetween(title.toString(), "title=\"", "\"").trim();
+					if(titleDesc.equals(altDesc))
+						occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "6"));
+				}
+								
+				if(altDesc.length() > 40)
+					occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "7"));
+			}
+			
 		}
 		
 		return occurrences;
@@ -197,15 +262,15 @@ public class ContentEvaluation extends Evaluation{
 		for (Element area : getDocument().getAllElements("area")) {
 			Attribute alt = area.getAttributes().get("alt");
 			if (alt == null) {
-				occurrences.add(buildOccurrence("21", true, area.toString(), area));
+				occurrences.add(this.buildOccurrence("21", true, area.toString(), area, "1"));
 			} else if (alt.getValue().equals("")) {
-				occurrences.add(buildOccurrence("21", true, area.toString(), area));
+				occurrences.add(this.buildOccurrence("21", true, area.toString(), area, "1"));
 			}
 		}
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute ismap = img.getAttributes().get("ismap");
 			if (ismap != null && ismap.getValue().equals("ismap")) {
-				occurrences.add(buildOccurrence("21", false, img.toString(), img));
+				occurrences.add(this.buildOccurrence("21", false, img.toString(), img, "1"));
 			}
 		}
 		
@@ -234,15 +299,15 @@ public class ContentEvaluation extends Evaluation{
 			Attribute summary = table.getAttributes().get("summary");
 
 			if (caption == null) {
-				occurrences.add(buildOccurrence("23", true, table .toString().split("[\\r\\n]+")[0], table));
+				occurrences.add(this.buildOccurrence("23", true, table .toString().split("[\\r\\n]+")[0], table, "1"));
 			} else if (caption.getAllElements().isEmpty() || caption.isEmpty()) {
-				occurrences.add(buildOccurrence("23", true, caption.toString(), caption));
+				occurrences.add(this.buildOccurrence("23", true, caption.toString(), caption, "1"));
 			}
 
 			if (summary == null) {
-				occurrences.add(buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table));
+				occurrences.add(this.buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table, "1"));
 			} else if (summary.getValue().isEmpty()) {
-				occurrences.add(buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table));
+				occurrences.add(this.buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table, "1"));
 			}
 		}
 		
@@ -298,7 +363,7 @@ public class ContentEvaluation extends Evaluation{
 				}
 				
 				if(!THusaScope && !THusaHeaders  && !THusaId){
-					occurrences.add(buildOccurrence("24", true, th.toString(), th));
+					occurrences.add(this.buildOccurrence("24", true, th.toString(), th, "1"));
 				}
 			}
 			
@@ -315,7 +380,7 @@ public class ContentEvaluation extends Evaluation{
 				}
 				
 				if(!TDusaScope && !TDusaHeaders  && !TDusaId){
-					occurrences.add(buildOccurrence("24", true, td.toString(), td));
+					occurrences.add(this.buildOccurrence("24", true, td.toString(), td, "1"));
 				}
 			}
 			
@@ -329,7 +394,13 @@ public class ContentEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation25() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		//occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		for (Element paragrafo : getDocument().getAllElements("p")) {
+			String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString(), "<p>", "</p>").trim();
+			if(conteudoParagrafo.length() > 1024)
+				occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+		}
+		
 		return occurrences;
 	}
 	
@@ -339,7 +410,7 @@ public class ContentEvaluation extends Evaluation{
 		for (Element abbr : getDocument().getAllElements("abbr")) {
 			Attribute title = abbr.getAttributes().get("title");
 				if(title == null || title.getValue().equals(""))
-					occurrences.add(buildOccurrence("26", true, abbr.toString(), abbr));
+					occurrences.add(buildOccurrence("26", true, abbr.toString(), abbr, "1"));
 				else
 					occurrences.add(buildOccurrence("26", false, abbr.toString(), abbr));
 		}
@@ -351,6 +422,12 @@ public class ContentEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		occurrences.add(new Occurrence("27", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
 		return occurrences;
+	}
+	
+	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.CONTENT_INFORMATION,criterio);
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,

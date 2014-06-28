@@ -3,6 +3,8 @@ package br.com.checker.emag.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -86,7 +88,7 @@ public class FormEvaluation extends Evaluation{
 				if (type.getValue().equals("image")) {
 					Attribute alt = input.getAttributes().get("alt");
 					if (alt == null || alt.getValue().isEmpty()) {
-						occurrences.add(this.buildOccurrence("38", true, input.toString(), input));
+						occurrences.add(this.buildOccurrence("38", true, input.toString(), input, "1"));
 					}
 				}
 				if (type.getValue().equals("submit") || type.getValue().equals("reset") || type.getValue().equals("button")) {
@@ -107,7 +109,7 @@ public class FormEvaluation extends Evaluation{
 			for (Element label : form.getAllElements("label")) {
 				Attribute attrFor = label.getAttributes().get("for");
 				if (attrFor == null || attrFor.getValue().isEmpty()) {
-					occurrences.add(this.buildOccurrence("39", true, label.toString(), label));
+					occurrences.add(this.buildOccurrence("39", true, label.toString(), label, "1"));
 				} else {
 					boolean temInputEquivalente = false;
 					for (Element input : form.getAllElements("input")) {
@@ -324,6 +326,12 @@ public class FormEvaluation extends Evaluation{
 							.toString(), form));
 		}
 		
+		for (Element script : this.getDocument().getAllElements("script")) {
+			if(StringUtils.substringBetween(script.toString(), "alert(", ")") != null){
+				occurrences.add(this.buildOccurrence("43", false, script.toString(), script, "4"));
+			}	
+		}
+		
 		return occurrences;
 	}
 	
@@ -333,7 +341,7 @@ public class FormEvaluation extends Evaluation{
 		for (Element form : this.getDocument().getAllElements("form")) {
 			if (form.getAllElements("fieldset").isEmpty()) {
 				occurrences.add(this.buildOccurrence("44", false, form
-								.toString(), form));
+								.toString(), form, "1"));
 			} else {
 				for (Element fieldset : form.getAllElements("fieldset")) {
 					if (fieldset.getAllElements("legend").isEmpty()) {
@@ -368,6 +376,12 @@ public class FormEvaluation extends Evaluation{
 			occurrences.add(this.buildOccurrence("45", false, form.toString(), form));
 		
 		return occurrences;
+	}
+	
+	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.FORM,criterio);
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,

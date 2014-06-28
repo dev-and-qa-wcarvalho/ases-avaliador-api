@@ -154,9 +154,6 @@ public class PresentationEvaluation extends Evaluation{
 		return occurrences;
 	}
 	
-	
-	
-	
 	private Occurrence buildOccurrence(String code, boolean error,
 			String tag, Element element) {
 		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.PRESENTATION_DESIGN);

@@ -65,7 +65,7 @@ public class MultimediaEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("33", false, video.toString(), video));
+			occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
 		
 		for (Element video : this.getDocument().getAllElements("object")) {
 			
@@ -76,8 +76,9 @@ public class MultimediaEvaluation extends Evaluation{
 							|| value.getValue().contains("flv")
 							|| value.getValue().contains("rmvb")) {
 						occurrences.add(this.buildOccurrence("33", false,
-										video.toString(), video));
+										video.toString(), video, "2"));
 					}
+				
 		}
 		
 		return occurrences;
@@ -90,7 +91,8 @@ public class MultimediaEvaluation extends Evaluation{
 			Attribute data = video.getAttributes().get("data");
 			
 			if(data != null && (data.getValue().contains("mp3") || data.getValue().contains("wma") || data.getValue().contains("wav")))
-				occurrences.add(this.buildOccurrence("34", false, video.toString(), video));
+				occurrences.add(this.buildOccurrence("34", false, video.toString(), video, "1"));
+	
 		}
 		
 		return occurrences;
@@ -100,17 +102,39 @@ public class MultimediaEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element video : getDocument().getAllElements("object"))
-			occurrences.add(this.buildOccurrence("35", false, video.toString(), video));
+			occurrences.add(this.buildOccurrence("35", false, video.toString(), video, "1"));
 		
 		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("35", false, video.toString(), video));
+			occurrences.add(this.buildOccurrence("35", false, video.toString(), video, "1"));
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation36() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("36", false, getDocument().getFirstElement().toString(),OccurrenceClassification.MULTIMEDIA));
+		
+		for (Element musica : getDocument().getAllElements("embed")){
+			
+			Attribute autostart = musica.getAttributes().get("autostart");
+			Attribute hidden = musica.getAttributes().get("hidden");
+			
+			if(autostart != null && hidden != null){
+				if(autostart.toString().equals("true") && hidden.toString().equals("false"))
+					occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+			}
+		}
+		
+		for (Element musica : getDocument().getAllElements("object")){
+			
+			Attribute autostart = musica.getAttributes().get("autostart");
+			Attribute hidden = musica.getAttributes().get("hidden");
+			
+			if(autostart != null && hidden != null){
+				if(autostart.toString().equals("true") && hidden.toString().equals("false"))
+					occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+			}
+		}
+		
 		return occurrences;
 	}
 	
@@ -124,7 +148,11 @@ public class MultimediaEvaluation extends Evaluation{
 		return occurrences;
 	}
 	
-	
+	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MULTIMEDIA,criterio);
+	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,
 			String tag, Element element) {
