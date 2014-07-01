@@ -395,11 +395,14 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation25() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		//occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		for (Element paragrafo : getDocument().getAllElements("p")) {
-			String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString(), "<p>", "</p>").trim();
-			if(conteudoParagrafo.length() > 1024)
-				occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
-		}
+		if(getDocument().getAllElements("p") != null)
+			for (Element paragrafo : getDocument().getAllElements("p")) {
+				if(paragrafo.getEndTag() != null){
+					String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString().toLowerCase(), "<p>", "</p>").trim();
+					if(conteudoParagrafo.length() > 1024)
+						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+				}
+			}
 		
 		return occurrences;
 	}
