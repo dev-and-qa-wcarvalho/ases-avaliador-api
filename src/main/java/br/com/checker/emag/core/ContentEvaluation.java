@@ -186,11 +186,12 @@ public class ContentEvaluation extends Evaluation{
 				
 			}else{
 				
-				if(!href.toString().equals(descricaoLink.get(descricao))){
-					occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "11"));
-				}
+				if(href != null)
+					if(!href.toString().equals(descricaoLink.get(descricao))){
+						occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "11"));
+					}
 				
-				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "13"));
+				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "13"));
 			}
 			
 			if(name == null && title == null && descricao == null && a.getAllElements("img") == null)
@@ -232,7 +233,7 @@ public class ContentEvaluation extends Evaluation{
 			if(Pattern.compile("(alt|descrição|imagem)", Pattern.CASE_INSENSITIVE).matcher(img.toString()).find())
 				occurrences.add(this.buildOccurrence("20", true, img.toString(), img, "2"));
 			
-			if(alt != null){
+			if(alt != null && src != null){
 				if(!descricaoImg.containsKey(alt.toString()))
 					descricaoImg.put(alt.toString(), src.toString());
 				else
@@ -394,15 +395,12 @@ public class ContentEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation25() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		//occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		if(getDocument().getAllElements("p") != null)
-			for (Element paragrafo : getDocument().getAllElements("p")) {
-				if(paragrafo.getEndTag() != null){
-					String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString().toLowerCase(), "<p>", "</p>").trim();
-					if(conteudoParagrafo.length() > 1024)
-						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
-				}
-			}
+		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		for (Element paragrafo : getDocument().getAllElements("p")) {
+			String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString(), "<p>", "</p>").trim();
+			if(conteudoParagrafo.length() > 1024)
+				occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+		}
 		
 		return occurrences;
 	}
