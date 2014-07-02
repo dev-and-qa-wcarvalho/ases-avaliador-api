@@ -92,7 +92,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation19()).check();
 		
-		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 2 occurrences", 12,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 19","19",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertEquals("Should return Recommendation 19","19",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
 		assertTrue("Recommendation 19 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
@@ -111,7 +111,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation19()).check();
 		
-		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 1 occurrences", 11,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 19","19",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 19 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 
@@ -128,7 +128,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation20()).check();
 		
-		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 1 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 20","20",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 20 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
