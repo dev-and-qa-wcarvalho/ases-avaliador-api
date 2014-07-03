@@ -158,13 +158,16 @@ public class MarkEvaluationTest {
 		
 		StringBuilder html = new StringBuilder("<html>\n")
 		.append("<table></table>\n")
+		.append("<table>")
+		.append("<form>")
+		.append("</form>\n")
 		.append("<table></table>\n")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				.with(marking().recommendation7()).check();
 		
-		assertEquals("Deve retornar 2 ocorrencia",2, occurrences.get(OccurrenceClassification.MARK).size());
+		assertEquals("Deve retornar 2 ocorrencia",3, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 7 occurrence","7",ocorrencia.getCode());
