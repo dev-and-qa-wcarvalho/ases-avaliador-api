@@ -124,6 +124,7 @@ public class MultimediaEvaluation extends Evaluation{
 						|| type.getValue().contains("audio/x-wav")
 						|| type.getValue().contains("audio/x-pn-realaudio")
 						|| type.getValue().contains("audio/x-ms-wma")
+						|| type.getValue().contains("audio/ogg")
 						|| type.getValue().contains("audio/mpeg")) {
 			
 				String autostart = musica.getAttributes().get("autoplay").getValue();
@@ -146,6 +147,7 @@ public class MultimediaEvaluation extends Evaluation{
 						|| type.getValue().contains("audio/x-wav")
 						|| type.getValue().contains("audio/x-pn-realaudio")
 						|| type.getValue().contains("audio/x-ms-wma")
+						|| type.getValue().contains("audio/ogg")
 						|| type.getValue().contains("audio/mpeg")) {
 			
 					for (Element param : musica.getAllElements("param")){
