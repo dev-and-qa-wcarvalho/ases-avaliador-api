@@ -115,23 +115,51 @@ public class MultimediaEvaluation extends Evaluation{
 		
 		for (Element musica : getDocument().getAllElements("embed")){
 			
-			Attribute autostart = musica.getAttributes().get("autostart");
-			Attribute hidden = musica.getAttributes().get("hidden");
+
+			Attribute type = musica.getAttributes().get("type");
+			if (type != null)
+				if (type.getValue().contains("audio/x-mpeg")
+						|| type.getValue().contains("audio/basic")
+						|| type.getValue().contains("audio/wav")
+						|| type.getValue().contains("audio/x-wav")
+						|| type.getValue().contains("audio/x-pn-realaudio")
+						|| type.getValue().contains("audio/x-ms-wma")
+						|| type.getValue().contains("audio/mpeg")) {
 			
-			if(autostart != null && hidden != null){
-				if(autostart.toString().equals("true") && hidden.toString().equals("false"))
-					occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+				String autostart = musica.getAttributes().get("autoplay").getValue();
+				String hidden = musica.getAttributes().get("hidden").getValue();
+				
+				if(autostart != null && hidden != null){
+					if(autostart.equals("true") && hidden.equals("true"))
+						occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+				}
 			}
 		}
 		
 		for (Element musica : getDocument().getAllElements("object")){
 			
-			Attribute autostart = musica.getAttributes().get("autostart");
-			Attribute hidden = musica.getAttributes().get("hidden");
+			Attribute type = musica.getAttributes().get("type");
+			if (type != null)
+				if (type.getValue().contains("audio/x-mpeg")
+						|| type.getValue().contains("audio/basic")
+						|| type.getValue().contains("audio/wav")
+						|| type.getValue().contains("audio/x-wav")
+						|| type.getValue().contains("audio/x-pn-realaudio")
+						|| type.getValue().contains("audio/x-ms-wma")
+						|| type.getValue().contains("audio/mpeg")) {
 			
-			if(autostart != null && hidden != null){
-				if(autostart.toString().equals("true") && hidden.toString().equals("false"))
-					occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+					for (Element param : musica.getAllElements("param")){
+				
+						String name = param.getAttributes().getValue("name");
+						String value = param.getAttributes().getValue("value");
+						if(name != null && value != null){
+							if(name.equals("autoplay") && value.equals("false"))
+								occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+					
+							if(name.equals("autostart") && value.equals("0"))
+								occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+					}
+				}	
 			}
 		}
 		
