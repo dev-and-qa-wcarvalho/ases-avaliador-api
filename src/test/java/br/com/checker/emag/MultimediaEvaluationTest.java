@@ -87,11 +87,19 @@ public class MultimediaEvaluationTest {
 	
 	@Test
 	public void shouldAlwaysCheckRecommendation36() {
-		StringBuilder html = new StringBuilder("<html></html>");
+		StringBuilder html = new StringBuilder("<html>");
+				html.append("<embed id=\"video1\" hidden=\"true\" src=\"Wildlife.wmv\" type=\"audio/mpeg\" autoplay=\"true\" width=\"470\" height=\"280\"></embed>");
+				html.append("<object type=\"audio/x-mpeg\" data=\"fileName.mp3\" width=\"200\" height=\"16\" autoplay=\"false\">");
+				html.append("<param name=\"src\" value=\"fileName.mp3\" />");
+				html.append("<param name=\"controller\" value=\"true\" />"); 
+				html.append("<param name=\"autoplay\" value=\"false\" />");
+				html.append("<param name=\"autostart\" value=\"0\" />");
+				html.append("</object>");
+				html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation36()).check();
-		assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 3 occurrence", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		assertEquals("Should return Recommendation 36 ","36",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
 		assertFalse("Recommendation 36 should be WARNING",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).isError());
 		
