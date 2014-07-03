@@ -266,7 +266,7 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element table : getDocument().getAllElements("table"))
-			occurrences.add(this.buildOccurrence("7", true, table.toString(), table, "1"));
+			occurrences.add(this.buildOccurrence("7", false, table.toString(), table, "1"));
 		
 		for (Element table : getDocument().getAllElements("table")){
 			Element form = table.getFirstElement("form");
