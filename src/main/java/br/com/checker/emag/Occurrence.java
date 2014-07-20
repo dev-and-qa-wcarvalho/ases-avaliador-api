@@ -52,5 +52,12 @@ public @Getter class Occurrence {
 		this(code, error, tag, type,null);
 	}
 	
+	public String getTag() {
+	
+		this.tag = this.tag.replaceAll("<", "&lt;");
+		this.tag = this.tag.replaceAll(">", "&gt;");
+		this.tag = this.tag.replaceAll(" ", "&nbsp");
+		return tag;
+	}
 	
 }

@@ -137,6 +137,10 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 		return   StringUtils.isEmpty(linesString.toString()) ? EMPTY_LINES : linesString.toString().substring(0, linesString.length() -2);
 	}
 	
+	public boolean isPossuiLinhas() {
+		return this.lines != null && !this.lines.isEmpty();
+	}
+	
 	public String getNumberOfOccurrences() { return this.lines.size() !=0 ? String.valueOf(this.lines.size()) : EMPTY_LINES ; }
 	public String getDescription() { return this.mapDescription.get(this.getCheckPoint()); }
 
