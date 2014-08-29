@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -396,10 +397,20 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation25() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		
+		String reg = "<p.*?>(.*)<\\/p.*?>";
+		
 		for (Element paragrafo : getDocument().getAllElements("p")) {
-			String conteudoParagrafo = StringUtils.substringBetween(paragrafo.toString(), "<p>", "</p>").trim();
-			if(conteudoParagrafo.length() > 1024)
-				occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+			
+			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
+		        Matcher m = p.matcher(paragrafo);
+		       
+		        while(m.find()){
+		        	String conteudoParagrafo = m.group(1);
+		        	
+		        	if(conteudoParagrafo.length() > 1024)
+						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+		        }
 		}
 		
 		return occurrences;
