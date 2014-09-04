@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.htmlparser.jericho.Attribute;
+import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
-import net.htmlparser.jericho.StartTagType;
-import net.htmlparser.jericho.Tag;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
@@ -85,17 +84,47 @@ public class MarkEvaluation extends Evaluation {
 	
 	private List<Occurrence> checkRecommendation1() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		Tag docType = getDocument().getFirstStartTag(StartTagType.DOCTYPE_DECLARATION);
 		
-		if (docType == null || !docType.toString().contains("http"))
-			occurrences.add(this.buildOccurrence("1", true,"doctype",getDocument().getFirstElement(),"1"));
+		for (Element element : getDocument().getAllElements()) {
+			String value = element.getAttributeValue("style");
+			
+			if(value != null)
+				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "3"));
+		}
+		
+		for (Element element : getDocument().getAllElements("style")) {
+			
+			if(element != null)
+				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "4"));
+		}
+		
+		for (Element element : getDocument().getAllElements("script")) {
+			
+			String value = element.getAttributeValue("src");
+			if(value == null)
+				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "6"));
+		}
+		
+		
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("2", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK));
+		
+		for (Element element : getDocument().getAllElements()) {
+			
+			Attributes attribute = element.getAttributes();
+				if(attribute != null)
+					if(attribute.getCount()==0)
+						occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "1"));
+		}
+		
+		for (Element element : getDocument().getAllElements()) {
+			if(element.isEmpty())
+				occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
+		}
 		
 		return occurrences;
 	}
@@ -104,7 +133,6 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		int cont = 0, niveis = 0;
 		
-
 		for (Element element : getDocument().getAllElements("h1")){
 			if(cont>0){
 				occurrences.add(this.buildOccurrence("3", false,element.toString(), element, "3"));
@@ -136,18 +164,14 @@ public class MarkEvaluation extends Evaluation {
 			if(getDocument().getAllElements("h5").size()<1)
 				occurrences.add(this.buildOccurrence("3", true, elemento6.toString(), elemento6, "2")); niveis++;
 		}
-		
-		for (Element element : getDocument().getAllElements("h1")){
-			if(cont==1 && niveis==0)
-				occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "3"));
-		}
+				
 		
 		String[] tags = {"h1","h2","h3","h4","h5","h6"};
 		
 		int contTags = 0;
 		
-		for (String string : tags) {
-			if(getDocument().getAllElements(string).size() > 0)
+		for (String tag : tags) {
+			if(getDocument().getAllElements(tag).size() > 0)
 				contTags++;
 		}
 		
@@ -155,7 +179,12 @@ public class MarkEvaluation extends Evaluation {
 			Element element = getDocument().getFirstElement("html");
 			occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "1"));
 		}	
-				
+			
+		if((contTags - cont) == 0){
+			Element element = getDocument().getFirstElement("html");
+			occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "3"));
+		}	
+		
 		return occurrences;
 	}
 	
