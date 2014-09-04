@@ -89,23 +89,21 @@ public class MarkEvaluation extends Evaluation {
 			String value = element.getAttributeValue("style");
 			
 			if(value != null)
-				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "3"));
+				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "3"));
 		}
 		
 		for (Element element : getDocument().getAllElements("style")) {
 			
 			if(element != null)
-				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "4"));
+				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "4"));
 		}
 		
 		for (Element element : getDocument().getAllElements("script")) {
 			
 			String value = element.getAttributeValue("src");
 			if(value == null)
-				occurrences.add(this.buildOccurrence("1", true, element.toString(), element, "6"));
+				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "6"));
 		}
-		
-		
 		
 		return occurrences;
 	}
@@ -113,17 +111,24 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element element : getDocument().getAllElements()) {
-			
-			Attributes attribute = element.getAttributes();
-				if(attribute != null)
-					if(attribute.getCount()==0)
-						occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "1"));
-		}
+		String[] tags = {"h1","h2","h3","h4","h5","h6","a","p"};
 		
-		for (Element element : getDocument().getAllElements()) {
-			if(element.isEmpty())
-				occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
+		for (String tag : tags) {
+		
+			for (Element element : getDocument().getAllElements(tag)) {
+				Attributes attribute = element.getAttributes();
+					if(attribute != null)
+						if(attribute.getCount()==0)
+							occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "1"));
+			}
+		
+			for (Element element : getDocument().getAllElements(tag)) {
+				if(element.isEmpty()){
+					occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
+					System.out.println(element.toString());
+				}	
+			}
+		
 		}
 		
 		return occurrences;
@@ -182,7 +187,7 @@ public class MarkEvaluation extends Evaluation {
 			
 		if((contTags - cont) == 0){
 			Element element = getDocument().getFirstElement("html");
-			occurrences.add(this.buildOccurrence("3", true,element.toString(), element, "3"));
+			occurrences.add(this.buildOccurrence("3", false ,element.toString(), element, "3"));
 		}	
 		
 		return occurrences;
