@@ -222,42 +222,27 @@ public class MarkEvaluationTest {
 	@Test
 	public void shouldCheckRecommedation8() {
 		
-		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<p id=\"menu\">")
-		.append("<a href=\"#menu\">Go to menu</a></br>")
-	    .append("<a href=\"home.html\">Home</a></br>")
-	    .append("<a href=\"sarche.html\">Searche</a></br>")  
-	    .append("<a href=\"sitemap.html\">Site Map</a></br>")   
-	    .append("</p>")
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>")
+		.append("<html>\n")
+		.append("<header role=\"banner\"></header>")
+		.append("<nav role=\"navigation\"></nav>")
+		.append("<nav role=\"navigationFalse\"></nav>")
+		.append("<div role=\"main\"></div>")
+		.append("<footer role=\"contentinfo\"></footer>")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				.with(marking().recommendation8()).check();
 		
-		assertEquals("Deve retornar 3 ocorrencia",3, occurrences.get(OccurrenceClassification.MARK).size());
+		assertEquals("Deve retornar 4 ocorrencia",4, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 8 occurrence","8",ocorrencia.getCode());
-			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
+			assertFalse("Recommendation 8 should be WARNING",ocorrencia.isError());
 		}
 	}
 	
-	@Test
-	public void shouldNotReturnRecommendationOccurrence8() {
-		
-		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<ul id=\"menu\">")
-		.append("<li> <a href=\"home.html\">Home</a></li>")   
-		.append("<li> <a href=\"search.html\">Search</a></li>")   
-		.append("<li> <a href=\"sitemap.html\">Site Map</a></li>")  
-		.append("</ul>")
-		.append("</html>");
-		
-		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
-				.with(marking().recommendation8()).check();
-		
-		assertEquals("Shoud not return occurrences",0, occurrences.get(OccurrenceClassification.MARK).size());
-	}
+	
 	
 	@Test
 	public void shouldCheckRecommedation9WithError() {

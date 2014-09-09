@@ -346,26 +346,38 @@ public class MarkEvaluation extends Evaluation {
 	
 	public List<Occurrence> checkRecommendation8() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		Element link = null;
+		Element firstElement = this.getDocument().getFirstElement();
 		
-		for (Element element :getDocument().getAllElements()) {
+		if(firstElement.toString().equals("<!DOCTYPE html>")){
+			for (Element header : getDocument().getAllElements("header")){
+				String role = header.getAttributeValue("role");
+				
+				if(role!=null && "banner".equals(role.toLowerCase()))
+					occurrences.add(this.buildOccurrence("8", false, header.toString(), header));
+			}
 			
-			if(isLinkChild(element))
-				continue;
+			for (Element nav : getDocument().getAllElements("nav")){
+				String role = nav.getAttributeValue("role");
+				
+				if(role!=null && "navigation".equals(role.toLowerCase()))
+					occurrences.add(this.buildOccurrence("8", false, nav.toString(), nav));
+			}
+			for (Element div : getDocument().getAllElements("div")){
+				String role = div.getAttributeValue("role");
+				
+				if(role!=null && "main".equals(role.toLowerCase()))
+					occurrences.add(this.buildOccurrence("8", false, div.toString(), div));
+			}
 			
-			if (link != null && element.getStartTag().toString().contains("<a")) 
-				occurrences.add(this.buildOccurrence("8", true, link.toString(), link, "1"));
-			else
-				link = null;
-			
-			if (element.getEndTag() != null && element.getEndTag().toString().equals("</a>"))
-				link = element;
-			else
-				link = null;
-			
-			
+			for (Element footer : getDocument().getAllElements("footer")){
+				String role = footer.getAttributeValue("role");
+				
+				if(role!=null && "contentinfo".equals(role.toLowerCase()))
+					occurrences.add(this.buildOccurrence("8", false, footer.toString(), footer));
+			}
 			
 		}
+		
 		return occurrences;
 	}
 	
