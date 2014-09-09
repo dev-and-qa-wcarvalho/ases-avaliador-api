@@ -3,6 +3,8 @@ package br.com.checker.emag.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.TabExpander;
+
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
@@ -199,8 +201,12 @@ public class MarkEvaluation extends Evaluation {
 		
 		for(Element link : this.getDocument().getAllElements("a")){
 			Attribute tabIndex = link.getAttributes().get("tabindex");
-			if(tabIndex!=null)
+			if(tabIndex!=null) {
 				occurrences.add(this.buildOccurrence("4", false,link.toString(), link));
+				
+				if(rangeIncorretoTabeIndex(tabIndex))
+					occurrences.add(this.buildOccurrence("4", false,link.toString(), link));
+			}
 		}
 		
 		for(Element input : this.getDocument().getAllElements("input")){
@@ -215,6 +221,9 @@ public class MarkEvaluation extends Evaluation {
 			Attribute tabIndex = select.getAttributes().get("tabindex");
 			if(tabIndex!=null)
 				occurrences.add(this.buildOccurrence("4", false, select.toString(), select));
+			
+			if(rangeIncorretoTabeIndex(tabIndex))
+				occurrences.add(this.buildOccurrence("4", false,select.toString(), select));
 		}
 		
 		for(Element textarea : this.getDocument().getAllElements("textarea")){
@@ -222,9 +231,33 @@ public class MarkEvaluation extends Evaluation {
 			Attribute tabIndex = textarea.getAttributes().get("tabindex");
 			if(tabIndex!=null)
 				occurrences.add(this.buildOccurrence("4", false, textarea.toString(), textarea));
+			
+			if(rangeIncorretoTabeIndex(tabIndex))
+				occurrences.add(this.buildOccurrence("4", false,textarea.toString(), textarea));
+		}
+		
+		Element section =  this.getDocument().getFirstElement("section");
+		
+		if(section !=null){
+			int firstSection = section.getBegin();
+			for(Element nav : this.getDocument().getAllElements("nav")){
+				if(nav.getBegin() < firstSection)
+					occurrences.add(this.buildOccurrence("4", false,nav.toString(), nav));
+			}
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean rangeIncorretoTabeIndex(Attribute tabIndex) {
+		try{
+			Integer value = Integer.valueOf(tabIndex.getValue() );
+			if(value <0 || value > 32767)
+				return true;
+		}catch(Exception e){
+			return false;
+		}
+		return false ;
 	}
 	
 	

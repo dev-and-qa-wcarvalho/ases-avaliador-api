@@ -98,6 +98,48 @@ public class MarkEvaluationTest {
 			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
 		}
 	}
+	@Test
+	public void shouldCheckTabeIndexRangeRecommendation4() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<a tabindex=\"1\">link1</a><a tabindex=\"-5\">link2</a>\n")
+		.append("<input type=\"text\"/>\n")
+		.append("<input tabindex=\"2\" type=\"text\"/>\n")
+		.append("<select tabindex=\"8\">\n")
+		.append("<option>option 1</option>\n")
+		.append("</select>\n")
+		.append("<textarea tabindex=\"32768\"/>\n")
+		.append("</html>");
+		
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation4()).check();
+	
+		assertEquals(7, occurrences.get(OccurrenceClassification.MARK).size());
+	
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 4 occurrence","4",ocorrencia.getCode());
+			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
+		}
+	}
+	
+	@Test
+	public void shouldCheckNavAndSectionRecommendation4() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<nav></nav>\n")
+		.append("<section></section>\n")
+		.append("</html>");
+		
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation4()).check();
+	
+		assertEquals(1, occurrences.get(OccurrenceClassification.MARK).size());
+	
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 4 occurrence","4",ocorrencia.getCode());
+			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
+		}
+	}
 	
 	@Test
 	public void shouldCheckRecommedation5() {
