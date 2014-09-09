@@ -66,18 +66,55 @@ public class BehaviorEvaluation extends Evaluation{
 	
 	
 	private List<Occurrence> checkRecommendation10() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		
-		for (Element script : getDocument().getAllElements("script")) {
-			Element depois = this.getDocument().getNextElement(script.getEnd());
+		for (Element element : getDocument().getAllElements()) {
 			
-			if (depois == null || !depois.getName().equals("noscript")) 
-				occurrences.add(this.buildOccurrence("10", true, script.toString(), script));
+			Attribute onmousedown = null,onkeydown = null, 
+					  onmouseup = null, onkeyup = null,
+					  onclick = null, onkeypress = null,
+					  onmouseover = null,onfocus = null,
+					  onmouseout = null, onblur = null,dbclick = null;
+			
+			if (element.getAttributes() != null) {
+				onmousedown = element.getAttributes().get("onmousedown");
+				onkeydown = element.getAttributes().get("onkeydown");
+
+				onmouseup = element.getAttributes().get("onmouseup");
+				onkeyup = element.getAttributes().get("onkeyup");
+
+				onclick = element.getAttributes().get("onclick");
+				onkeypress = element.getAttributes().get("onkeypress");
+
+				onmouseover = element.getAttributes().get("onmouseover");
+				onfocus = element.getAttributes().get("onfocus");
+
+				onmouseout = element.getAttributes().get("onmouseout");
+				onblur = element.getAttributes().get("onblur");
+				
+				dbclick = element.getAttributes().get("dbclick");
+			}
+			
+			if(dbclick!=null){
+				occurrences.add(this.buildOccurrence("10", false, element.toString(), element));
+			}
+			
+			if (onmousedown != null && onkeydown == null) {
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				
+			} else if (onmouseup != null && onkeyup == null) {
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				
+			} else if (onclick != null && onkeypress == null) {
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				
+			} else if (onmouseover != null && onfocus == null) {
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				
+			} else if (onmouseout != null && onblur == null) {
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+			}
 		}
-		
-		for (Element video : this.getDocument().getAllElements("object"))
-			occurrences.add(this.buildOccurrence("10",true, video.toString(), video));
 		
 		return occurrences;
 	}

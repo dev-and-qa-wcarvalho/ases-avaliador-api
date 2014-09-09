@@ -1,9 +1,10 @@
 package br.com.checker.emag;
 
-import static br.com.checker.emag.core.Checker.from;
 import static br.com.checker.emag.core.Checker.behavior;
-import static org.junit.Assert.*;
-
+import static br.com.checker.emag.core.Checker.from;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -12,27 +13,41 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import br.com.checker.emag.Occurrence;
-import br.com.checker.emag.OccurrenceClassification;
-
 @RunWith(JUnit4.class)
 public class BehaviorEvaluationTest {
 
 	
 	@Test
 	public void shouldCheckRecommedation10() {
-		StringBuilder html = new StringBuilder("<html>");
-		html.append("<script>alert(\"teste\");</script>");
-		html.append("<object></object>");
-		html.append("</html>");
+		
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<a onclick=\"click()\">link1</a> <a onclick=\"click()\" onkeypress=\"press();\">link2</a>\n")
+		.append("<a onmousedown=\"mouseDown()\">link3</a> <a onmousedown=\"mouseDown()\" onkeydown=\"keyDown();\">link4</a>\n")
+		.append("<a onmouseup=\"mouseUp()\">link5</a> <a onmouseup=\"mouseUp()\" onkeyup=\"keyUp();\">link6</a>\n")
+		.append("<a onmouseover=\"over()\">link7</a> <a onmouseover=\"over()\" onfocus=\"focus();\">link8</a>\n")
+		.append("<a onmouseout=\"out()\">link9</a> <a onmouseout=\"out()\" onblur=\"blur();\">link10</a>\n")
+		.append("<a dbclick=\"dbclick()\">link10</a>\n")
+		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
-				  													.with(behavior().recommendation10()).check();
+				.with(behavior().recommendation10()).check();
 		
-		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
-		assertEquals("Should return Recommendation 10","10",occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).getCode());
-		assertTrue("Recommendation 10 should be ERROR",occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
-		assertTrue("Recommendation 10 should be ERROR",occurrences.get(OccurrenceClassification.BEHAVIOR).get(1).isError());
+		int error = 0;
+		int warning = 0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.BEHAVIOR)) {
+			assertEquals("Should return Recommendation 10 occurrence","10",ocorrencia.getCode());
+			if(ocorrencia.isError())
+				error++;
+			else
+				warning++;
+		}
+		
+		
+		
+		assertEquals(6, occurrences.get(OccurrenceClassification.BEHAVIOR).size());
+		assertEquals(1, warning);
+		assertEquals(5, error);
+		
 	}
 	
 	@Test
