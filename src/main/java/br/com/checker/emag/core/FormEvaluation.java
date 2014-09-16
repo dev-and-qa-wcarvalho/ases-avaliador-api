@@ -206,56 +206,39 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation41() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		String[] eventos = {"onchange", "onblur","onfocus", "onformchange",
+				      		"onforminput","oninput","oninvalid","onreset",
+				      		"onselect","onsubmit","onkeydown","onkeypress",
+				      		"onkeyup", "onclick","ondblclick","ondrag",
+				      		"ondragend","ondragenter","ondragleave","ondragover",
+				      		"ondragstart","ondrop","onmousedown","onmousemove",
+				      		"onmouseout","onmouseover","onmouseup", 
+				      		"onmousewheel","onscrol"};
 		
 		for (Element elemento : this.getDocument().getAllElements()) {
-			Attribute onChange = null;
-			if (elemento.getAttributes() != null) {
-				onChange = elemento.getAttributes().get("onchange");
-			}
-			if (onChange != null) {
-				occurrences.add(this.buildOccurrence("41", true, elemento
-								.toString(), elemento));
-			}
+			if(isSubmitResetOrButton(elemento)) continue;
 			
-			Attribute onBlur = null;
-			if (elemento.getAttributes() != null) {
-				onBlur = elemento.getAttributes().get("onblur");
+			for(String evento : eventos){
+				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("41", false, elemento.toString(), elemento));
 			}
-			if (onBlur != null) {
-				occurrences.add(this.buildOccurrence("41", true, elemento
-								.toString(), elemento));
-			}
-			
-			Attribute onFocus = null;
-			if (elemento.getAttributes() != null) {
-				onFocus = elemento.getAttributes().get("onfocus");
-			}
-			if (onFocus != null) {
-				occurrences.add(this.buildOccurrence("41", true, elemento
-								.toString(), elemento));
-			}
-			
-			Attribute onSelect = null;
-			if (elemento.getAttributes() != null) {
-				onSelect = elemento.getAttributes().get("onselect");
-			}
-			if (onSelect != null) {
-				occurrences.add(this.buildOccurrence("41", true, elemento
-								.toString(), elemento));
-			}
-			
-			Attribute onSubmit = null;
-			if (elemento.getAttributes() != null) {
-				onSubmit = elemento.getAttributes().get("onsubmit");
-			}
-			if (onSubmit != null) {
-				occurrences.add(this.buildOccurrence("41", true, elemento
-								.toString(), elemento));
-			}
-			
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean eventExists(Element elemento, String event) {
+		return elemento.getAttributes() != null && elemento.getAttributes().get(event) != null;
+	}
+	
+	private boolean isSubmitResetOrButton(Element elemento){
+		Attribute type = elemento.getAttributes().get("type");
+		if (type != null) {
+			return (type.getValue().equals("submit") ||
+					type.getValue().equals("reset") ||
+					type.getValue().equals("button"));
+		}
+		
+		return false;
 	}
 	
 	private List<Occurrence> checkRecommendation42() {

@@ -97,18 +97,52 @@ public class FormEvaluationTest {
 		html.append("<input type=\"text\" onblur=\"test();\"></input>");
 		html.append("<input type=\"text\" onfocus=\"test();\"></input>");
 		html.append("<select onselect=\"test();\"><option>1</option></select>");
+		html.append("<input type=\"text\" ondblclick=\"test();\"></input>");
+		html.append("<input type=\"text\" ondrag=\"test();\"></input>");
+		html.append("<input type=\"text\" ondragend=\"test();\"></input>");
+		html.append("<input type=\"text\" ondragenter=\"test();\"></input>");
+		html.append("<input type=\"text\" ondragleave=\"test();\"></input>");
+		html.append("<input type=\"text\" ondragover=\"test();\"></input>");
+		html.append("<input type=\"text\" ondragstart=\"test();\"></input>");
+		html.append("<input type=\"text\" ondrop=\"test();\"></input>");
+		html.append("<input type=\"text\" onmousedown=\"test();\"></input>");
+		html.append("<input type=\"text\" onmousemove=\"test();\"></input>");
+		html.append("<input type=\"text\" onmouseout=\"test();\"></input>");
+		html.append("<input type=\"text\" onmouseover=\"test();\"></input>");
+		html.append("<input type=\"text\" onmouseup=\"test();\"></input>");
+		html.append("<input type=\"text\" onmousewheel=\"test();\"></input>");
+		html.append("<input type=\"text\" onscrol=\"test();\"></input>");
+		html.append("<input type=\"text\"></input>");
 		html.append("</form>");
 		html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation41()).check();
 		
-		assertEquals("Should return 5 occurrences", 5,occurrences.get(OccurrenceClassification.FORM).size());
+		assertEquals("Should return 20 occurrences", 20,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
 			assertEquals("Should return Recommendation 41","41",occurrence.getCode());
-			assertTrue("Recommendation 41 should be ERROR",occurrence.isError());
+			assertFalse("Recommendation 41 should be WARNING",occurrence.isError());
 		}
+		
+	}
+	
+	
+	@Test
+	public void shouldNotCheckRecommedation41() {
+		StringBuilder html = new StringBuilder("<html>");
+		html.append("<form>");
+		html.append("<input type=\"button\" onchange=\"test();\"></input>");
+		html.append("<input type=\"reset\" onblur=\"test();\"></input>");
+		html.append("<input type=\"submit\" onfocus=\"test();\"></input>");
+		html.append("</form>");
+		html.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(form().recommendation41()).check();
+		
+		assertEquals("Should return 0 occurrence", 0,occurrences.get(OccurrenceClassification.FORM).size());
 		
 	}
 	
