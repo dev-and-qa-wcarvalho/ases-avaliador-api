@@ -63,10 +63,10 @@ public class BehaviorEvaluationTest {
 	}
 	
 	@Test
-	public void shouldCheckRecommedation11WithError() {
-		StringBuilder html = new StringBuilder("<<html>")
+	public void shouldCheckRecommedation11WithWarning() {
+		StringBuilder html = new StringBuilder("<html>")
 							.append("<head>")
-							.append("<meta http-equiv=\"refresh\" content=\"20; url='http://www.exemplo.com/'\" />")
+							.append("<object data=\"audi.jpeg\"></object>")
 							.append("</head>")
 							.append("</html>");
 		
@@ -79,17 +79,20 @@ public class BehaviorEvaluationTest {
 	}
 	
 	@Test
-	public void shouldCheckRecommedation11WithWarning() {
-		StringBuilder html = new StringBuilder("<<html>")
+	public void shouldCheckRecommedation11WithError() {
+		StringBuilder html = new StringBuilder("<html>")
 							.append("<head>")
-							.append("<title>teste</title>")
+							.append("<script>")
+							.append("alert(\"javascript\");")
+							.append("</script>")
 							.append("</head>")
 							.append("</html>");
+		
 		
 			Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 					  													.with(behavior().recommendation11()).check();
 			
-			assertFalse("Recommendation 11 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
+			assertTrue("Recommendation 11 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
 	}
 	
 	
@@ -105,7 +108,7 @@ public class BehaviorEvaluationTest {
 					  													.with(behavior().recommendation12()).check();
 			
 			assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
-			assertTrue("Recommendation 12 should be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
+			assertFalse("Recommendation 12 should be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
 			
 	}
 	
@@ -125,16 +128,19 @@ public class BehaviorEvaluationTest {
 	
 	@Test
 	public void shouldCheckRecommedation13() {
-		StringBuilder html = new StringBuilder("<<html>")
-							.append("<head>")
-							.append("<title>teste</title>")
-							.append("</head>")
+		StringBuilder html = new StringBuilder("<meta http-equiv=\"refresh\" content=\"5; url=teste.html\">\n")
+							.append("<html>\n")
+							.append("<head>\n")
+							.append("<title>teste</title>\n")
+							.append("</head>\n")
 							.append("</html>");
+		
+		
 		
 			Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 					  													.with(behavior().recommendation13()).check();
 			assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
-			assertFalse("Recommendation 13 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
+			assertTrue("Recommendation 13 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
 	}
 	
 	@Test
@@ -169,13 +175,14 @@ public class BehaviorEvaluationTest {
 		StringBuilder html = new StringBuilder("<<html>")
 							.append("<head>")
 							.append("<title>teste</title>")
+							.append("<blink>teste</blink>")
 							.append("</head>")
 							.append("</html>");
 		
 			Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 					  													.with(behavior().recommendation15()).check();
 			assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
-			assertFalse("Recommendation 15 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
+			assertTrue("Recommendation 15 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
 	}
 	
 	
