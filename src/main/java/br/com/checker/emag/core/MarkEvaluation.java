@@ -102,9 +102,17 @@ public class MarkEvaluation extends Evaluation {
 		
 		for (Element element : getDocument().getAllElements("script")) {
 			
-			String value = element.getAttributeValue("src");
-			if(value == null)
+			if(element != null)
 				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "6"));
+		}
+		
+		for (Element element : getDocument().getAllElements()) {
+			if(element.getAttributes() != null){
+				String script = element.getAttributes().getTextExtractor().toString();
+				if(script.contains("javascript")){
+					occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "5"));
+				}
+			}
 		}
 		
 		return occurrences;
@@ -125,10 +133,10 @@ public class MarkEvaluation extends Evaluation {
 			}
 		
 			for (Element element : getDocument().getAllElements(tag)) {
-				if(element.isEmpty()){
-					occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
-					System.out.println(element.toString());
-				}	
+				if(element != null)
+					if(element.isEmpty()){
+						occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
+					}	
 			}
 		
 		}
@@ -142,35 +150,33 @@ public class MarkEvaluation extends Evaluation {
 		
 		for (Element element : getDocument().getAllElements("h1")){
 			if(cont>0){
-				occurrences.add(this.buildOccurrence("3", false,element.toString(), element, "3"));
+				occurrences.add(this.buildOccurrence("3", false,element.toString(), element, "4"));
 			}else
 				cont++;
 		}
 	
-		for (Element elemento2 : getDocument().getAllElements("h2")){
-			if(getDocument().getAllElements("h1").size()<1)
-				occurrences.add(this.buildOccurrence("3", true, elemento2.toString(), elemento2,"2")); niveis++;
+		List<Element> elementsObj = getDocument().getAllElements();
+		List<String> tagsH = new ArrayList<String>();
+		
+		
+		for (Element htmlElement : elementsObj) {
+		    if (htmlElement.getName().matches("h[1-6]")) {
+		    	tagsH.add(htmlElement.getName());
+		    }
 		}
 		
-		for (Element elemento3 : getDocument().getAllElements("h3")){
-			if(getDocument().getAllElements("h2").size()<1)
-				occurrences.add(this.buildOccurrence("3", true, elemento3.toString(), elemento3, "2")); niveis++;
-		}
-		
-		for (Element elemento4 : getDocument().getAllElements("h4")){
-			if(getDocument().getAllElements("h3").size()<1)
-				occurrences.add(this.buildOccurrence("3", true, elemento4.toString(), elemento4, "2")); niveis++;
-		}
-		
-		for (Element elemento5 : getDocument().getAllElements("h5")){
-			if(getDocument().getAllElements("h4").size()<1)
-				occurrences.add(this.buildOccurrence("3", true,elemento5.toString(), elemento5, "2")); niveis++;
-		}
-		
-		for (Element elemento6 : getDocument().getAllElements("h6")){
-			if(getDocument().getAllElements("h5").size()<1)
-				occurrences.add(this.buildOccurrence("3", true, elemento6.toString(), elemento6, "2")); niveis++;
-		}
+		if(!tagsH.isEmpty())
+			if(tagsH.get(0).equals("h1")){
+				for (int i = 1; i < tagsH.size(); i++) {
+					if(!(verificarNiveis(i, tagsH) > 0)){
+						Element elemento = getDocument().getFirstElement(tagsH.get(i));
+						occurrences.add(this.buildOccurrence("3", true, elemento.toString(), elemento,"2")); 
+					}
+				}
+			}else{
+				Element elemento = getDocument().getFirstElement("h1");
+				occurrences.add(this.buildOccurrence("3", true, elemento.toString(), elemento,"2")); 
+			}	
 				
 		
 		String[] tags = {"h1","h2","h3","h4","h5","h6"};
@@ -310,35 +316,34 @@ public class MarkEvaluation extends Evaluation {
 		return occurrences;
 	}
 	
-	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
 	public List<Occurrence> checkRecommendation6() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		Element html = getDocument().getFirstElement("html");
-		if (html != null) {
-			int anchors = 0;
-			for (Element link : getDocument().getAllElements("a")) {
-				String hrefValue = link.getAttributeValue("href");
-				if (hrefValue != null && !hrefValue.isEmpty() && hrefValue.startsWith("#"))
-					anchors++;
-			}
-			
-			if (anchors == 0)
-				occurrences.add(this.buildOccurrence("6", false, html.toString(), html));
+		for (Element table : getDocument().getAllElements("table"))
+			occurrences.add(this.buildOccurrence("6", false, table.toString(), table, "1"));
+		
+		for (Element form : getDocument().getAllElements("form")){
+			Element tagsTabela = form.getFirstElement("table");
+			if(tagsTabela != null)
+				occurrences.add(this.buildOccurrence("6", true, form.toString(), form, "3"));
 		}
+		
 		return occurrences;
 	}
 	
+	
 	public List<Occurrence> checkRecommendation7() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		List<Element> element = getDocument().getAllElements();
 		
-		for (Element table : getDocument().getAllElements("table"))
-			occurrences.add(this.buildOccurrence("7", false, table.toString(), table, "1"));
+		int pos = 1;
 		
-		for (Element table : getDocument().getAllElements("table")){
-			Element form = table.getFirstElement("form");
-			if(form != null)
-				occurrences.add(this.buildOccurrence("7", true, form.toString(), form, "2"));
+		for (int i = 0; i < element.size() -1 ; i++) {
+			if(element.get(i).getName().equals("a"))
+					if(element.get(i).getName().equals(element.get(pos).getName())){
+						occurrences.add(this.buildOccurrence("7", true, element.get(i).toString()+" "+element.get(pos).toString(), element.get(i), "1"));
+					}	
+			pos++;
 		}
 		
 		return occurrences;
@@ -413,6 +418,15 @@ public class MarkEvaluation extends Evaluation {
 		else
 			return isLinkChild(element.getParentElement());
 		
+	}
+	
+	private int verificarNiveis(Integer posicao, List<String> tags){
+		for (int i = 0; i < posicao; i++) {
+			if(Integer.parseInt(tags.get(i).substring(1)) == Integer.parseInt(tags.get(posicao).substring(1))-1){
+				return Integer.parseInt(tags.get(i).substring(1));
+        	}
+		}	
+		return -1;
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,
