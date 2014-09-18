@@ -21,14 +21,30 @@ public class MarkEvaluationTest {
 	
 	@Test
 	public void shouldCheckRecommedation1() {
-		StringBuilder html = new StringBuilder("<html></html>");
+		StringBuilder html = new StringBuilder("<html>/n")
+		.append("<head>")
+		.append("<style>")
+		.append("body {background-color:lightgrey}")
+		.append("h1   {color:blue}")
+		.append("p    {color:green}")
+		.append("</style>")
+		.append("<script>")
+		.append("alert(\"javascript\");")
+		.append("</script>")
+		.append("</head>")
+		.append("<BODY>")
+		.append("<p style=\"color:green;margin-left:20px;\">Css Inline.</p>")
+		.append("<a href=\"javascript:void(0)\" onclick=\"fn()\">fn is called</a>")
+		.append("<a href=\"javascript:\" onclick=\"fn()\">fn is called too!</a>")
+		.append("</BODY>")
+		.append("</HTML>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation1()).check();
 		
-		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.MARK).size());
-		assertEquals("Should return Recommendation 1 occurrence","1",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
-		assertTrue("Recommendation 1 should be ERROR",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
+		assertEquals("Should return 5 occurrences", 5,occurrences.get(OccurrenceClassification.MARK).size());
+		assertEquals("Should return Recommendation 5 occurrence","1",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		assertFalse("Recommendation 1 should be ERROR",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 		
 	}
 	
@@ -45,14 +61,23 @@ public class MarkEvaluationTest {
 	
 	@Test
 	public void shouldAlwaysCheckRecommendation2() {
-		StringBuilder html = new StringBuilder("<html></html>");
+		StringBuilder html = new StringBuilder("<html>")
+		.append("<head>")
+		.append("</head>")
+		.append("<BODY>")
+		.append("<h1></h1>")
+		.append("<p style=\"color:green;margin-left:20px;\"></p>")
+		.append("<a ></a>")
+		.append("<a ></a>")
+		.append("</BODY>")
+		.append("</HTML>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation2()).check();
 		
 		assertEquals("Should return Recommendation 2 occurrence","2",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 2 should be WARNING",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
-		assertNull("Recoomendation 2 should not return line",occurrences.get(OccurrenceClassification.MARK).get(0).getLine());
+		assertNotNull("Recoomendation 2 should not return line",occurrences.get(OccurrenceClassification.MARK).get(0).getLine());
 		
 	}
 	
@@ -70,9 +95,9 @@ public class MarkEvaluationTest {
 				  													.with(marking().recommendation3()).check();
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 3 occurrence","3",ocorrencia.getCode());
-			assertTrue("Occurrences lines should be 3 - h1 , 5- h4 or 6 - h6 ",
-							ocorrencia.getLine() == 3 || ocorrencia.getLine() == 5 || ocorrencia.getLine() == 6);
+			assertEquals("Should return Recommendation 4 occurrence","3",ocorrencia.getCode());
+			assertTrue("Occurrences lines should be 3 - h1 , 2 - h1, 5- h4 or 6 - h6 ",
+							ocorrencia.getLine() == 3 || ocorrencia.getLine() == 2 || ocorrencia.getLine() == 5 || ocorrencia.getLine() == 6);
 		}
 	}
 	
@@ -167,14 +192,19 @@ public class MarkEvaluationTest {
 	public void shouldCheckRecommedation6() {
 		
 		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<a href=\"link1.html\">Link</a>\n")
-		.append("<a href=\"link2.html\">Link 2</a>\n")
-		.append("</html>");
+		.append("<form>")
+		.append("<table>")
+		.append("<tr>")
+		.append("<td><td>")
+		.append("</tr>")
+		.append(".append(\"</table>")
+		.append("</form>")
+		.append(".append(\"</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				.with(marking().recommendation6()).check();
 		
-		assertEquals("Should return 1 occurrence",1, occurrences.get(OccurrenceClassification.MARK).size());
+		assertEquals("Should return 2 occurrence",2, occurrences.get(OccurrenceClassification.MARK).size());
 		assertEquals("Should return Recommendation 6 occurrence","6",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 1 should be WARNING",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 			
@@ -199,11 +229,10 @@ public class MarkEvaluationTest {
 	public void shouldCheckRecommedation7() {
 		
 		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<table></table>\n")
-		.append("<table>")
-		.append("<form>")
-		.append("</form>\n")
-		.append("<table></table>\n")
+		.append("<a href>Link 1</a>")
+		.append("<a href>Link 2</a>")
+		.append("<a href>Link 3</a>")
+		.append("<a href>Link 4</a>")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -213,7 +242,7 @@ public class MarkEvaluationTest {
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 7 occurrence","7",ocorrencia.getCode());
-			assertFalse("Recommendation 1 should be WARNING",ocorrencia.isError());
+			assertTrue("Recommendation 1 should be WARNING",ocorrencia.isError());
 			
 		}
 			
