@@ -124,18 +124,41 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	private List<Occurrence> checkRecommendation11() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		boolean temMetaRefresh = false;
-		for (Element element : getDocument().getAllElements("meta")) {
-			Attribute httpEquiv = element.getAttributes().get("http-equiv");
+		boolean script = false;
+		boolean contAlter = false;
+		
+		if(!getDocument().getAllElements("script").isEmpty())
+			script = true;
+		
+		if(script)
+			if(getDocument().getAllElements("noscript").isEmpty())
+				occurrences.add(this.buildOccurrence("11", true, getDocument().getFirstElement("html").toString(), getDocument().getFirstElement("html"), "1"));
 			
-			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue())) {
-				occurrences.add(this.buildOccurrence("11", true, element.toString(), element, "1"));
-				temMetaRefresh = true;
+		
+		for (Element object : getDocument().getAllElements("object")) {
+			
+			for(Element elemnet : object.getChildElements()){
+				if(!elemnet.getName().equals("param")){
+					contAlter = true;
+				}
 			}
+			
+			if(!contAlter){
+				occurrences.add(this.buildOccurrence("11", true, object.toString(), object, "2"));
+				contAlter = false;
+			}	
+			
 		}
 		
-		if(!temMetaRefresh)
-			occurrences.add(new Occurrence("11", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+		if(!getDocument().getAllElements("embed").isEmpty()){
+			for(Element embed : getDocument().getAllElements("embed"))
+				occurrences.add(this.buildOccurrence("11", false, embed.toString(), embed, "3"));
+		}	
+		
+		if(!getDocument().getAllElements("applet").isEmpty()){
+			for(Element applet : getDocument().getAllElements("applet"))
+				occurrences.add(this.buildOccurrence("11", false, applet.toString(), applet, "4"));
+		}
 		
 		return occurrences;
 	}
@@ -148,7 +171,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			Attribute httpEquiv = element.getAttributes().get("http-equiv");
 			
 			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue())) {
-				occurrences.add(this.buildOccurrence("12", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("12", false, element.toString(), element, "1"));
 				temMetaRefresh = true;
 			}
 		}
@@ -161,7 +184,19 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	
 	private List<Occurrence> checkRecommendation13() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("13", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+		
+		for (Element element : getDocument().getAllElements("meta")) {
+			Attribute content = element.getAttributes().get("content");
+			Attribute httpEquiv = element.getAttributes().get("http-equiv");
+			
+			boolean url = false;
+			if(content != null)
+				url = content.toString().contains("url");
+			
+			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue()) && content != null && url == true) 
+				occurrences.add(this.buildOccurrence("13", true, element.toString(), element, "1"));
+		}
+		
 		return occurrences;
 	}
 	
@@ -187,7 +222,23 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	
 	private List<Occurrence> checkRecommendation15() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("15", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+		
+		for (Element blink : getDocument().getAllElements("blink")) {
+			occurrences.add(this.buildOccurrence("15", true, blink.toString(), blink, "1"));
+		}
+		
+		for(Element marquee : getDocument().getAllElements("marquee")) {
+			occurrences.add(this.buildOccurrence("15", true, marquee.toString(), marquee, "2"));
+		}
+		
+		for(Element img : getDocument().getAllElements("img")) {
+			Attribute src = img.getAttributes().get("src");
+			if(src != null)
+			if(img.getAttributeValue("src").contains(".gif")){
+				occurrences.add(this.buildOccurrence("15", false, img.toString(), img, "3"));
+			}
+		}
+		
 		return occurrences;
 	}
 	
