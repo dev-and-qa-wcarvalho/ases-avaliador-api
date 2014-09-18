@@ -183,8 +183,8 @@ public class ContentEvaluation extends Evaluation{
 			
 
 			if(!descricaoLink.containsKey(descricao) && !descricao.equals("")){
-				descricaoLink.put(descricao, href.toString());
-				
+				if(href != null)
+					descricaoLink.put(descricao, href.toString());
 			}else{
 				
 				if(href != null)
