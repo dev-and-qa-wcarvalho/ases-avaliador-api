@@ -23,18 +23,26 @@ public class MultimediaEvaluationTest {
 	@Test
 	public void shouldCheckRecommedation33() {
 		StringBuilder html = new StringBuilder("<html>");
-		html.append("<embed></embed>");
-		html.append("<object></object>");
-		html.append("<object value=\"teste.mp4\"></object>");
-		html.append("<object value=\"teste.avi\"></object>");
-		html.append("<object value=\"teste.flv\"></object>");
-		html.append("<object value=\"teste.rmvb\"></object>");
+		html.append("<head>");
+		html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">");
+		html.append("<title>Style Test</title>");
+		html.append("</head>");
+		html.append("<body>");
+		html.append("<embed autoplay=\"false\" src=\"VIDEO.mp4\" width=\"50\" height=\"50></embed>");
+		html.append("<embed SRC=\"mymovie.mov\" WIDTH=\"200\" HEIGHT=\"100\" AUTOPLAY=\"TRUE\" LOOP=\"true\"></embed>");
+		html.append("<embed width=\"400\" height=\"400\" data=\"helloworld.swf\"></embed>");
+		html.append("<object width=\"400\" height=\"400\" data=\"helloworld.mp4\"></object>");
+		html.append("<video id=\"video\" width=\"320\" height=\"240\" controls>");
+		html.append(" <source src=\"exemplo.mp4\" type=\"video/mp4\">");
+		html.append("<source src=\"exemplo.ogg\" type=\"video/ogg\">");
+		html.append("</video>");
+		html.append("</body>");
 		html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation33()).check();
 		
-		assertEquals("Should return 5 occurrences", 5,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 5 occurrences", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
 			assertEquals("Should return Recommendation 33","33",occurrence.getCode());
