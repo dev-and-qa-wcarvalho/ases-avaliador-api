@@ -94,7 +94,7 @@ public class FormEvaluation extends Evaluation{
 				if (type.getValue().equals("submit") || type.getValue().equals("reset") || type.getValue().equals("button")) {
 					Attribute value = input.getAttributes().get("value");
 					if (value == null || value.getValue().isEmpty()) {
-						occurrences.add(this.buildOccurrence("38", true,input.toString(), input));
+						occurrences.add(this.buildOccurrence("38", true,input.toString(), input, "1"));
 					}
 				}
 			}
@@ -231,6 +231,7 @@ public class FormEvaluation extends Evaluation{
 	}
 	
 	private boolean isSubmitResetOrButton(Element elemento){
+
 		Attribute type = elemento.getAttributes().get("type");
 		if (type != null) {
 			return (type.getValue().equals("submit") ||
@@ -329,20 +330,20 @@ public class FormEvaluation extends Evaluation{
 				for (Element fieldset : form.getAllElements("fieldset")) {
 					if (fieldset.getAllElements("legend").isEmpty()) {
 						occurrences.add(this.buildOccurrence("44", true,
-										fieldset.toString(), fieldset));
+										fieldset.toString(), fieldset, "1"));
 					}
 				}
 			}
 			for (Element select : form.getAllElements("select")) {
 				if (select.getAllElements("optgroup").isEmpty()) {
 					occurrences.add(this.buildOccurrence("44", false, select
-									.toString(), select));
+									.toString(), select, "2"));
 				} else {
 					for (Element optgroup : select.getAllElements("optgroup")) {
 						Attribute label = optgroup.getAttributes().get("label");
 						if (label == null || label.getValue().equals("")) {
 							occurrences.add(this.buildOccurrence("44", true,
-											optgroup.toString(), optgroup));
+											optgroup.toString(), optgroup, "2"));
 						}
 					}
 				}

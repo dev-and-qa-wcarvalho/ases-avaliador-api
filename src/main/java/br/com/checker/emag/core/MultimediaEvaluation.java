@@ -64,21 +64,41 @@ public class MultimediaEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation33() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
+		
+		for (Element video : getDocument().getAllElements("embed")){
+			
+			Attribute value = video.getAttributes().get("src");
+			if (value != null){
+				if (value.getValue().contains(".mp4")
+						|| value.getValue().contains(".avi")
+						|| value.getValue().contains(".flv")
+						|| value.getValue().contains(".rmvb")
+						|| value.getValue().contains(".WebM")
+						|| value.getValue().contains(".Ogg")) {
+					occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
+				}
+			
+			}
+		}
 		
 		for (Element video : this.getDocument().getAllElements("object")) {
-			
-				Attribute value = video.getAttributes().get("value");
+				Attribute value = video.getAttributes().get("data");
 				if (value != null)
-					if (value.getValue().contains("mp4")
-							|| value.getValue().contains("avi")
-							|| value.getValue().contains("flv")
-							|| value.getValue().contains("rmvb")) {
-						occurrences.add(this.buildOccurrence("33", false,
-										video.toString(), video, "2"));
+					if (value.getValue().contains(".mp4")
+							|| value.getValue().contains(".avi")
+							|| value.getValue().contains(".flv")
+							|| value.getValue().contains(".rmvb")
+							|| value.getValue().contains(".WebM")
+							|| value.getValue().contains(".Ogg")) {
+						occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
 					}
 				
+		}
+		
+		for (Element video : this.getDocument().getAllElements("video")) {
+			String descricao = video.getTextExtractor().toString().trim();
+			if(descricao.length() == 0)
+				occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
 		}
 		
 		return occurrences;

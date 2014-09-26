@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.Tag;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.ContentRecommendation;
@@ -101,124 +102,89 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation16() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		Element head = getDocument().getFirstElement("head");
+		
+		if(head == null) {
+			occurrences.add(new Occurrence("16", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		}else {
+		
+			Element title = head.getFirstElement("title");
+			if (title == null) {
+				occurrences.add(this.buildOccurrence("16", true, head.toString(), head, "1"));
+			} else if (title.isEmpty()) {
+				occurrences.add(buildOccurrence("16", true, title.toString(), title, "1"));
+			}
+		}
+		
+		return occurrences;
+	}	
+	
+	private List<Occurrence> checkRecommendation17() {
+		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		
 		Element html = getDocument().getFirstElement("html");
 		
 		if (html != null) {
 			Attribute lang = html.getAttributes().get("lang");
 			Attribute xmlLang = html.getAttributes().get("xml:lang");
+			Attribute xmlns = html.getAttributes().get("xmlns");
 			
 			if (lang == null && xmlLang == null) {
-				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "1"));
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "1"));
 			} else if (lang != null && lang.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "2"));
-			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("16", true, html.toString(), html, "2"));
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "1"));
+			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "1"));
+			}
+			
+			if (xmlLang == null && xmlns != null) {
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "2"));
+			} else if (xmlns != null && xmlLang.getValue().isEmpty()) {
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "2"));
+			} else if (xmlns != null && xmlns.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("17", true, html.toString(), html, "2"));
 			}
 		}
 		
 		return occurrences;
 	}
-	
-	private List<Occurrence> checkRecommendation17() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		Element head = getDocument().getFirstElement("head");
-		
-		if(head == null) {
-			occurrences.add(new Occurrence("17", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		}else {
-		
-			Element title = head.getFirstElement("title");
-			if (title == null) {
-				occurrences.add(this.buildOccurrence("17", true, head.toString(), head, "1"));
-			} else if (title.isEmpty()) {
-				occurrences.add(buildOccurrence("17", true, title.toString(), title, "1"));
-			}
-		}
-		
-		return occurrences;
-	}
 	
 	private List<Occurrence> checkRecommendation18() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("18", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		
+		for (Element element : getDocument().getAllElements()) {
+			
+			if(!element.getName().equals("html")){
+				if(element.getAttributeValue("lang") != null)
+					occurrences.add(this.buildOccurrence("18", false, element.toString(), element, "1"));
+					
+			}
+		}
+	
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation19() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		Map<String, String> descricaoLink = new HashMap<String, String>();
-				
-		for (Element a : getDocument().getAllElements("a")) {
-			Attribute href = a.getAttributes().get("href");
-			Attribute name = a.getAttributes().get("name");
-			Attribute title = a.getAttributes().get("title");
-			Attribute id = a.getAttributes().get("id");
-			String descricao = StringUtils.substringBetween(a.toString(), ">", "<").trim();
-				
-			if (href == null && name == null && id == null) {
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "2"));
-			
-			} else if(name != null){
-				String nameValue = name.getValue();
-				System.out.println("Name Value = "+nameValue);
-				boolean nameContemHref = false; 
-				
-				if(!nameValue.toString().contains("#")){
-					nameValue = ("#"+nameValue);
-				}
-				
-				for (Element aHref : getDocument().getAllElements("a")) {
-					String hrefValue = aHref.getAttributeValue("href");
-					System.out.println(nameValue+"=="+hrefValue);
-					
-					if(nameValue.equals(hrefValue))
-						nameContemHref = true; 
-				}
-				
-				if(!nameContemHref)
-					occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "1"));
-				
-			}
-			
-
-			if(!descricaoLink.containsKey(descricao) && !descricao.equals("")){
-				if(href != null)
-					descricaoLink.put(descricao, href.toString());
-			}else{
-				
-				if(href != null)
-					if(!href.toString().equals(descricaoLink.get(descricao))){
-						occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "11"));
-					}
-				
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "13"));
-			}
-			
-			if(name == null && title == null && descricao == null && a.getAllElements("img") == null)
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "3"));
-					
-			if(title == null)
-				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "12"));
-			
-			if(name == null && title != null)
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "4"));
-			
-			if(a.getAttributeValue("alt")== null && a.getAllElements("img") != null)
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "5"));
 		
-			if(Pattern.compile("(clique aqui|leia mais|veja aqui)", Pattern.CASE_INSENSITIVE).matcher(a.toString()).find())
-				occurrences.add(this.buildOccurrence("19", true, a.toString(), a, "6"));
-			
-			if(descricao.length() > 60)
-				occurrences.add(this.buildOccurrence("19", false, a.toString(), a, "14"));
-			
+		Element head = getDocument().getFirstElement("head");
+		
+		if(head == null) {
+			occurrences.add(new Occurrence("19", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION,"1"));
+		}else {
+		
+			Element title = head.getFirstElement("title");
+			if (title == null) {
+				occurrences.add(this.buildOccurrence("19", true, head.toString(), head, "1"));
+			} else if (title.isEmpty()) {
+				occurrences.add(buildOccurrence("19", true, title.toString(), title, "1"));
+			}
 		}
-				
+		
 		return occurrences;
-				
 	}
-	
+		
 	private List<Occurrence> checkRecommendation20() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		Map<String, String> descricaoImg = new HashMap<String, String>();
@@ -296,29 +262,49 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation23() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element table : getDocument().getAllElements("table")) {
-			Element caption = table.getFirstElement("caption");
-			Attribute summary = table.getAttributes().get("summary");
+		for (Element table : getDocument().getAllElements("img")) {
+			
+			Attribute usemap = table.getAttributes().get("usemap");
+			Attribute alt = table.getAttributes().get("alt");
 
-			if (caption == null) {
-				occurrences.add(this.buildOccurrence("23", true, table .toString().split("[\\r\\n]+")[0], table, "1"));
-			} else if (caption.getAllElements().isEmpty() || caption.isEmpty()) {
-				occurrences.add(this.buildOccurrence("23", true, caption.toString(), caption, "1"));
-			}
-
-			if (summary == null) {
-				occurrences.add(this.buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table, "1"));
-			} else if (summary.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("23", true, table.toString().split("[\\r\\n]+")[0], table, "1"));
-			}
+			if (usemap != null && alt == null)
+				occurrences.add(this.buildOccurrence("23", true, table.toString(), table, "1"));
+			
 		}
-		
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation24() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		occurrences.add(new Occurrence("24", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		return occurrences;
+	}
+	
+	private List<Occurrence> checkRecommendation25() {
+		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		
+		String reg = "<p.*?>(.*)<\\/p.*?>";
+		
+		for (Element paragrafo : getDocument().getAllElements("p")) {
+			
+			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
+		        Matcher m = p.matcher(paragrafo);
+		       
+		        while(m.find()){
+		        	String conteudoParagrafo = m.group(1);
+		        	
+		        	if(conteudoParagrafo.length() > 1024)
+						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
+		        }
+		}
+		
+		return occurrences;
+	}
+	
+	private List<Occurrence> checkRecommendation26() {
+List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element table : getDocument().getAllElements("table")) {
 			Attribute summary = table.getAttributes().get("summary");
@@ -386,48 +372,11 @@ public class ContentEvaluation extends Evaluation{
 				}
 			}
 			
-			}
-			
-			
-		}
+		 }
+	   }
 		
 		return occurrences;
-	}
-	
-	private List<Occurrence> checkRecommendation25() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		
-		String reg = "<p.*?>(.*)<\\/p.*?>";
-		
-		for (Element paragrafo : getDocument().getAllElements("p")) {
-			
-			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
-		        Matcher m = p.matcher(paragrafo);
-		       
-		        while(m.find()){
-		        	String conteudoParagrafo = m.group(1);
-		        	
-		        	if(conteudoParagrafo.length() > 1024)
-						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
-		        }
-		}
-		
-		return occurrences;
-	}
-	
-	private List<Occurrence> checkRecommendation26() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		for (Element abbr : getDocument().getAllElements("abbr")) {
-			Attribute title = abbr.getAttributes().get("title");
-				if(title == null || title.getValue().equals(""))
-					occurrences.add(buildOccurrence("26", true, abbr.toString(), abbr, "1"));
-				else
-					occurrences.add(buildOccurrence("26", false, abbr.toString(), abbr));
-		}
-		
-		return occurrences;
+
 	}
 	
 	private List<Occurrence> checkRecommendation27() {

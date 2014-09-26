@@ -174,8 +174,9 @@ public class MarkEvaluation extends Evaluation {
 					}
 				}
 			}else{
-				Element elemento = getDocument().getFirstElement("h1");
-				occurrences.add(this.buildOccurrence("3", true, elemento.toString(), elemento,"2")); 
+				Element elemento = getDocument().getFirstElement(tagsH.get(0));
+				if(elemento != null)
+					occurrences.add(this.buildOccurrence("3", true, elemento.toString(), elemento,"2")); 
 			}	
 				
 		

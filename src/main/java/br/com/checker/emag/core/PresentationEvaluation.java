@@ -54,43 +54,15 @@ public class PresentationEvaluation extends Evaluation{
 		return getOccurrences();
 	}
 	
-	
-	
 	private List<Occurrence> checkRecommendation28() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		boolean temBgcolor = false;
-		for (Element bgcolor : getDocument().getAllElements("body")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				occurrences.add(buildOccurrence("28", true, bgcolor.toString(), bgcolor));
-				temBgcolor = true;
-			}
+		for (Element abbr : getDocument().getAllElements("abbr")) {
+			Attribute title = abbr.getAttributes().get("title");
+				if(title == null || title.getValue().equals(""))
+					occurrences.add(buildOccurrence("28", true, abbr.toString(), abbr, "1"));
+				
 		}
-		for (Element bgcolor : getDocument().getAllElements("table")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				occurrences.add(buildOccurrence("28", true, bgcolor.toString(), bgcolor));
-				temBgcolor = true;
-			}
-		}
-		for (Element bgcolor : getDocument().getAllElements("td")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				occurrences.add(buildOccurrence("28", true, bgcolor.toString(), bgcolor));
-				temBgcolor = true;
-			}
-		}
-		for (Element bgcolor : getDocument().getAllElements("tr")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				occurrences.add(buildOccurrence("28", true, bgcolor.toString(), bgcolor));
-				temBgcolor = true;
-			}
-		}
-		
-		if(!temBgcolor)
-			occurrences.add(new Occurrence("28", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
 		
 		return occurrences;
 	}
@@ -149,9 +121,27 @@ public class PresentationEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation32() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("32", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
+		
+		for (Element style : getDocument().getAllElements("style")) {
+			
+			if(style.toString().contains("a:focus") || style.toString().contains("a:hover"))
+				occurrences.add(buildOccurrence("32", false, style.toString(), style, "1"));
+		}
+		
+		for (Element style : getDocument().getAllElements("a")) {
+			Attribute attribute = style.getAttributes().get("style");
+			if(attribute != null)
+				if(attribute.toString().contains("a:focus") || attribute.toString().contains("a:hover"))
+					occurrences.add(buildOccurrence("32", false, style.toString(), style, "1"));
+		}
 		
 		return occurrences;
+	}
+	
+	private Occurrence buildOccurrence(String code, boolean error,
+			String tag, Element element,
+			String criterio) {
+		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.PRESENTATION_DESIGN,criterio);
 	}
 	
 	private Occurrence buildOccurrence(String code, boolean error,
