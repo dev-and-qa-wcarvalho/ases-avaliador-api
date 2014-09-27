@@ -169,11 +169,13 @@ public class MarkEvaluationTest {
 	@Test
 	public void shouldCheckRecommedation5() {
 		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<a onclick=\"click()\">link1</a> <a onclick=\"click()\" onkeypress=\"press();\">link2</a>\n")
-		.append("<a onmousedown=\"mouseDown()\">link3</a> <a onmousedown=\"mouseDown()\" onkeydown=\"keyDown();\">link4</a>\n")
-		.append("<a onmouseup=\"mouseUp()\">link5</a> <a onmouseup=\"mouseUp()\" onkeyup=\"keyUp();\">link6</a>\n")
-		.append("<a onmouseover=\"over()\">link7</a> <a onmouseover=\"over()\" onfocus=\"focus();\">link8</a>\n")
-		.append("<a onmouseout=\"out()\">link9</a> <a onmouseout=\"out()\" onblur=\"blur();\">link10</a>\n")
+		.append("<a acesskey=\"a\">link1</a>\n")
+		.append("<a acesskey=\"a\">link3</a>\n")
+		.append("<a acesskey=\"b\">link5</a>\n")
+		.append("<a acesskey=\"c\">link7</a>\n")
+		.append("<a acesskey=\"d\">link9</a>\n")
+		.append("<a acesskey=\"e\">link9</a>\n")
+		.append("<a acesskey=\"e\">link9</a>\n")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -185,7 +187,7 @@ public class MarkEvaluationTest {
 			
 		}
 	
-		assertEquals(5, occurrences.get(OccurrenceClassification.MARK).size());
+		assertEquals(4, occurrences.get(OccurrenceClassification.MARK).size());
 	}
 	
 	@Test

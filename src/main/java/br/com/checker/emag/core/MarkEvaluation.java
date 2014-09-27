@@ -2,8 +2,7 @@ package br.com.checker.emag.core;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.text.TabExpander;
+import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
@@ -267,54 +266,32 @@ public class MarkEvaluation extends Evaluation {
 		return false ;
 	}
 	
-	
-	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
 	private List<Occurrence> checkRecommendation5() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element element : getDocument().getAllElements()) {
+		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
+			String acessKey = elemento.getAttributeValue("acesskey");
 			
-			Attribute onmousedown = null,onkeydown = null, 
-					  onmouseup = null, onkeyup = null,
-					  onclick = null, onkeypress = null,
-					  onmouseover = null,onfocus = null,
-					  onmouseout = null, onblur = null;
-			
-			if (element.getAttributes() != null) {
-				onmousedown = element.getAttributes().get("onmousedown");
-				onkeydown = element.getAttributes().get("onkeydown");
-
-				onmouseup = element.getAttributes().get("onmouseup");
-				onkeyup = element.getAttributes().get("onkeyup");
-
-				onclick = element.getAttributes().get("onclick");
-				onkeypress = element.getAttributes().get("onkeypress");
-
-				onmouseover = element.getAttributes().get("onmouseover");
-				onfocus = element.getAttributes().get("onfocus");
-
-				onmouseout = element.getAttributes().get("onmouseout");
-				onblur = element.getAttributes().get("onblur");
-			}
-			
-			if (onmousedown != null && onkeydown == null) {
-				occurrences.add(this.buildOccurrence("5", true, element.toString(), element));
-				
-			} else if (onmouseup != null && onkeyup == null) {
-				occurrences.add(this.buildOccurrence("5", true, element.toString(), element));
-				
-			} else if (onclick != null && onkeypress == null) {
-				occurrences.add(this.buildOccurrence("5", true, element.toString(), element));
-				
-			} else if (onmouseover != null && onfocus == null) {
-				occurrences.add(this.buildOccurrence("5", true, element.toString(), element));
-				
-			} else if (onmouseout != null && onblur == null) {
-				occurrences.add(this.buildOccurrence("5", true, element.toString(), element));
-			}
+			if(duplicatedAcessKey(acessKey))
+				occurrences.add(this.buildOccurrence("5", true, elemento.toString(), elemento));
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean duplicatedAcessKey(String value){
+		int count=0;
+		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
+			String acessKey = elemento.getAttributeValue("acesskey");
+			if(acessKey.equals(value))
+				count++;
+			
+			if(count>1)
+				return true;
+			
+		}
+		
+		return false;
 	}
 	
 	public List<Occurrence> checkRecommendation6() {
