@@ -1,10 +1,10 @@
 package br.com.checker.emag;
 
-import static br.com.checker.emag.core.Checker.from;
 import static br.com.checker.emag.core.Checker.content;
-import static br.com.checker.emag.core.Checker.marking;
-import static org.junit.Assert.*;
-
+import static br.com.checker.emag.core.Checker.from;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +12,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import br.com.checker.emag.Occurrence;
-import br.com.checker.emag.OccurrenceClassification;
 
 @RunWith(JUnit4.class)
 public class ContentEvaluationTest {
@@ -150,18 +147,123 @@ public class ContentEvaluationTest {
 	public void shouldCheckRecommedation21() {
 		
 		StringBuilder html = new StringBuilder("<html> ");
-								   html.append("<area alt=\"\"></area>");
-								   html.append("<img ismap=\"ismap\"></img>");
+								   html.append("<a href=\"www.teste.com.br\">teste</a>");
+								   html.append("<a title=\"teste\"></a>");
+								   html.append("<a><img alt=\"\" src=\"teste.img\"/></a>");
+								   html.append("<a><img alt=\"imagem de teste\" src=\"teste.img\"/></a>");
 								   html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
+		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+	}
+	
+	@Test
+	public void shouldCheckRecommedation21LeiaMais() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("<a title=\"teste\" href=\"teste.html\">clique aqui meu filho!!!</a>");
+								   html.append("<a title=\"teste\" href=\"teste2.html\">leia mais</a>");
+								   html.append("<a><img alt=\"saiba mais\" src=\"teste.img\"/></a>");
+								   html.append("<a><img alt=\"veja mais\" src=\"teste.img\"/></a>");
+								   html.append("<a title=\"teste\" href=\"teste3.html\">acesse a lista</a>");
+								   html.append("</html>");
+								  
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation21()).check();
+		
+		assertEquals("Should return 1 occurrences", 5,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
+		}
+	}
+	
+	@Test
+	public void shouldCheckRecommedation21SameLinkDiferentContent() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("<a title=\"teste\" href=\"teste.html\">Content 1</a>");
+								   html.append("<a title=\"teste\" href=\"teste.html\">content 2</a>");
+								   html.append("</html>");
+								  
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation21()).check();
+		
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 21","21",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertEquals("Should return Recommendation 21","21",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
-		assertTrue("Recommendation 21 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
-		assertFalse("Recommendation 21 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
+		}
+	}
+	
+	@Test
+	public void shouldCheckRecommedation21DiferentLinkSameContent() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("<a title=\"teste\" href=\"teste.html\">Content</a>");
+								   html.append("<a title=\"teste\" href=\"teste2.html\">content</a>");
+								   html.append("</html>");
+								  
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation21()).check();
+		
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
+		}
+	}
+	
+	@Test
+	public void shouldCheckRecommedation21SameDescription() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("<a title=\"teste\" href=\"teste.html\">teste</a>");
+								   html.append("<a title=\"teste 2\" href=\"teste2.html\">Teste 2</a>");
+								   html.append("</html>");
+								  
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation21()).check();
+		
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
+		}
+	}
+	
+	@Test
+	public void shouldCheckRecommedation21LargDescription() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("<a href=\"teste.html\"");
+								   html.append("title=\"qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop");
+								   html.append("123");
+								   html.append("\"");
+								   html.append(">teste</a>");
+								   
+								   html.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation21()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertFalse("Recommendation 21 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
 	@Test

@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
-import net.htmlparser.jericho.Tag;
+
+import org.apache.commons.lang3.StringUtils;
+
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.ContentRecommendation;
@@ -227,22 +227,125 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation21() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element area : getDocument().getAllElements("area")) {
-			Attribute alt = area.getAttributes().get("alt");
-			if (alt == null) {
-				occurrences.add(this.buildOccurrence("21", true, area.toString(), area, "1"));
-			} else if (alt.getValue().equals("")) {
-				occurrences.add(this.buildOccurrence("21", true, area.toString(), area, "1"));
-			}
-		}
-		for (Element img : getDocument().getAllElements("img")) {
-			Attribute ismap = img.getAttributes().get("ismap");
-			if (ismap != null && ismap.getValue().equals("ismap")) {
-				occurrences.add(this.buildOccurrence("21", false, img.toString(), img, "1"));
-			}
+		for(Element  link : getDocument().getAllElements("a")){
+			String href = link.getAttributeValue("href");
+			String title = link.getAttributeValue("title");
+			
+			if(isRegistroBr(href))
+				occurrences.add(this.buildOccurrence("21", false, link.toString(), link));
+			
+			if(hasTitle(link) && !hasContent(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(!hasTitle(link) && !hasContent(link) && hasImgWithoutAlt(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(hasLeiaMaisDescription(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(hasDiferenteContentSameLink(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(hasSameContentDiferentLink(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(isTitleEqualsContent(link))
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+			
+			if(StringUtils.isNotBlank(title) && title.length() > 500)
+				occurrences.add(this.buildOccurrence("21", false, link.toString(), link));
+			
+			
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean hasContent(Element link) {
+		return StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
+	}
+	private boolean hasTitle(Element link){
+		String title = link.getAttributeValue("title");
+		return title != null && StringUtils.isNotBlank(title);
+	}
+	private boolean hasImgWithoutAlt(Element link) {
+		Element img = link.getFirstElement("img");
+		if(img == null) return false; 
+		String alt = img.getAttributeValue("alt");
+		return alt == null || StringUtils.isBlank(alt);
+	}
+	
+	private boolean hasLeiaMaisDescription(Element link){
+		String title = link.getAttributeValue("title");
+		String content = link.getContent().getTextExtractor().toString();
+		String altImg = link.getFirstElement("img")!=null ? link.getFirstElement("img").getAttributeValue("alt") : "" ;
+		
+		Pattern pattern;
+		for(String leiaMais:leiaMais){
+			pattern = Pattern.compile("("+leiaMais+")");
+			if(title!=null)
+				if(pattern.matcher(title.toLowerCase()).find()) return true;
+			
+			if(content!=null)
+				if(pattern.matcher(content.toLowerCase()).find()) return true;
+			
+			if(altImg!=null)
+				if(pattern.matcher(altImg.toLowerCase()).find()) return true;
+		}
+		
+		return false;
+	}
+	private boolean isRegistroBr(String href){
+		if(StringUtils.isBlank(href)) return false;
+		Pattern pattern;
+		for(String registro:hrefRegistroBr){
+			pattern = Pattern.compile("(.*)("+registro+")$");
+			if(pattern.matcher(href.toUpperCase()).find()) return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean hasDiferenteContentSameLink(Element link) {
+		String content = link.getContent().getTextExtractor().toString();
+		String href = link.getAttributeValue("href");
+		if(StringUtils.isBlank(href)) return  false;
+		String otherContent;
+		String otherHref;
+		for(Element otherLink:getDocument().getAllElements("a")){
+			otherContent = otherLink.getContent().getTextExtractor().toString();
+			otherHref = otherLink.getAttributeValue("href");
+			if(StringUtils.isBlank(otherHref))continue;
+			if(!content.toLowerCase().equals(otherContent.toLowerCase()) && href.equals(otherHref)) return true;
+		}
+		return false;
+	}
+	
+	private boolean hasSameContentDiferentLink(Element link) {
+		String content = link.getContent().getTextExtractor().toString();
+		String href = link.getAttributeValue("href");
+		if(StringUtils.isBlank(href)) return  false;
+		String otherContent;
+		String otherHref;
+		for(Element otherLink:getDocument().getAllElements("a")){
+			
+			if(otherLink.getBegin() == link.getBegin()) continue;
+			otherContent = otherLink.getContent().getTextExtractor().toString();
+			otherHref = otherLink.getAttributeValue("href");
+			if(StringUtils.isBlank(otherHref))continue;
+			if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)) return true;
+		}
+		return false;
+	}
+	
+	private boolean isTitleEqualsContent(Element element) {
+		
+		String content = element.getContent().getTextExtractor().toString() ;
+		String title = element.getAttributeValue("title");
+		
+		if(StringUtils.isBlank(title)) return false;
+		
+		return title.toLowerCase().equals(content.toLowerCase());
 	}
 	
 	private List<Occurrence> checkRecommendation22() {
@@ -397,4 +500,17 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	}
 	
 	public OccurrenceClassification type () { return OccurrenceClassification.CONTENT_INFORMATION;}
+	
+	private String[] hrefRegistroBr = {"COM.BR","ECO.BR","EMP.BR","NET.BR","EDU.BR",
+			"ADM.BR","ADV.BR","ARQ.BR","ATO.BR","BIO.BR","BMD.BR","CIM.BR","CNG.BR",
+			"CNT.BR","ECN.BR","ENG.BR","ETI.B","FND.BR","FOT.BR","FST.BR","GGF.BR","JOR.BR",
+			"LEL.BR","MAT.BR","MED.BR","MUS.BR","NOT.BR","NTR.BR","ODO.BR","PPG.BR","PRO.BR", 
+			"PSC.BR","QSL.BR","SLG.BR","TAXI.BR","TEO.BR","TRD.BR","VET.BR","ZLG.BR","BLOG.BR", 
+			"FLOG.BR","NOM.BR","VLOG.BR","WIKI.BR","AGR.BR","ART.BR","ESP.BR","ETC.BR","FAR.BR",
+			"IMB.BR","IND.BR","INF.BR","RADIO.BR","REC.BR","SRV.BR","TMP.BR","TUR.BR","TV.BR",
+			"AM.BR","COOP.BR","FM.BR","G12.BR","GOV.BR","MIL.BR","ORG.BR","PSI.BR","B.BR",
+			"JUS.BR","LEG.BR","MP.BR"};
+	
+	private String[] leiaMais = {"clique aqui","leia mais","saiba mais","veja mais","acesse a lista"};
+	
 }
