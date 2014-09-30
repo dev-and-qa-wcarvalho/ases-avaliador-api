@@ -351,13 +351,66 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation22() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element a : getDocument().getAllElements("a")) {
-			Attribute href = a.getAttributes().get("href");
-			if (href != null) {
-				if (href.getValue().endsWith(".pdf"))
-					occurrences.add(buildOccurrence("22", false, a.toString(), a));
+		String[] parts = null;
+		
+		String[] descricoes = {"figura", "imagem", "alt", "descrição", "foto"};
+		
+		for (Element img : getDocument().getAllElements("img")) {
+			Attribute alt = img.getAttributes().get("alt");
+			if (alt == null) {
+				occurrences.add(buildOccurrence("22", true, img.toString(), img, "1"));
+			}else if(alt.getValueSegment().toString().trim().isEmpty()){
+				occurrences.add(buildOccurrence("22", true, img.toString(), img, "3"));
+			}	
+			
+			Attribute src = img.getAttributes().get("src");
+			String contAlt = null;
+			
+			if(src != null && alt != null){
+				String value = src.getValue();
+				parts = value.toString().split("/");
+				contAlt = alt.getValue();  
+			
+				if(parts[parts.length-1].toString().equals(contAlt))
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "4"));
+			}
+			
+			for(String descricao : descricoes){
+				if(descricao.equalsIgnoreCase(contAlt))
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "5"));
+				
+			}
+			
+			
+		}
+		
+		Map<String, String> aMap = new HashMap<String, String>();
+		
+		for (Element img : getDocument().getAllElements("img")) {
+			Attribute altAtt = img.getAttributes().get("alt");
+			if (altAtt != null) {
+				if(aMap.containsKey(altAtt.getValue())){
+					Attribute srcAtt = img.getAttributes().get("src");
+					if(srcAtt != null){
+						if(!aMap.get(altAtt.getValue()).contains("src=\""+srcAtt.getValue()+"\""))
+							occurrences.add(buildOccurrence("22", false, img.toString(), img, "6"));
+					}
+				}else{
+					aMap.put(altAtt.getValue(), img.toString());
+				}
 			}
 		}
+		
+		for (Element img : getDocument().getAllElements("img")) {
+			Attribute alt = img.getAttributes().get("alt");
+			Attribute title = img.getAttributes().get("title");
+			if (alt != null && title != null) {
+				if(title.getValue().equals(alt.getValue()))
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "7"));
+			}
+		}
+		
+		
 		
 		return occurrences;
 	}
