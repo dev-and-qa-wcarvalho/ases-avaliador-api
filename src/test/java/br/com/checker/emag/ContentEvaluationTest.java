@@ -267,11 +267,105 @@ public class ContentEvaluationTest {
 	}
 	
 	@Test
-	public void shouldCheckRecommedation22() {
+	public void shouldCheckRecommedation22Criterion1() {
 		
-		StringBuilder html = new StringBuilder("<html> ");
-								   html.append("<a href=\"doc.pdf\"></a>");
-								   html.append("</html>");
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"smiley.gif\"  height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation22()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+	}
+	
+	@Test
+	public void shouldCheckRecommedation22Criterion3() {
+		
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"smiley.gif\" alt=\" \" height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation22()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+	}
+	
+	@Test
+	public void shouldCheckRecommedation22Criterion4() {
+		
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"smiley.gif\" height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation22()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+	}
+	
+	@Test
+	public void shouldCheckRecommedation22Criterion5() {
+		
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"imagem\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"alt\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"descrição\" height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation22()).check();
+		
+		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+	}
+	
+	
+	@Test
+	public void shouldCheckRecommedation22Criterion7() {
+		
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"smiley.gif\" alt=\"arquivo descrição\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"/pasta/smiley.gif\" alt=\"arquivo descrição\" height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation22()).check();
@@ -279,6 +373,27 @@ public class ContentEvaluationTest {
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+	}
+	
+	@Test
+	public void shouldCheckRecommedation22Criterion8() {
+		
+		StringBuilder html = new StringBuilder("<!DOCTYPE html>");
+		 html.append("<html>");
+		 html.append("<head>");
+		 html.append("</head>");
+		 html.append(" <body>");
+		 html.append("<img src=\"smiley.gif\" alt=\"arquivo descrição\" title=\"arquivo descrição\" height=\"42\" width=\"42\">");
+		 html.append("</body>");
+		 html.append("</html>");
+		 html.append("<html> ");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(content().recommendation22()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
 	@Test
