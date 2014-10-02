@@ -232,11 +232,11 @@ public class FormEvaluation extends Evaluation{
 	
 	private boolean isSubmitResetOrButton(Element elemento){
 
-		Attribute type = elemento.getAttributes().get("type");
+		String type = elemento.getAttributeValue("type");
 		if (type != null) {
-			return (type.getValue().equals("submit") ||
-					type.getValue().equals("reset") ||
-					type.getValue().equals("button"));
+			return (type.equals("submit") ||
+					type.equals("reset") ||
+					type.equals("button"));
 		}
 		
 		return false;

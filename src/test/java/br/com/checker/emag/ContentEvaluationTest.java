@@ -438,32 +438,34 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 	
 	@Test
 	public void shouldAlwaysCheckRecommendation25() {
-		StringBuilder html = new StringBuilder(
-				"<html><p>"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
-				+ "</p></html>");
-		
+		StringBuilder html = new StringBuilder("<html> ");
+		   html.append("<table>\n");
+		   html.append("<thead>\n");
+		   html.append("</thead>\n");
+		   html.append("<tbody>\n");
+		   html.append("</tbody\n>");
+		   html.append("<tfoot>\n");
+		   html.append("</tfoot>\n");
+		   html.append("</table>\n");
+		   
+		   html.append("<table summary=\"sumary\">\n");
+		   html.append("<caption>teste</caption>\n");
+		   html.append("<th>\n");
+		   html.append("<td></td>\n");
+		   html.append("</th>\n");
+		   html.append("</table>\n");
+		   
+		   html.append("</html>\n");
+
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
-				  													.with(content().recommendation25()).check();
+													.with(content().recommendation25()).check();
 		
-		assertEquals("Should return Recommendation 25 ","25",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
-		assertFalse("Recommendation 25 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
+			assertEquals("Should return Recommendation 25 occurrence","25",ocorrencia.getCode());
+			assertFalse("Recommendation 25 should be WARNING",ocorrencia.isError());
+		}
 		
 	}
 	
@@ -495,7 +497,7 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 24 occurrence","24",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 26 occurrence","26",ocorrencia.getCode());
 			assertTrue("Recommendation 24 should be ERROR",ocorrencia.isError());
 		}
 	
@@ -503,13 +505,37 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 	
 	@Test
 	public void shouldAlwaysCheckRecommendation27() {
-		StringBuilder html = new StringBuilder("<html></html>");
+		StringBuilder html = new StringBuilder(
+				"<html><p>"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo conteudo"
+				+ "</p>"
+				+ "<p align=\"justify\"></p>"
+				+ "</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation27()).check();
 		
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 27 ","27",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 27 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		assertEquals("Should return Recommendation 27 ","27",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
+		assertTrue("Recommendation 27 should be ERRIR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
 		
 	}
 	

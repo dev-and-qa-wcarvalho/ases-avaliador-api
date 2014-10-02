@@ -439,28 +439,22 @@ public class ContentEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation25() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("25", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
 		
-		String reg = "<p.*?>(.*)<\\/p.*?>";
-		
-		for (Element paragrafo : getDocument().getAllElements("p")) {
+		for (Element table : getDocument().getAllElements("table")) {
+			Attribute summary = table.getAttributes().get("summary");
 			
-			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
-		        Matcher m = p.matcher(paragrafo);
-		       
-		        while(m.find()){
-		        	String conteudoParagrafo = m.group(1);
-		        	
-		        	if(conteudoParagrafo.length() > 1024)
-						occurrences.add(this.buildOccurrence("25", false, paragrafo.toString(), paragrafo,"4"));
-		        }
+			if (summary == null || summary.getValue().equals("")) 
+				occurrences.add(buildOccurrence("25", false, table.toString(), table));
+			
+			if(table.getAllElements("caption").isEmpty())
+				occurrences.add(buildOccurrence("25", false, table.toString(), table));
 		}
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation26() {
-List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element table : getDocument().getAllElements("table")) {
 			Attribute summary = table.getAttributes().get("summary");
@@ -475,7 +469,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			boolean usaTbody = false;
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("24", true, table.toString(), table));
+				occurrences.add(buildOccurrence("26", true, table.toString(), table));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
@@ -507,7 +501,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				}
 				
 				if(!THusaScope && !THusaHeaders  && !THusaId){
-					occurrences.add(this.buildOccurrence("24", true, th.toString(), th, "1"));
+					occurrences.add(this.buildOccurrence("26", true, th.toString(), th, "1"));
 				}
 			}
 			
@@ -524,7 +518,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				}
 				
 				if(!TDusaScope && !TDusaHeaders  && !TDusaId){
-					occurrences.add(this.buildOccurrence("24", true, td.toString(), td, "1"));
+					occurrences.add(this.buildOccurrence("26", true, td.toString(), td, "1"));
 				}
 			}
 			
@@ -537,7 +531,26 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	
 	private List<Occurrence> checkRecommendation27() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("27", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		
+		String reg = "<p.*?>(.*)<\\/p.*?>";
+		
+		for (Element paragrafo : getDocument().getAllElements("p")) {
+			
+			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
+		        Matcher m = p.matcher(paragrafo);
+		       
+		        while(m.find()){
+		        	String conteudoParagrafo = m.group(1);
+		        	
+		        	if(conteudoParagrafo.length() > 1000)
+						occurrences.add(this.buildOccurrence("27", false, paragrafo.toString(), paragrafo));
+		        }
+		        
+		        String align = paragrafo.getAttributeValue("align");
+		        if("justify".equals(align))
+		        	occurrences.add(this.buildOccurrence("27", true, paragrafo.toString(), paragrafo));
+		}
+		
 		return occurrences;
 	}
 	
