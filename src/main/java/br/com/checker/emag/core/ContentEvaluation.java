@@ -281,7 +281,7 @@ public class ContentEvaluation extends Evaluation{
 		String altImg = link.getFirstElement("img")!=null ? link.getFirstElement("img").getAttributeValue("alt") : "" ;
 		
 		Pattern pattern;
-		for(String leiaMais:leiaMais){
+		for(String leiaMais:this.leiaMais){
 			pattern = Pattern.compile("("+leiaMais+")");
 			if(title!=null)
 				if(pattern.matcher(title.toLowerCase()).find()) return true;
