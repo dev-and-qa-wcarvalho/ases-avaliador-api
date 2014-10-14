@@ -159,7 +159,7 @@ public class FormEvaluation extends Evaluation{
 						}
 					}
 					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true,  input.toString(), input));
+						occurrences.add(this.buildOccurrence("39", true,  input.toString(), input,"1"));
 					}
 				}
 			}
@@ -180,7 +180,7 @@ public class FormEvaluation extends Evaluation{
 						}
 					}
 					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true, input.toString(), input));
+						occurrences.add(this.buildOccurrence("39", true, input.toString(), input,"1"));
 					}
 				}
 			}
@@ -197,7 +197,7 @@ public class FormEvaluation extends Evaluation{
 		for(Element input : this.getDocument().getAllElements("input")){
 			Attribute t = input.getAttributes().get("tabindex");
 			if(t!=null){
-				occurrences.add(this.buildOccurrence("40", false, input.toString(), input));
+				occurrences.add(this.buildOccurrence("40", false, input.toString(), input,"1"));
 			}
 		}
 		

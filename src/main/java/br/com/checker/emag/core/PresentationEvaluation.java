@@ -74,28 +74,28 @@ public class PresentationEvaluation extends Evaluation{
 		for (Element bgcolor : getDocument().getAllElements("body")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor));
+				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("table")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor));
+				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("td")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor));
+				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("tr")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor));
+				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}	
