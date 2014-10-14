@@ -95,7 +95,7 @@ public class MarkEvaluation extends Evaluation {
 				      new ValidatorBuilder().html().validate(getDocument().toString());
 			
 			if(!response.errors().isEmpty())
-				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
 			else if (!response.warnings().isEmpty())
 				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
 			
@@ -113,7 +113,7 @@ public class MarkEvaluation extends Evaluation {
 				      new ValidatorBuilder().css().validate(css);
 			
 			if(!response.errors().isEmpty())
-				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
 			else if (!response.warnings().isEmpty())
 				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
 			
