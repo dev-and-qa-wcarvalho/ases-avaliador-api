@@ -1,8 +1,12 @@
 package br.com.checker.emag.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import com.jcabi.w3c.ValidationResponse;
+import com.jcabi.w3c.ValidatorBuilder;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
@@ -85,6 +89,37 @@ public class MarkEvaluation extends Evaluation {
 	
 	private List<Occurrence> checkRecommendation1() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		
+		try {
+			ValidationResponse response =
+				      new ValidatorBuilder().html().validate(getDocument().toString());
+			
+			if(!response.errors().isEmpty())
+				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+			else if (!response.warnings().isEmpty())
+				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			
+			String css = "";
+			for (Element element : getDocument().getAllElements("style")) 
+				css+= element.getContent().toString();
+			
+			ValidationResponse response =
+				      new ValidatorBuilder().css().validate(css);
+			
+			if(!response.errors().isEmpty())
+				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+			else if (!response.warnings().isEmpty())
+				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		for (Element element : getDocument().getAllElements()) {
 			String value = element.getAttributeValue("style");

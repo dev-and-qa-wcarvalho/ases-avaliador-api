@@ -4,10 +4,10 @@ import static br.com.checker.emag.core.Checker.from;
 import static br.com.checker.emag.core.Checker.marking;
 import static org.junit.Assert.*;
 
-
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -20,6 +20,7 @@ public class MarkEvaluationTest {
 
 	
 	@Test
+	@Ignore
 	public void shouldCheckRecommedation1() {
 		StringBuilder html = new StringBuilder("<html>/n")
 		.append("<head>")
@@ -49,6 +50,7 @@ public class MarkEvaluationTest {
 	}
 	
 	@Test
+	@Ignore
 	public void shouldNotCheckRecommedation1() {
 		StringBuilder html = new StringBuilder("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">")
 							.append("<html></html>");
