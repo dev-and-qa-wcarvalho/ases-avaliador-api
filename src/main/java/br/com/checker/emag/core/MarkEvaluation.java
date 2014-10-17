@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
 
@@ -99,26 +101,29 @@ public class MarkEvaluation extends Evaluation {
 			else if (!response.warnings().isEmpty())
 				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		try {
+		
 			
 			String css = "";
 			for (Element element : getDocument().getAllElements("style")) 
 				css+= element.getContent().toString();
 			
-			ValidationResponse response =
-				      new ValidatorBuilder().css().validate(css);
-			
-			if(!response.errors().isEmpty())
-				occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
-			else if (!response.warnings().isEmpty())
-				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(StringUtils.isNotBlank(css)){	
+			try {
+				ValidationResponse response =
+					      new ValidatorBuilder().css().validate(css);
+				
+				if(!response.errors().isEmpty())
+					occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				else if (!response.warnings().isEmpty())
+					occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		for (Element element : getDocument().getAllElements()) {
