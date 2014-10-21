@@ -187,40 +187,7 @@ public class ContentEvaluation extends Evaluation{
 		
 	private List<Occurrence> checkRecommendation20() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		Map<String, String> descricaoImg = new HashMap<String, String>();
-		
-		for (Element img : getDocument().getAllElements("img")) {
-			Attribute alt = img.getAttributes().get("alt");
-			Attribute src = img.getAttributes().get("src");
-			Attribute title = img.getAttributes().get("title");
-			
-			if (alt == null || StringUtils.isEmpty(alt.getValue()))
-				occurrences.add(this.buildOccurrence("20", true, img.toString(), img, "1"));
-			
-			if(Pattern.compile("(alt|descrição|imagem)", Pattern.CASE_INSENSITIVE).matcher(img.toString()).find())
-				occurrences.add(this.buildOccurrence("20", true, img.toString(), img, "2"));
-			
-			if(alt != null && src != null){
-				if(!descricaoImg.containsKey(alt.toString()))
-					descricaoImg.put(alt.toString(), src.toString());
-				else
-					if(!src.toString().equals(descricaoImg.get(alt.toString())))
-						occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "4"));
-				
-				String altDesc = StringUtils.substringBetween(alt.toString(), "alt=\"", "\"").trim();
-				
-				if(title != null){
-					String titleDesc = StringUtils.substringBetween(title.toString(), "title=\"", "\"").trim();
-					if(titleDesc.equals(altDesc))
-						occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "6"));
-				}
-								
-				if(altDesc.length() > 40)
-					occurrences.add(this.buildOccurrence("20", false, img.toString(), img, "7"));
-			}
-			
-		}
-		
+		occurrences.add(new Occurrence("20", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
 		return occurrences;
 	}
 	
@@ -232,28 +199,28 @@ public class ContentEvaluation extends Evaluation{
 			String title = link.getAttributeValue("title");
 			
 			if(isRegistroBr(href))
-				occurrences.add(this.buildOccurrence("21", false, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", false, link.toString(), link, "1"));
 			
 			if(hasTitle(link) && !hasContent(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"2"));
 			
 			if(!hasTitle(link) && !hasContent(link) && hasImgWithoutAlt(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"4"));
 			
 			if(hasLeiaMaisDescription(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"5"));
 			
 			if(hasDiferenteContentSameLink(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"6"));
 			
 			if(hasSameContentDiferentLink(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"7"));
 			
 			if(isTitleEqualsContent(link))
-				occurrences.add(this.buildOccurrence("21", true, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", true, link.toString(), link,"8"));
 			
 			if(StringUtils.isNotBlank(title) && title.length() > 500)
-				occurrences.add(this.buildOccurrence("21", false, link.toString(), link));
+				occurrences.add(this.buildOccurrence("21", false, link.toString(), link,"9"));
 			
 			
 		}
@@ -360,7 +327,7 @@ public class ContentEvaluation extends Evaluation{
 			if (alt == null) {
 				occurrences.add(buildOccurrence("22", true, img.toString(), img, "1"));
 			}else if(alt.getValueSegment().toString().trim().isEmpty()){
-				occurrences.add(buildOccurrence("22", true, img.toString(), img, "3"));
+				occurrences.add(buildOccurrence("22", true, img.toString(), img, "2"));
 			}	
 			
 			Attribute src = img.getAttributes().get("src");
@@ -372,12 +339,12 @@ public class ContentEvaluation extends Evaluation{
 				contAlt = alt.getValue();  
 			
 				if(parts[parts.length-1].toString().equals(contAlt))
-					occurrences.add(buildOccurrence("22", true, img.toString(), img, "4"));
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "3"));
 			}
 			
 			for(String descricao : descricoes){
 				if(descricao.equalsIgnoreCase(contAlt))
-					occurrences.add(buildOccurrence("22", true, img.toString(), img, "5"));
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "4"));
 				
 			}
 			
@@ -393,7 +360,7 @@ public class ContentEvaluation extends Evaluation{
 					Attribute srcAtt = img.getAttributes().get("src");
 					if(srcAtt != null){
 						if(!aMap.get(altAtt.getValue()).contains("src=\""+srcAtt.getValue()+"\""))
-							occurrences.add(buildOccurrence("22", false, img.toString(), img, "6"));
+							occurrences.add(buildOccurrence("22", false, img.toString(), img, "5"));
 					}
 				}else{
 					aMap.put(altAtt.getValue(), img.toString());
@@ -406,7 +373,7 @@ public class ContentEvaluation extends Evaluation{
 			Attribute title = img.getAttributes().get("title");
 			if (alt != null && title != null) {
 				if(title.getValue().equals(alt.getValue()))
-					occurrences.add(buildOccurrence("22", true, img.toString(), img, "7"));
+					occurrences.add(buildOccurrence("22", true, img.toString(), img, "6"));
 			}
 		}
 		

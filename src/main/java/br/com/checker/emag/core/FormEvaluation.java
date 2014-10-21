@@ -129,7 +129,7 @@ public class FormEvaluation extends Evaluation{
 					}
 					
 					if (!temInputEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true, label.toString(), label));
+						occurrences.add(this.buildOccurrence("39", true, label.toString(), label,"1"));
 					}
 				}
 			}
@@ -148,7 +148,7 @@ public class FormEvaluation extends Evaluation{
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
 					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("39", true,input.toString(), input));
+					occurrences.add(this.buildOccurrence("39", true,input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
 					for (Element label : form.getAllElements("label")) {
@@ -169,7 +169,7 @@ public class FormEvaluation extends Evaluation{
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
 					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("39", true, input.toString(), input));
+					occurrences.add(this.buildOccurrence("39", true, input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
 					for (Element label : form.getAllElements("label")) {

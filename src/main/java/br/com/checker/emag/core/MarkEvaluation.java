@@ -139,12 +139,6 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "4"));
 		}
 		
-		for (Element element : getDocument().getAllElements("script")) {
-			
-			if(element != null)
-				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "6"));
-		}
-		
 		for (Element element : getDocument().getAllElements()) {
 			if(element.getAttributes() != null){
 				String script = element.getAttributes().getTextExtractor().toString();
@@ -153,6 +147,13 @@ public class MarkEvaluation extends Evaluation {
 				}
 			}
 		}
+		
+		for (Element element : getDocument().getAllElements("script")) {
+			
+			if(element != null)
+				occurrences.add(this.buildOccurrence("1", false, element.toString(), element, "6"));
+		}
+		
 		
 		return occurrences;
 	}
@@ -174,7 +175,7 @@ public class MarkEvaluation extends Evaluation {
 			for (Element element : getDocument().getAllElements(tag)) {
 				if(element != null)
 					if(element.isEmpty()){
-						occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "2"));
+						occurrences.add(this.buildOccurrence("2", false, element.toString(), element, "1"));
 					}	
 			}
 		
@@ -376,27 +377,27 @@ public class MarkEvaluation extends Evaluation {
 				String role = header.getAttributeValue("role");
 				
 				if(role!=null && "banner".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("8", false, header.toString(), header));
+					occurrences.add(this.buildOccurrence("8", false, header.toString(), header,"1"));
 			}
 			
 			for (Element nav : getDocument().getAllElements("nav")){
 				String role = nav.getAttributeValue("role");
 				
 				if(role!=null && "navigation".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("8", false, nav.toString(), nav));
+					occurrences.add(this.buildOccurrence("8", false, nav.toString(), nav,"1"));
 			}
 			for (Element div : getDocument().getAllElements("div")){
 				String role = div.getAttributeValue("role");
 				
 				if(role!=null && "main".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("8", false, div.toString(), div));
+					occurrences.add(this.buildOccurrence("8", false, div.toString(), div,"1"));
 			}
 			
 			for (Element footer : getDocument().getAllElements("footer")){
 				String role = footer.getAttributeValue("role");
 				
 				if(role!=null && "contentinfo".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("8", false, footer.toString(), footer));
+					occurrences.add(this.buildOccurrence("8", false, footer.toString(), footer,"1"));
 			}
 			
 		}
