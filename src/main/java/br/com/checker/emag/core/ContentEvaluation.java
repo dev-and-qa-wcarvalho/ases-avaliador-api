@@ -101,21 +101,7 @@ public class ContentEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation16() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		Element head = getDocument().getFirstElement("head");
-		
-		if(head == null) {
-			occurrences.add(new Occurrence("16", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		}else {
-		
-			Element title = head.getFirstElement("title");
-			if (title == null) {
-				occurrences.add(this.buildOccurrence("16", true, head.toString(), head, "1"));
-			} else if (title.isEmpty()) {
-				occurrences.add(buildOccurrence("16", true, title.toString(), title, "1"));
-			}
-		}
-		
+		occurrences.add(new Occurrence("16", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
 		return occurrences;
 	}	
 	
