@@ -219,7 +219,7 @@ public class FormEvaluation extends Evaluation{
 			if(isSubmitResetOrButton(elemento)) continue;
 			
 			for(String evento : eventos){
-				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("41", false, elemento.toString(), elemento));
+				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("41", false, elemento.toString(), elemento, "1"));
 			}
 		}
 		

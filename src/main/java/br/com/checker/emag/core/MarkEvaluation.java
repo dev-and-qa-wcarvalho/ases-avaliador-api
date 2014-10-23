@@ -97,18 +97,16 @@ public class MarkEvaluation extends Evaluation {
 				      new ValidatorBuilder().html().validate(getDocument().toString());
 			
 			if(!response.errors().isEmpty())
-				occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
 			else if (!response.warnings().isEmpty())
-				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+				occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
 			
-			String css = "";
-			for (Element element : getDocument().getAllElements("style")) 
+		String css = "";
+		for (Element element : getDocument().getAllElements("style")) 
 				css+= element.getContent().toString();
 			
 		if(StringUtils.isNotBlank(css)){	
@@ -117,9 +115,9 @@ public class MarkEvaluation extends Evaluation {
 					      new ValidatorBuilder().css().validate(css);
 				
 				if(!response.errors().isEmpty())
-					occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+					occurrences.add(this.buildOccurrence("1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
 				else if (!response.warnings().isEmpty())
-					occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement()));
+					occurrences.add(this.buildOccurrence("1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
 				
 			} catch (Exception e) {
 				e.printStackTrace();
