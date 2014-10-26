@@ -27,7 +27,7 @@ public class ContentEvaluationTest {
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 16","16",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertTrue("Recommendation 17 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		assertFalse("Recommendation 17 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 
 	
@@ -137,9 +137,9 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation20()).check();
 		
-		assertEquals("Should return 1 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 20","20",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertTrue("Recommendation 20 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		assertFalse("Recommendation 20 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
 	
