@@ -96,23 +96,23 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 			
 			if(dbclick!=null){
-				occurrences.add(this.buildOccurrence("10", false, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", false, element.toString(), element, "2"));
 			}
 			
 			if (onmousedown != null && onkeydown == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
 				
 			} else if (onmouseup != null && onkeyup == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
 				
 			} else if (onclick != null && onkeypress == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
 				
 			} else if (onmouseover != null && onfocus == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
 				
 			} else if (onmouseout != null && onblur == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element));
+				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
 			}
 		}
 		

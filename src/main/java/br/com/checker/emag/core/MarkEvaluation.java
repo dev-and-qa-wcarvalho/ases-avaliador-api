@@ -247,10 +247,10 @@ public class MarkEvaluation extends Evaluation {
 		for(Element link : this.getDocument().getAllElements("a")){
 			Attribute tabIndex = link.getAttributes().get("tabindex");
 			if(tabIndex!=null) {
-				occurrences.add(this.buildOccurrence("4", false,link.toString(), link));
+				occurrences.add(this.buildOccurrence("4", false,link.toString(), link, "3"));
 				
 				if(rangeIncorretoTabeIndex(tabIndex))
-					occurrences.add(this.buildOccurrence("4", false,link.toString(), link));
+					occurrences.add(this.buildOccurrence("4", false,link.toString(), link, "3"));
 			}
 		}
 		
@@ -258,27 +258,27 @@ public class MarkEvaluation extends Evaluation {
 			
 			Attribute tabIndex = input.getAttributes().get("tabindex");
 			if(tabIndex!=null)
-				occurrences.add(this.buildOccurrence("4", false, input.toString(), input));
+				occurrences.add(this.buildOccurrence("4", false, input.toString(), input, "2"));
 		}
 		
 		for(Element select : this.getDocument().getAllElements("select")){
 			
 			Attribute tabIndex = select.getAttributes().get("tabindex");
 			if(tabIndex!=null)
-				occurrences.add(this.buildOccurrence("4", false, select.toString(), select));
+				occurrences.add(this.buildOccurrence("4", false, select.toString(), select, "2"));
 			
 			if(rangeIncorretoTabeIndex(tabIndex))
-				occurrences.add(this.buildOccurrence("4", false,select.toString(), select));
+				occurrences.add(this.buildOccurrence("4", false,select.toString(), select, "2"));
 		}
 		
 		for(Element textarea : this.getDocument().getAllElements("textarea")){
 			
 			Attribute tabIndex = textarea.getAttributes().get("tabindex");
 			if(tabIndex!=null)
-				occurrences.add(this.buildOccurrence("4", false, textarea.toString(), textarea));
+				occurrences.add(this.buildOccurrence("4", false, textarea.toString(), textarea, "2"));
 			
 			if(rangeIncorretoTabeIndex(tabIndex))
-				occurrences.add(this.buildOccurrence("4", false,textarea.toString(), textarea));
+				occurrences.add(this.buildOccurrence("4", false,textarea.toString(), textarea, "2"));
 		}
 		
 		Element section =  this.getDocument().getFirstElement("section");
@@ -287,7 +287,7 @@ public class MarkEvaluation extends Evaluation {
 			int firstSection = section.getBegin();
 			for(Element nav : this.getDocument().getAllElements("nav")){
 				if(nav.getBegin() < firstSection)
-					occurrences.add(this.buildOccurrence("4", false,nav.toString(), nav));
+					occurrences.add(this.buildOccurrence("4", false,nav.toString(), nav, "1"));
 			}
 		}
 		

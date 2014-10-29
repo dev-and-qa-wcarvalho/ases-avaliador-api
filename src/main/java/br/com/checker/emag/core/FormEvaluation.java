@@ -244,78 +244,14 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation42() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		for (Element form : this.getDocument().getAllElements("form")) {
-			
-			for (Element input : form.getAllElements("input")) {
-				Attribute type = input.getAttributes().get("type");
-				if (type != null) {
-					if (type.getValue().equals("submit") ||
-						type.getValue().equals("reset") ||
-						type.getValue().equals("button") ||
-						type.getValue().equals("image") ||
-						type.getValue().equals("hidden")) {
-						continue;
-					}
-				}
-				Attribute attrId = input.getAttributes().get("id");
-				if (attrId == null || attrId.getValue().isEmpty()) {
-					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("42", true, input.toString(), input));
-				} else {
-					boolean temLabelEquivalente = false;
-					for (Element label : form.getAllElements("label")) {
-						Attribute attrFor = label.getAttributes().get("for");
-						if (attrFor != null && attrFor.getValue().equals(attrId.getValue())) {
-							temLabelEquivalente = true;
-							break;
-						}
-					}
-					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("42", true, input.toString(), input));
-					}
-				}
-			}
-			
-			for (Element input : form.getAllElements("textarea")) {
-				
-				Attribute attrId = input.getAttributes().get("id");
-				if (attrId == null || attrId.getValue().isEmpty()) {
-					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("42", true, input.toString(), input));
-				} else {
-					boolean temLabelEquivalente = false;
-					for (Element label : form.getAllElements("label")) {
-						Attribute attrFor = label.getAttributes().get("for");
-						if (attrFor != null && attrFor.getValue().equals(attrId.getValue())) {
-							temLabelEquivalente = true;
-							break;
-						}
-					}
-					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("42", true, input.toString(), input));
-					}
-				}
-			}
-		}
-		
+		occurrences.add(new Occurrence("42", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	
 	
 	private List<Occurrence> checkRecommendation43() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		for (Element form : this.getDocument().getAllElements("form")) {
-			occurrences.add(this.buildOccurrence("43", false, form
-							.toString(), form));
-		}
-		
-		for (Element script : this.getDocument().getAllElements("script")) {
-			if(StringUtils.substringBetween(script.toString(), "alert(", ")") != null){
-				occurrences.add(this.buildOccurrence("43", false, script.toString(), script, "4"));
-			}	
-		}
-		
+		occurrences.add(new Occurrence("43", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	
@@ -355,10 +291,7 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation45() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		for (Element form : this.getDocument().getAllElements("form"))
-			occurrences.add(this.buildOccurrence("45", false, form.toString(), form));
-		
+		occurrences.add(new Occurrence("45", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	
