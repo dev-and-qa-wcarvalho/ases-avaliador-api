@@ -496,12 +496,12 @@ public class ContentEvaluation extends Evaluation{
 		        	String conteudoParagrafo = m.group(1);
 		        	
 		        	if(conteudoParagrafo.length() > 1000)
-						occurrences.add(this.buildOccurrence("27", false, paragrafo.toString(), paragrafo));
+						occurrences.add(this.buildOccurrence("27", false, paragrafo.toString(), paragrafo, "1"));
 		        }
 		        
 		        String align = paragrafo.getAttributeValue("align");
 		        if("justify".equals(align))
-		        	occurrences.add(this.buildOccurrence("27", true, paragrafo.toString(), paragrafo));
+		        	occurrences.add(this.buildOccurrence("27", true, paragrafo.toString(), paragrafo, "2"));
 		}
 		
 		return occurrences;
