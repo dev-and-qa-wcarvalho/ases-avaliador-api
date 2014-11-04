@@ -397,10 +397,10 @@ public class ContentEvaluation extends Evaluation{
 			Attribute summary = table.getAttributes().get("summary");
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("25", false, table.toString(), table));
+				occurrences.add(buildOccurrence("25", false, table.toString(), table, "1"));
 			
 			if(table.getAllElements("caption").isEmpty())
-				occurrences.add(buildOccurrence("25", false, table.toString(), table));
+				occurrences.add(buildOccurrence("25", false, table.toString(), table, "1"));
 		}
 		
 		return occurrences;
@@ -422,7 +422,7 @@ public class ContentEvaluation extends Evaluation{
 			boolean usaTbody = false;
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("26", true, table.toString(), table));
+				occurrences.add(buildOccurrence("26", true, table.toString(), table, "1"));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
