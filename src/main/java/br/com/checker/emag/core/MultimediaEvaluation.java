@@ -193,7 +193,7 @@ public class MultimediaEvaluation extends Evaluation{
 		for (Element video : getDocument().getAllElements("object")) {
 			
 			if (video.toString().contains("swf")) 
-				occurrences.add(this.buildOccurrence("37", false, video.toString(), video));
+				occurrences.add(this.buildOccurrence("37", false, video.toString(), video, "1"));
 		}
 		return occurrences;
 	}
