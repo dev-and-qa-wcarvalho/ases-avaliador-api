@@ -60,7 +60,7 @@ public class PresentationEvaluation extends Evaluation{
 		for (Element abbr : getDocument().getAllElements("abbr")) {
 			Attribute title = abbr.getAttributes().get("title");
 				if(title == null || title.getValue().equals(""))
-					occurrences.add(buildOccurrence("28", true, abbr.toString(), abbr, "1"));
+					occurrences.add(buildOccurrence("3.12", true, abbr.toString(), abbr, "1"));
 				
 		}
 		
@@ -74,47 +74,47 @@ public class PresentationEvaluation extends Evaluation{
 		for (Element bgcolor : getDocument().getAllElements("body")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
+				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("table")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
+				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("td")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
+				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("tr")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("29", true, bgcolor.toString(), bgcolor,"1"));
+				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
 				temBgcolor = true;
 			}
 		}	
 		
 		if(!temBgcolor)
-			occurrences.add(new Occurrence("29", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
+			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation30() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("30", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
+		occurrences.add(new Occurrence("4.2", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation31() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("31", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
+		occurrences.add(new Occurrence("4.3", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
 		
 		return occurrences;
 	}
@@ -125,14 +125,14 @@ public class PresentationEvaluation extends Evaluation{
 		for (Element style : getDocument().getAllElements("style")) {
 			
 			if(style.toString().contains("a:focus") || style.toString().contains("a:hover"))
-				occurrences.add(buildOccurrence("32", false, style.toString(), style, "1"));
+				occurrences.add(buildOccurrence("4.4", false, style.toString(), style, "1"));
 		}
 		
 		for (Element style : getDocument().getAllElements("a")) {
 			Attribute attribute = style.getAttributes().get("style");
 			if(attribute != null)
 				if(attribute.toString().contains("a:focus") || attribute.toString().contains("a:hover"))
-					occurrences.add(buildOccurrence("32", false, style.toString(), style, "1"));
+					occurrences.add(buildOccurrence("4.4", false, style.toString(), style, "1"));
 		}
 		
 		return occurrences;

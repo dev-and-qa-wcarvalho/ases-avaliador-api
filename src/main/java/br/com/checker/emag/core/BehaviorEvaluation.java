@@ -96,23 +96,23 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 			
 			if(dbclick!=null){
-				occurrences.add(this.buildOccurrence("10", false, element.toString(), element, "2"));
+				occurrences.add(this.buildOccurrence("2.1", false, element.toString(), element, "2"));
 			}
 			
 			if (onmousedown != null && onkeydown == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
 			} else if (onmouseup != null && onkeyup == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
 			} else if (onclick != null && onkeypress == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
 			} else if (onmouseover != null && onfocus == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
 			} else if (onmouseout != null && onblur == null) {
-				occurrences.add(this.buildOccurrence("10", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 			}
 		}
 		
@@ -132,7 +132,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		if(script)
 			if(getDocument().getAllElements("noscript").isEmpty())
-				occurrences.add(this.buildOccurrence("11", true, getDocument().getFirstElement("html").toString(), getDocument().getFirstElement("html"), "1"));
+				occurrences.add(this.buildOccurrence("2.2", true, getDocument().getFirstElement("html").toString(), getDocument().getFirstElement("html"), "1"));
 			
 		
 		for (Element object : getDocument().getAllElements("object")) {
@@ -144,7 +144,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 			
 			if(!contAlter){
-				occurrences.add(this.buildOccurrence("11", true, object.toString(), object, "2"));
+				occurrences.add(this.buildOccurrence("2.2", true, object.toString(), object, "2"));
 				contAlter = false;
 			}	
 			
@@ -152,12 +152,12 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		if(!getDocument().getAllElements("embed").isEmpty()){
 			for(Element embed : getDocument().getAllElements("embed"))
-				occurrences.add(this.buildOccurrence("11", false, embed.toString(), embed, "3"));
+				occurrences.add(this.buildOccurrence("2.2", false, embed.toString(), embed, "3"));
 		}	
 		
 		if(!getDocument().getAllElements("applet").isEmpty()){
 			for(Element applet : getDocument().getAllElements("applet"))
-				occurrences.add(this.buildOccurrence("11", false, applet.toString(), applet, "4"));
+				occurrences.add(this.buildOccurrence("2.2", false, applet.toString(), applet, "4"));
 		}
 		
 		return occurrences;
@@ -171,13 +171,13 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			Attribute httpEquiv = element.getAttributes().get("http-equiv");
 			
 			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue())) {
-				occurrences.add(this.buildOccurrence("12", false, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.3", false, element.toString(), element, "1"));
 				temMetaRefresh = true;
 			}
 		}
 		
 		if(!temMetaRefresh)
-			occurrences.add(new Occurrence("12", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+			occurrences.add(new Occurrence("2.3", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
 		
 		return occurrences;
 	}
@@ -194,7 +194,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				url = content.toString().contains("url");
 			
 			if (httpEquiv != null && "refresh".equals(httpEquiv.getValue()) && content != null && url == true) 
-				occurrences.add(this.buildOccurrence("13", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.4", true, element.toString(), element, "1"));
 		}
 		
 		return occurrences;
@@ -205,17 +205,17 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		boolean hasBlink = false;
 		boolean hasMarquee = false;
 		for (Element blink : getDocument().getAllElements("blink")) {
-			occurrences.add(this.buildOccurrence("14", true, blink.toString(), blink));
+			occurrences.add(this.buildOccurrence("2.5", true, blink.toString(), blink));
 			hasBlink = true;
 		}
 		
 		for(Element marquee : getDocument().getAllElements("marquee")) {
-			occurrences.add(this.buildOccurrence("14", true, marquee.toString(), marquee));
+			occurrences.add(this.buildOccurrence("2.5", true, marquee.toString(), marquee));
 			hasMarquee = true;
 		}
 		
 		if (!hasBlink && !hasMarquee)
-			occurrences.add(new Occurrence("14", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR,"1"));
+			occurrences.add(new Occurrence("2.5", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR,"1"));
 		
 		return occurrences;
 	}
@@ -224,18 +224,18 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element blink : getDocument().getAllElements("blink")) {
-			occurrences.add(this.buildOccurrence("15", true, blink.toString(), blink, "1"));
+			occurrences.add(this.buildOccurrence("2.6", true, blink.toString(), blink, "1"));
 		}
 		
 		for(Element marquee : getDocument().getAllElements("marquee")) {
-			occurrences.add(this.buildOccurrence("15", true, marquee.toString(), marquee, "2"));
+			occurrences.add(this.buildOccurrence("2.6", true, marquee.toString(), marquee, "2"));
 		}
 		
 		for(Element img : getDocument().getAllElements("img")) {
 			Attribute src = img.getAttributes().get("src");
 			if(src != null)
 			if(img.getAttributeValue("src").contains(".gif")){
-				occurrences.add(this.buildOccurrence("15", false, img.toString(), img, "3"));
+				occurrences.add(this.buildOccurrence("2.6", false, img.toString(), img, "3"));
 			}
 		}
 		

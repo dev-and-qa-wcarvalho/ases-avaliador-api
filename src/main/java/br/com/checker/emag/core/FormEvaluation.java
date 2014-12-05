@@ -88,13 +88,13 @@ public class FormEvaluation extends Evaluation{
 				if (type.getValue().equals("image")) {
 					Attribute alt = input.getAttributes().get("alt");
 					if (alt == null || alt.getValue().isEmpty()) {
-						occurrences.add(this.buildOccurrence("38", true, input.toString(), input, "1"));
+						occurrences.add(this.buildOccurrence("6.1", true, input.toString(), input, "1"));
 					}
 				}
 				if (type.getValue().equals("submit") || type.getValue().equals("reset") || type.getValue().equals("button")) {
 					Attribute value = input.getAttributes().get("value");
 					if (value == null || value.getValue().isEmpty()) {
-						occurrences.add(this.buildOccurrence("38", true,input.toString(), input, "1"));
+						occurrences.add(this.buildOccurrence("6.1", true,input.toString(), input, "1"));
 					}
 				}
 			}
@@ -109,7 +109,7 @@ public class FormEvaluation extends Evaluation{
 			for (Element label : form.getAllElements("label")) {
 				Attribute attrFor = label.getAttributes().get("for");
 				if (attrFor == null || attrFor.getValue().isEmpty()) {
-					occurrences.add(this.buildOccurrence("39", true, label.toString(), label, "1"));
+					occurrences.add(this.buildOccurrence("6.2", true, label.toString(), label, "1"));
 				} else {
 					boolean temInputEquivalente = false;
 					for (Element input : form.getAllElements("input")) {
@@ -129,7 +129,7 @@ public class FormEvaluation extends Evaluation{
 					}
 					
 					if (!temInputEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true, label.toString(), label,"1"));
+						occurrences.add(this.buildOccurrence("6.2", true, label.toString(), label,"1"));
 					}
 				}
 			}
@@ -148,7 +148,7 @@ public class FormEvaluation extends Evaluation{
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
 					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("39", true,input.toString(), input,"1"));
+					occurrences.add(this.buildOccurrence("6.2", true,input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
 					for (Element label : form.getAllElements("label")) {
@@ -159,7 +159,7 @@ public class FormEvaluation extends Evaluation{
 						}
 					}
 					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true,  input.toString(), input,"1"));
+						occurrences.add(this.buildOccurrence("6.2", true,  input.toString(), input,"1"));
 					}
 				}
 			}
@@ -169,7 +169,7 @@ public class FormEvaluation extends Evaluation{
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
 					System.out.println("TAG COMPLETA: "+input.toString());
-					occurrences.add(this.buildOccurrence("39", true, input.toString(), input,"1"));
+					occurrences.add(this.buildOccurrence("6.2", true, input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
 					for (Element label : form.getAllElements("label")) {
@@ -180,7 +180,7 @@ public class FormEvaluation extends Evaluation{
 						}
 					}
 					if (!temLabelEquivalente) {
-						occurrences.add(this.buildOccurrence("39", true, input.toString(), input,"1"));
+						occurrences.add(this.buildOccurrence("6.2", true, input.toString(), input,"1"));
 					}
 				}
 			}
@@ -197,7 +197,7 @@ public class FormEvaluation extends Evaluation{
 		for(Element input : this.getDocument().getAllElements("input")){
 			Attribute t = input.getAttributes().get("tabindex");
 			if(t!=null){
-				occurrences.add(this.buildOccurrence("40", false, input.toString(), input,"1"));
+				occurrences.add(this.buildOccurrence("6.3", false, input.toString(), input,"1"));
 			}
 		}
 		
@@ -219,7 +219,7 @@ public class FormEvaluation extends Evaluation{
 			if(isSubmitResetOrButton(elemento)) continue;
 			
 			for(String evento : eventos){
-				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("41", false, elemento.toString(), elemento, "1"));
+				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("6.4", false, elemento.toString(), elemento, "1"));
 			}
 		}
 		
@@ -244,14 +244,14 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation42() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("42", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
+		occurrences.add(new Occurrence("6.5", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	
 	
 	private List<Occurrence> checkRecommendation43() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("43", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
+		occurrences.add(new Occurrence("6.6", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	
@@ -260,25 +260,25 @@ public class FormEvaluation extends Evaluation{
 		
 		for (Element form : this.getDocument().getAllElements("form")) {
 			if (form.getAllElements("fieldset").isEmpty()) {
-				occurrences.add(this.buildOccurrence("44", false, form
+				occurrences.add(this.buildOccurrence("6.7", false, form
 								.toString(), form, "1"));
 			} else {
 				for (Element fieldset : form.getAllElements("fieldset")) {
 					if (fieldset.getAllElements("legend").isEmpty()) {
-						occurrences.add(this.buildOccurrence("44", true,
+						occurrences.add(this.buildOccurrence("6.7", true,
 										fieldset.toString(), fieldset, "1"));
 					}
 				}
 			}
 			for (Element select : form.getAllElements("select")) {
 				if (select.getAllElements("optgroup").isEmpty()) {
-					occurrences.add(this.buildOccurrence("44", false, select
+					occurrences.add(this.buildOccurrence("6.7", false, select
 									.toString(), select, "2"));
 				} else {
 					for (Element optgroup : select.getAllElements("optgroup")) {
 						Attribute label = optgroup.getAttributes().get("label");
 						if (label == null || label.getValue().equals("")) {
-							occurrences.add(this.buildOccurrence("44", true,
+							occurrences.add(this.buildOccurrence("6.7", true,
 											optgroup.toString(), optgroup, "2"));
 						}
 					}
@@ -291,7 +291,7 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation45() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("45", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
+		occurrences.add(new Occurrence("6.8", false, getDocument().getFirstElement().toString(),OccurrenceClassification.FORM));
 		return occurrences;
 	}
 	

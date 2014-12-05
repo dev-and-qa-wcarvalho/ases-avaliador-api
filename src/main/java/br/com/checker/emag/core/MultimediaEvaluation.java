@@ -75,7 +75,7 @@ public class MultimediaEvaluation extends Evaluation{
 						|| value.getValue().contains(".rmvb")
 						|| value.getValue().contains(".WebM")
 						|| value.getValue().contains(".Ogg")) {
-					occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
+					occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
 				}
 			
 			}
@@ -90,7 +90,7 @@ public class MultimediaEvaluation extends Evaluation{
 							|| value.getValue().contains(".rmvb")
 							|| value.getValue().contains(".WebM")
 							|| value.getValue().contains(".Ogg")) {
-						occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
+						occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
 					}
 				
 		}
@@ -98,7 +98,7 @@ public class MultimediaEvaluation extends Evaluation{
 		for (Element video : this.getDocument().getAllElements("video")) {
 			String descricao = video.getTextExtractor().toString().trim();
 			if(descricao.length() == 0)
-				occurrences.add(this.buildOccurrence("33", false, video.toString(), video, "1"));
+				occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
 		}
 		
 		return occurrences;
@@ -111,7 +111,7 @@ public class MultimediaEvaluation extends Evaluation{
 			Attribute data = video.getAttributes().get("data");
 			
 			if(data != null && (data.getValue().contains("mp3") || data.getValue().contains("wma") || data.getValue().contains("wav")))
-				occurrences.add(this.buildOccurrence("34", false, video.toString(), video, "1"));
+				occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
 	
 		}
 		
@@ -122,10 +122,10 @@ public class MultimediaEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element video : getDocument().getAllElements("object"))
-			occurrences.add(this.buildOccurrence("35", false, video.toString(), video, "1"));
+			occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
 		
 		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("35", false, video.toString(), video, "1"));
+			occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
 		
 		return occurrences;
 	}
@@ -152,7 +152,7 @@ public class MultimediaEvaluation extends Evaluation{
 				
 				if(autostart != null && hidden != null){
 					if(autostart.equals("true") && hidden.equals("true"))
-						occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+						occurrences.add(this.buildOccurrence("5.4", false, musica.toString(), musica, "1"));
 				}
 			}
 		}
@@ -176,10 +176,10 @@ public class MultimediaEvaluation extends Evaluation{
 						String value = param.getAttributes().getValue("value");
 						if(name != null && value != null){
 							if(name.equals("autoplay") && value.equals("false"))
-								occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+								occurrences.add(this.buildOccurrence("5.4", false, musica.toString(), musica, "1"));
 					
 							if(name.equals("autostart") && value.equals("0"))
-								occurrences.add(this.buildOccurrence("36", false, musica.toString(), musica, "1"));
+								occurrences.add(this.buildOccurrence("5.4", false, musica.toString(), musica, "1"));
 					}
 				}	
 			}
@@ -193,7 +193,7 @@ public class MultimediaEvaluation extends Evaluation{
 		for (Element video : getDocument().getAllElements("object")) {
 			
 			if (video.toString().contains("swf")) 
-				occurrences.add(this.buildOccurrence("37", false, video.toString(), video, "1"));
+				occurrences.add(this.buildOccurrence("5.5", false, video.toString(), video, "1"));
 		}
 		return occurrences;
 	}
