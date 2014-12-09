@@ -35,7 +35,7 @@ public class BehaviorEvaluationTest {
 		int error = 0;
 		int warning = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.BEHAVIOR)) {
-			assertEquals("Should return Recommendation 10 occurrence","10",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 10 occurrence","2.1",ocorrencia.getCode());
 			if(ocorrencia.isError())
 				error++;
 			else

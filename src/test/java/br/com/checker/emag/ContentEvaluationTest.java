@@ -26,7 +26,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation16()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 16","16",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 16","2.7",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 17 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 
@@ -41,7 +41,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation17()).check();
 		
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 17 occurrence","17",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 17 occurrence","3.1",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 16 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -100,7 +100,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation19()).check();
 		
 		assertEquals("Should return 2 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 19","19",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 19","3.3",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 19 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 		
 	}
@@ -121,7 +121,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation19()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 19","19",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 19","3.3",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 19 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 
 	}
@@ -138,7 +138,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation20()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 20","20",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 20","3.4",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 20 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -176,7 +176,7 @@ public class ContentEvaluationTest {
 		assertEquals("Should return 1 occurrences", 5,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
 			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
 		}
 	}
@@ -195,7 +195,7 @@ public class ContentEvaluationTest {
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
 			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
 		}
 	}
@@ -214,7 +214,7 @@ public class ContentEvaluationTest {
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
 			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
 		}
 	}
@@ -233,7 +233,7 @@ public class ContentEvaluationTest {
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 21 occurrence","21",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
 			assertTrue("Recommendation 21 should be ERROR",ocorrencia.isError());
 		}
 	}
@@ -283,7 +283,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -304,7 +304,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -325,7 +325,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -348,7 +348,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -371,7 +371,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -392,7 +392,7 @@ public class ContentEvaluationTest {
 				  													.with(content().recommendation22()).check();
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 22","22",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -430,7 +430,7 @@ Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString(
 											.with(content().recommendation24()).check();
 
 assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+assertEquals("Should return Recommendation 24","3.8",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 
 
 	}
@@ -463,7 +463,7 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 25 occurrence","25",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 25 occurrence","3.9",ocorrencia.getCode());
 			assertFalse("Recommendation 25 should be WARNING",ocorrencia.isError());
 		}
 		
@@ -497,7 +497,7 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
-			assertEquals("Should return Recommendation 26 occurrence","26",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 26 occurrence","3.10",ocorrencia.getCode());
 			assertTrue("Recommendation 24 should be ERROR",ocorrencia.isError());
 		}
 	
@@ -532,9 +532,9 @@ assertEquals("Should return Recommendation 24","24",occurrences.get(OccurrenceCl
 				  													.with(content().recommendation27()).check();
 		
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 27 ","27",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+		assertEquals("Should return Recommendation 27 ","3.11",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertFalse("Recommendation 27 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
-		assertEquals("Should return Recommendation 27 ","27",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
+		assertEquals("Should return Recommendation 27 ","3.11",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
 		assertTrue("Recommendation 27 should be ERRIR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
 		
 	}

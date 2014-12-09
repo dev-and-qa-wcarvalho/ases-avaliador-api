@@ -34,7 +34,7 @@ public class FormEvaluationTest {
 		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
-			assertEquals("Should return Recommendation 38","38",occurrence.getCode());
+			assertEquals("Should return Recommendation 38","6.1",occurrence.getCode());
 			assertTrue("Recommendation 38 should be ERROR",occurrence.isError());
 		}
 	}
@@ -61,7 +61,7 @@ public class FormEvaluationTest {
 		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
-			assertEquals("Should return Recommendation 39","39",occurrence.getCode());
+			assertEquals("Should return Recommendation 39","6.2",occurrence.getCode());
 			assertTrue("Recommendation 39 should be ERROR",occurrence.isError());
 		}
 		
@@ -84,7 +84,7 @@ public class FormEvaluationTest {
 		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
-			assertEquals("Should return Recommendation 40","40",occurrence.getCode());
+			assertEquals("Should return Recommendation 40","6.3",occurrence.getCode());
 			assertFalse("Recommendation 40 should be WARNING",occurrence.isError());
 		}
 	}
@@ -122,7 +122,7 @@ public class FormEvaluationTest {
 		assertEquals("Should return 20 occurrences", 20,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
-			assertEquals("Should return Recommendation 41","41",occurrence.getCode());
+			assertEquals("Should return Recommendation 41","6.4",occurrence.getCode());
 			assertFalse("Recommendation 41 should be WARNING",occurrence.isError());
 		}
 		
@@ -165,11 +165,11 @@ public class FormEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation42()).check();
 		
-		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.FORM).size());
+		//assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
-			assertEquals("Should return Recommendation 42","42",occurrence.getCode());
-			assertTrue("Recommendation 42 should be ERROR",occurrence.isError());
+			assertEquals("Should return Recommendation 42","6.5",occurrence.getCode());
+			assertFalse("Recommendation 42 should be ERROR",occurrence.isError());
 		}
 		
 	}
@@ -182,7 +182,7 @@ public class FormEvaluationTest {
 				  													.with(form().recommendation43()).check();
 		
 		assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.FORM).size());
-		assertEquals("Should return Recommendation 43 ","43",occurrences.get(OccurrenceClassification.FORM).get(0).getCode());
+		assertEquals("Should return Recommendation 43 ","6.6",occurrences.get(OccurrenceClassification.FORM).get(0).getCode());
 		assertFalse("Recommendation 45 should be WARNING",occurrences.get(OccurrenceClassification.FORM).get(0).isError());
 		
 	}
@@ -230,7 +230,7 @@ public class FormEvaluationTest {
 				  													.with(form().recommendation45()).check();
 		
 		assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.FORM).size());
-		assertEquals("Should return Recommendation 45 ","45",occurrences.get(OccurrenceClassification.FORM).get(0).getCode());
+		assertEquals("Should return Recommendation 45 ","6.8",occurrences.get(OccurrenceClassification.FORM).get(0).getCode());
 		assertFalse("Recommendation 45 should be WARNING",occurrences.get(OccurrenceClassification.FORM).get(0).isError());
 		
 	}
@@ -243,7 +243,7 @@ public class FormEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation45()).check();
 		
-		assertEquals("Should return 0 occurrence", 0,occurrences.get(OccurrenceClassification.FORM).size());
+		assertEquals("Should return 0 occurrence", 1,occurrences.get(OccurrenceClassification.FORM).size());
 	}
 	
 }

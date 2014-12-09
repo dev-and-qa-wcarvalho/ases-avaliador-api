@@ -44,7 +44,7 @@ public class MarkEvaluationTest {
 				  													.with(marking().recommendation1()).check();
 		
 		assertEquals("Should return 5 occurrences", 5,occurrences.get(OccurrenceClassification.MARK).size());
-		assertEquals("Should return Recommendation 5 occurrence","1",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		assertEquals("Should return Recommendation 5 occurrence","1.1",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 1 should be ERROR",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 		
 	}
@@ -77,7 +77,7 @@ public class MarkEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation2()).check();
 		
-		assertEquals("Should return Recommendation 2 occurrence","2",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		assertEquals("Should return Recommendation 2 occurrence","1.2",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 2 should be WARNING",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 		assertNotNull("Recoomendation 2 should not return line",occurrences.get(OccurrenceClassification.MARK).get(0).getLine());
 		
@@ -97,7 +97,7 @@ public class MarkEvaluationTest {
 				  													.with(marking().recommendation3()).check();
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 4 occurrence","3",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 4 occurrence","1.3",ocorrencia.getCode());
 			assertTrue("Occurrences lines should be 3 - h1 , 2 - h1, 5- h4 or 6 - h6 ",
 							ocorrencia.getLine() == 3 || ocorrencia.getLine() == 2 || ocorrencia.getLine() == 5 || ocorrencia.getLine() == 6);
 		}
@@ -121,7 +121,7 @@ public class MarkEvaluationTest {
 		assertEquals(5, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 4 occurrence","4",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 4 occurrence","1.4",ocorrencia.getCode());
 			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
 		}
 	}
@@ -144,7 +144,7 @@ public class MarkEvaluationTest {
 		assertEquals(7, occurrences.get(OccurrenceClassification.MARK).size());
 	
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 4 occurrence","4",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 4 occurrence","1.4",ocorrencia.getCode());
 			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
 		}
 	}
@@ -163,7 +163,7 @@ public class MarkEvaluationTest {
 		assertEquals(1, occurrences.get(OccurrenceClassification.MARK).size());
 	
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 4 occurrence","4",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 4 occurrence","1.4",ocorrencia.getCode());
 			assertFalse("Recommendation 4 should be WARNING",ocorrencia.isError());
 		}
 	}
@@ -184,7 +184,7 @@ public class MarkEvaluationTest {
 				.with(marking().recommendation5()).check();
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 5 occurrence","5",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
 			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
 			
 		}
@@ -209,7 +209,7 @@ public class MarkEvaluationTest {
 				.with(marking().recommendation6()).check();
 		
 		assertEquals("Should return 2 occurrence",2, occurrences.get(OccurrenceClassification.MARK).size());
-		assertEquals("Should return Recommendation 6 occurrence","6",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		assertEquals("Should return Recommendation 6 occurrence","1.6",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 1 should be WARNING",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 			
 	}
@@ -245,7 +245,7 @@ public class MarkEvaluationTest {
 		assertEquals("Deve retornar 2 ocorrencia",3, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 7 occurrence","7",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 7 occurrence","1.7",ocorrencia.getCode());
 			assertTrue("Recommendation 1 should be WARNING",ocorrencia.isError());
 			
 		}
@@ -270,7 +270,7 @@ public class MarkEvaluationTest {
 		assertEquals("Deve retornar 4 ocorrencia",4, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 8 occurrence","8",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 8 occurrence","1.8",ocorrencia.getCode());
 			assertFalse("Recommendation 8 should be WARNING",ocorrencia.isError());
 		}
 	}
@@ -291,7 +291,7 @@ public class MarkEvaluationTest {
 		assertEquals("Should return 2 occurrences",2, occurrences.get(OccurrenceClassification.MARK).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 9 occurrence","9",ocorrencia.getCode());
+			assertEquals("Should return Recommendation 9 occurrence","1.9",ocorrencia.getCode());
 			assertTrue("Recommendation 8 should be ERROR",ocorrencia.isError());
 		}
 	}
@@ -308,7 +308,7 @@ public class MarkEvaluationTest {
 				.with(marking().recommendation9()).check();
 		
 		assertEquals("Should return 1 occurrence",1, occurrences.get(OccurrenceClassification.MARK).size());
-		assertEquals("Should return Recommendation 9 occurrence","9",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		assertEquals("Should return Recommendation 9 occurrence","1.9",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
 		assertFalse("Recommendation 9 should be WARNING to html without target blank links",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
 	}
 	

@@ -45,7 +45,7 @@ public class MultimediaEvaluationTest {
 		assertEquals("Should return 5 occurrences", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
-			assertEquals("Should return Recommendation 33","33",occurrence.getCode());
+			assertEquals("Should return Recommendation 33","5.1",occurrence.getCode());
 			assertFalse("Recommendation 33 should be WARNING",occurrence.isError());
 		}
 	}
@@ -65,7 +65,7 @@ public class MultimediaEvaluationTest {
 		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
-			assertEquals("Should return Recommendation 34","34",occurrence.getCode());
+			assertEquals("Should return Recommendation 34","5.2",occurrence.getCode());
 			assertFalse("Recommendation 34 should be WARNING",occurrence.isError());
 		}
 	}
@@ -88,7 +88,7 @@ public class MultimediaEvaluationTest {
 		assertEquals("Should return 7 occurrences", 7,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
-			assertEquals("Should return Recommendation 35","35",occurrence.getCode());
+			assertEquals("Should return Recommendation 35","5.3",occurrence.getCode());
 			assertFalse("Recommendation 35 should be WARNING",occurrence.isError());
 		}
 	}
@@ -108,7 +108,7 @@ public class MultimediaEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation36()).check();
 		assertEquals("Should return 3 occurrence", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
-		assertEquals("Should return Recommendation 36 ","36",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
+		assertEquals("Should return Recommendation 36 ","5.4",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
 		assertFalse("Recommendation 36 should be WARNING",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).isError());
 		
 	}
@@ -123,7 +123,7 @@ public class MultimediaEvaluationTest {
 				  													.with(multimedia().recommendation37()).check();
 		
 		assertEquals("Should return 1 occurrences 1", 1,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
-		assertEquals("Should return Recommendation 37","37",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
+		assertEquals("Should return Recommendation 37","5.5",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
 		assertFalse("Recommendation 37 should be WARNING",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).isError());
 	}
 	

@@ -50,7 +50,7 @@ public class PresentationEvaluationTest {
 					.with(presentation().recommendation28()).check();
 
 assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).size());
-assertEquals("Should return Recommendation 28","28",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
+assertEquals("Should return Recommendation 28","3.12",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
 assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
 		
 	}
@@ -88,7 +88,7 @@ assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassif
 		assertEquals("Should return 4 occurrences",4,occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).size());
 		
 		for(Occurrence occurrence : occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN)) {
-			assertEquals("Should return Recommendation 98 occurrence","29",occurrence.getCode());
+			assertEquals("Should return Recommendation 29 occurrence","4.1",occurrence.getCode());
 			assertTrue("Recomerndation 29 should be Error", occurrence.isError());
 		}
 		
@@ -122,7 +122,7 @@ assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassif
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(presentation().recommendation30()).check();
 		
-		assertEquals("Should return Recommendation 30 ","30",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
+		assertEquals("Should return Recommendation 30 ","4.2",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
 		assertFalse("Recommendation 30 should be WARNING",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
 		
 	}
@@ -134,7 +134,7 @@ assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassif
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(presentation().recommendation31()).check();
 		
-		assertEquals("Should return Recommendation 31 ","31",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
+		assertEquals("Should return Recommendation 31 ","4.3",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
 		assertFalse("Recommendation 31 should be WARNING",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
 		
 	}
@@ -165,7 +165,7 @@ assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassif
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(presentation().recommendation32()).check();
 		
-		assertEquals("Should return Recommendation 32 ","32",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
+		assertEquals("Should return Recommendation 32 ","4.4",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).getCode());
 		assertFalse("Recommendation 32 should be WARNING",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
 		
 	}
