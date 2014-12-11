@@ -1,9 +1,9 @@
 package br.com.checker.emag;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import lombok.Getter;
 
@@ -88,7 +88,7 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 		
 		private String checkPoint;
 		private boolean isError;
-		private Set<Integer> lines = new HashSet<Integer>();
+		private Set<Integer> lines = new TreeSet<Integer>();
 		private StringBuilder sourceCode = new StringBuilder();
 		private OccurrenceClassification type;
 		
@@ -128,6 +128,7 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	
 	public String getStringLines() {
 		StringBuilder linesString = new StringBuilder();
+		
 		
 		for(Integer line : this.lines) {
 			linesString.append(line);
