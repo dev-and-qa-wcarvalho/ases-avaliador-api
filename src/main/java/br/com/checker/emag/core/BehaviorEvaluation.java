@@ -51,6 +51,10 @@ public class BehaviorEvaluation extends Evaluation{
 		protected List<Occurrence> check() { return getEvaluation().checkRecommendation15();}
 	}
 	
+	protected static class EvaluationRecommendation16 extends BehaviorRecommendation{
+		protected List<Occurrence> check() { return getEvaluation().checkRecommendation16();}
+	}
+	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
 		getOccurrences().addAll(checkRecommendation10());
@@ -59,6 +63,7 @@ public class BehaviorEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation13());
 		getOccurrences().addAll(checkRecommendation14());
 		getOccurrences().addAll(checkRecommendation15());
+		getOccurrences().addAll(checkRecommendation16());
 		
 		return getOccurrences();
 	}
@@ -239,6 +244,12 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 		}
 		
+		return occurrences;
+	}
+	
+	private List<Occurrence> checkRecommendation16() {
+		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		occurrences.add(new Occurrence("2.7", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
 		return occurrences;
 	}
 	

@@ -26,7 +26,6 @@ public class ContentEvaluation extends Evaluation{
 		@Override
 		protected ContentEvaluation with(Source document) { return new ContentEvaluation(document); }
 		
-		public SpecificRecommendation recommendation16() { return new EvaluationRecommendation16();}
 		public SpecificRecommendation recommendation17() { return new EvaluationRecommendation17();}
 		public SpecificRecommendation recommendation18() { return new EvaluationRecommendation18();}
 		public SpecificRecommendation recommendation19() { return new EvaluationRecommendation19();}
@@ -41,9 +40,6 @@ public class ContentEvaluation extends Evaluation{
 		
 	}
 	
-	protected static class EvaluationRecommendation16 extends ContentRecommendation{
-		protected List<Occurrence> check() { return getEvaluation().checkRecommendation16();}
-	}
 	protected static class EvaluationRecommendation17 extends ContentRecommendation{
 		protected List<Occurrence> check() { return getEvaluation().checkRecommendation17();}
 	}
@@ -81,7 +77,6 @@ public class ContentEvaluation extends Evaluation{
 	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
-		getOccurrences().addAll(checkRecommendation16());
 		getOccurrences().addAll(checkRecommendation17());
 		getOccurrences().addAll(checkRecommendation18());
 		getOccurrences().addAll(checkRecommendation19());
@@ -97,13 +92,6 @@ public class ContentEvaluation extends Evaluation{
 		return getOccurrences();
 	}
 	
-	
-	
-	private List<Occurrence> checkRecommendation16() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("2.7", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
-		return occurrences;
-	}	
 	
 	private List<Occurrence> checkRecommendation17() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
@@ -511,11 +499,6 @@ public class ContentEvaluation extends Evaluation{
 			String tag, Element element,
 			String criterio) {
 		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.CONTENT_INFORMATION,criterio);
-	}
-	
-	private Occurrence buildOccurrence(String code, boolean error,
-			String tag, Element element) {
-		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.CONTENT_INFORMATION);
 	}
 	
 	public OccurrenceClassification type () { return OccurrenceClassification.CONTENT_INFORMATION;}
