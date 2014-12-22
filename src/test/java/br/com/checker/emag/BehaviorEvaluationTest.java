@@ -1,6 +1,7 @@
 package br.com.checker.emag;
 
 import static br.com.checker.emag.core.Checker.behavior;
+import static br.com.checker.emag.core.Checker.content;
 import static br.com.checker.emag.core.Checker.from;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -183,6 +184,21 @@ public class BehaviorEvaluationTest {
 					  													.with(behavior().recommendation15()).check();
 			assertEquals("Should return 1 occurrence", 1,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
 			assertTrue("Recommendation 15 should not be ERROR", occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
+	}
+	
+	
+	@Test
+	public void shouldCheckRecommedation16() {
+		
+		StringBuilder html = new StringBuilder("<html> ");
+								   html.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(behavior().recommendation16()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.BEHAVIOR).size());
+		assertEquals("Should return Recommendation 16","2.7",occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).getCode());
+		assertFalse("Recommendation 17 should be ERROR",occurrences.get(OccurrenceClassification.BEHAVIOR).get(0).isError());
 	}
 	
 	
