@@ -16,20 +16,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ContentEvaluationTest {
 	
-	@Test
-	public void shouldCheckRecommedation16() {
-		
-		StringBuilder html = new StringBuilder("<html> ");
-								   html.append("</html>");
-		
-		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
-				  													.with(content().recommendation16()).check();
-		
-		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
-		assertEquals("Should return Recommendation 16","2.7",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertFalse("Recommendation 17 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
-	}
-
 	
 	@Test
 	public void shouldCheckRecommedation17() {

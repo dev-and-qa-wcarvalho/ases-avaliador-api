@@ -25,6 +25,7 @@ public class BehaviorEvaluation extends Evaluation{
 		public SpecificRecommendation recommendation13() { return new EvaluationRecommendation13();}
 		public SpecificRecommendation recommendation14() { return new EvaluationRecommendation14();}
 		public SpecificRecommendation recommendation15() { return new EvaluationRecommendation15();}
+		public SpecificRecommendation recommendation16() { return new EvaluationRecommendation16();}
 	}
 	
 	protected static class EvaluationRecommendation10 extends BehaviorRecommendation{
@@ -249,7 +250,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	
 	private List<Occurrence> checkRecommendation16() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		occurrences.add(new Occurrence("2.7", false, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION));
+		occurrences.add(new Occurrence("2.7", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
 		return occurrences;
 	}
 	
