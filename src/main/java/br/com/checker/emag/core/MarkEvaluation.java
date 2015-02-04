@@ -1,22 +1,22 @@
 package br.com.checker.emag.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.jcabi.w3c.ValidationResponse;
-import com.jcabi.w3c.ValidatorBuilder;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+
+import org.apache.commons.lang3.StringUtils;
+
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
+
+import com.jcabi.w3c.ValidationResponse;
+import com.jcabi.w3c.ValidatorBuilder;
 
 public class MarkEvaluation extends Evaluation {
 
@@ -247,7 +247,7 @@ public class MarkEvaluation extends Evaluation {
 		for(Element link : this.getDocument().getAllElements("a")){
 			Attribute tabIndex = link.getAttributes().get("tabindex");
 			if(tabIndex!=null) {
-				occurrences.add(this.buildOccurrence("1.4", false,link.toString(), link, "3"));
+				occurrences.add(this.buildOccurrence("1.4", false,link.toString(), link, "2"));
 				
 				if(rangeIncorretoTabeIndex(tabIndex))
 					occurrences.add(this.buildOccurrence("1.4", false,link.toString(), link, "3"));
@@ -259,6 +259,9 @@ public class MarkEvaluation extends Evaluation {
 			Attribute tabIndex = input.getAttributes().get("tabindex");
 			if(tabIndex!=null)
 				occurrences.add(this.buildOccurrence("1.4", false, input.toString(), input, "2"));
+			
+			if(rangeIncorretoTabeIndex(tabIndex))
+				occurrences.add(this.buildOccurrence("1.4", false,input.toString(), input, "3"));
 		}
 		
 		for(Element select : this.getDocument().getAllElements("select")){
@@ -268,7 +271,7 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.4", false, select.toString(), select, "2"));
 			
 			if(rangeIncorretoTabeIndex(tabIndex))
-				occurrences.add(this.buildOccurrence("1.4", false,select.toString(), select, "2"));
+				occurrences.add(this.buildOccurrence("1.4", false,select.toString(), select, "3"));
 		}
 		
 		for(Element textarea : this.getDocument().getAllElements("textarea")){
@@ -278,15 +281,16 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.4", false, textarea.toString(), textarea, "2"));
 			
 			if(rangeIncorretoTabeIndex(tabIndex))
-				occurrences.add(this.buildOccurrence("1.4", false,textarea.toString(), textarea, "2"));
+				occurrences.add(this.buildOccurrence("1.4", false,textarea.toString(), textarea, "3"));
 		}
 		
 		Element section =  this.getDocument().getFirstElement("section");
 		
 		if(section !=null){
-			int firstSection = section.getBegin();
+
+			int firstSectionRow =  this.getRow(section);
 			for(Element nav : this.getDocument().getAllElements("nav")){
-				if(nav.getBegin() < firstSection)
+				if(this.getRow(nav) < firstSectionRow)
 					occurrences.add(this.buildOccurrence("1.4", false,nav.toString(), nav, "1"));
 			}
 		}
@@ -339,10 +343,10 @@ public class MarkEvaluation extends Evaluation {
 		for (Element table : getDocument().getAllElements("table"))
 			occurrences.add(this.buildOccurrence("1.6", false, table.toString(), table, "1"));
 		
-		for (Element form : getDocument().getAllElements("form")){
-			Element tagsTabela = form.getFirstElement("table");
-			if(tagsTabela != null)
-				occurrences.add(this.buildOccurrence("1.6", true, form.toString(), form, "3"));
+		for (Element table : getDocument().getAllElements("table")){
+			Element tagsForm = table.getFirstElement("form");
+			if(tagsForm != null)
+				occurrences.add(this.buildOccurrence("1.6", true, table.toString(), table, "2"));
 		}
 		
 		return occurrences;
@@ -354,12 +358,19 @@ public class MarkEvaluation extends Evaluation {
 		List<Element> element = getDocument().getAllElements();
 		
 		int pos = 1;
-		
+		int end = 0;
+		int begin = 0;
+		Element firstElement = null;
+		Element secondElement = null;
 		for (int i = 0; i < element.size() -1 ; i++) {
-			if(element.get(i).getName().equals("a"))
-					if(element.get(i).getName().equals(element.get(pos).getName())){
-						occurrences.add(this.buildOccurrence("1.7", true, element.get(i).toString()+" "+element.get(pos).toString(), element.get(i), "1"));
-					}	
+			firstElement = element.get(i);
+			secondElement = element.get(pos);
+			if(firstElement.getName().equals("a"))
+			 	end = firstElement.getEndTag().getEnd();
+			 	begin = secondElement.getStartTag().getBegin();
+				if(element.get(i).getName().equals(element.get(pos).getName()) && (end == begin) ){
+					occurrences.add(this.buildOccurrence("1.7", true, element.get(i).toString()+" "+element.get(pos).toString(), element.get(i), "1"));
+				}	
 			pos++;
 		}
 		
@@ -371,34 +382,54 @@ public class MarkEvaluation extends Evaluation {
 		Element firstElement = this.getDocument().getFirstElement();
 		
 		if(firstElement.toString().equals("<!DOCTYPE html>")){
-			for (Element header : getDocument().getAllElements("header")){
-				String role = header.getAttributeValue("role");
+			
+			Element header = getDocument().getFirstElement("header");
+			Element nav = getDocument().getFirstElement("nav");
+			Element section = getDocument().getFirstElement("section");
+			Element footer = getDocument().getFirstElement("footer");
+			
+			if(header == null)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+			
+			if(nav == null)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+			
+			if(section == null)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+			
+			if(footer == null)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+			
+			
+			boolean hasBanner = false;
+			boolean hasNavigation = false;
+			boolean hasMain = false;
+			for (Element element : getDocument().getAllElements()){
+				String role = element.getAttributeValue("role");
 				
 				if(role!=null && "banner".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("1.8", false, header.toString(), header,"1"));
-			}
-			
-			for (Element nav : getDocument().getAllElements("nav")){
-				String role = nav.getAttributeValue("role");
+					hasBanner = true;
 				
 				if(role!=null && "navigation".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("1.8", false, nav.toString(), nav,"1"));
-			}
-			for (Element div : getDocument().getAllElements("div")){
-				String role = div.getAttributeValue("role");
+					hasNavigation = true;
 				
 				if(role!=null && "main".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("1.8", false, div.toString(), div,"1"));
-			}
-			
-			for (Element footer : getDocument().getAllElements("footer")){
-				String role = footer.getAttributeValue("role");
+					hasMain = true;
 				
-				if(role!=null && "contentinfo".equals(role.toLowerCase()))
-					occurrences.add(this.buildOccurrence("1.8", false, footer.toString(), footer,"1"));
+				if(hasBanner && hasNavigation && hasMain)
+					break;
 			}
 			
+			if(!hasBanner)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
+			
+			if(!hasNavigation)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
+			
+			if(!hasMain)
+				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
 		}
+		
 		
 		return occurrences;
 	}
@@ -411,7 +442,7 @@ public class MarkEvaluation extends Evaluation {
 			
 			if(link.toString().contains("_blank")){
 				hasBlankLink = true;
-				occurrences.add(this.buildOccurrence("1.9", true, link.toString(), link, "1"));
+				occurrences.add(this.buildOccurrence("1.9", false, link.toString(), link, "1"));
 			}
 		}
 		

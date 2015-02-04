@@ -32,6 +32,10 @@ public abstract class Evaluation {
 		return new Occurrence(line, column, code, error, tag,type,criterio);
 	}
 	
+	protected int getRow(Element element) {
+		return this.document.getRowColumnVector(element.getBegin()).getRow();
+	}
+	
 	protected Occurrence buildOccurrence(String code,boolean error,String tag, 
 			Element element,OccurrenceClassification type) {
 		RowColumnVector rcv = this.document.getRowColumnVector(element.getBegin());
