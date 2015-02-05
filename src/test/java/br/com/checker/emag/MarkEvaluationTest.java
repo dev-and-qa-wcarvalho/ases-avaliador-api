@@ -168,8 +168,120 @@ public class MarkEvaluationTest {
 		}
 	}
 	
+	
 	@Test
-	public void shouldCheckRecommedation5() {
+	public void shouldCheckCriterio1Recommedation5() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<a href=\"a\">link1</a>\n")
+		.append("<a href=\"a\">link3</a>\n")
+		.append("<a href=\"#b\">link5</a>\n")
+		.append("<a href=\"#c\">link5</a>\n")
+		.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation5()).check();
+		
+		
+		int criterio1 = 0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
+			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
+			if(ocorrencia.getCriterio().equals("1"))
+				criterio1++;
+			
+		}
+		
+		assertEquals("Should return 2 occurrence with criteitio 1",2,criterio1);
+	
+	}
+	
+	@Test
+	public void shouldCheckCriterio2Recommedation5() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<a href=\"#anchor\">link1</a>\n")
+		.append("<a href=\"#anchor1\">link5</a>\n")
+		.append("<a name=\"anchor\">anchor</a>\n")
+		.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation5()).check();
+		
+		
+		int criterio2 = 0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
+			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
+			if(ocorrencia.getCriterio().equals("2"))
+				criterio2++;
+		}
+		
+		assertEquals("Should return 1 occurrence with criteitio 1",1,criterio2);
+	
+	}
+	
+	@Test
+	public void shouldCheckCriterio3Recommedation5() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		
+		.append("<a>link</a>\n")
+		.append("<area>area</area>\n")
+		.append("<button>button</button>\n")
+		.append("<input></input>\n")
+		.append("<label>label</a>\n")
+		.append("<fieldset><legend>legend</legend></fieldset>\n")
+		.append("<textarea></textarea>\n")
+		
+		.append("<a acesskey=\"acess0\">link</a>\n")
+		.append("<area acesskey=\"acess1\">area</area>\n")
+		.append("<button acesskey=\"acess2\">button</button>\n")
+		.append("<input acesskey=\"acess3\"></input>\n")
+		.append("<label acesskey=\"acess4\">label</a>\n")
+		.append("<fieldset><legend acesskey=\"acess5\">legend</legend></fieldset>\n")
+		.append("<textarea acesskey=\"acess6\"></textarea>\n")
+		.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation5()).check();
+		
+		
+		int criterio3 = 0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
+			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
+			if(ocorrencia.getCriterio().equals("3"))
+				criterio3++;
+		}
+		
+		assertEquals("Should return 7 occurrence with criteitio 3",7,criterio3);
+	
+	}
+	
+	@Test
+	public void shouldCheckCriterio4Recommedation5() {
+		StringBuilder html = new StringBuilder("<html>\n")
+		.append("<base href=\"http://www.governoeletronico.gov.br/\" />\n")
+		.append("<a href=\"#anchor1\">link5</a>\n")
+		.append("<a name=\"anchor\">anchor</a>\n")
+		.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				.with(marking().recommendation5()).check();
+		
+		
+		int criterio4 = 0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
+			assertFalse("Recommendation 1 should be WARNING",ocorrencia.isError());
+			if(ocorrencia.getCriterio().equals("4"))
+				criterio4++;
+		}
+		
+		assertEquals("Should return 1 occurrence with criteitio 1",1,criterio4);
+	
+	}
+	
+	@Test
+	public void shouldCheckCriterio5Recommedation5() {
 		StringBuilder html = new StringBuilder("<html>\n")
 		.append("<a acesskey=\"a\">link1</a>\n")
 		.append("<a acesskey=\"a\">link3</a>\n")
@@ -183,13 +295,18 @@ public class MarkEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				.with(marking().recommendation5()).check();
 		
+		
+		int criterio5 = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
-			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
+			assertEquals("Should return Recommendation 1.5","1.5",ocorrencia.getCode());
 			
+			if(ocorrencia.getCriterio().equals("5")) {
+				assertFalse("Recommendation 1 should be WARNING",ocorrencia.isError());
+				criterio5++;
+			}
 		}
-	
-		assertEquals(4, occurrences.get(OccurrenceClassification.MARK).size());
+		
+		assertEquals("Should return 4 occurrence with criteitio 5",4,criterio5);
 	}
 	
 	@Test

@@ -312,24 +312,94 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation5() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
-			String acessKey = elemento.getAttributeValue("acesskey");
+		Element firstLink =  getDocument().getFirstElement("href", Pattern.compile(".*"));
+		if(firstLink == null){
+			occurrences.add(this.buildOccurrence("1.5", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "4"));
+		}
+		else if(firstLink.getAttributeValue("href") == null || !firstLink.getAttributeValue("href").contains("#")){
+			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));
+		}
+		
+		for (Element area : getDocument().getAllElements("area")) {
+			if(!hasAcessKey(area))
+				occurrences.add(this.buildOccurrence("1.5", true, area.toString(), area, "3"));
+		}
+		
+		for (Element button : getDocument().getAllElements("button")) {
+			if(!hasAcessKey(button))
+				occurrences.add(this.buildOccurrence("1.5", true, button.toString(), button, "3"));
+		}
+		
+		for (Element input : getDocument().getAllElements("input")) {
+			if(!hasAcessKey(input))
+				occurrences.add(this.buildOccurrence("1.5", true, input.toString(), input, "3"));
+		}
+		
+		for (Element label : getDocument().getAllElements("label")) {
+			if(!hasAcessKey(label))
+				occurrences.add(this.buildOccurrence("1.5", true, label.toString(), label, "3"));
+		}
+		
+		for (Element legend : getDocument().getAllElements("legend")) {
+			if(!hasAcessKey(legend))
+				occurrences.add(this.buildOccurrence("1.5", true, legend.toString(), legend, "3"));
+		}
+		for (Element textarea : getDocument().getAllElements("textarea")) {
+			if(!hasAcessKey(textarea))
+				occurrences.add(this.buildOccurrence("1.5", true, textarea.toString(), textarea, "3"));
+		}
+		
+		String href;
+	
+		for (Element link : getDocument().getAllElements("a")) {
+			href = link.getAttributeValue("href");
+			if(href != null && href.contains("#")){
+				if(!hasAnchor(href.substring(1)))
+					occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));
+			}else{
+				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "1"));
+			}
 			
-			if(duplicatedAcessKey(acessKey))
-				occurrences.add(this.buildOccurrence("1.5", true, elemento.toString(), elemento));
+			if(!hasAcessKey(link))
+				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "3"));
+		}
+		
+		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
+			
+			
+			if(duplicatedAcessKey(elemento))
+				occurrences.add(this.buildOccurrence("1.5", false, elemento.toString(), elemento,"5"));
 		}
 		
 		return occurrences;
 	}
 	
-	private boolean duplicatedAcessKey(String value){
-		int count=0;
-		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
-			String acessKey = elemento.getAttributeValue("acesskey");
-			if(acessKey.equals(value))
-				count++;
+	private boolean hasAcessKey(Element element) {
+		String acessKey = element.getAttributeValue("acesskey");
+		
+		return StringUtils.isNotBlank(acessKey);
+	}
+	private boolean hasAnchor(String href) {
+		
+		String id,name;
+		
+		for (Element element : getDocument().getAllElements()) {
+			id = element.getAttributeValue("id");
+			name = element.getAttributeValue("name");
 			
-			if(count>1)
+			if(href.equals(id) || href.equals(name))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean duplicatedAcessKey(Element element){
+		String value = element.getAttributeValue("acesskey");
+		
+		for (Element elementToCompare : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
+			String acessKey = elementToCompare.getAttributeValue("acesskey");
+			if(acessKey.equals(value) && elementToCompare.getBegin() != element.getBegin())
 				return true;
 			
 		}
