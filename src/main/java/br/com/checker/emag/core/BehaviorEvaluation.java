@@ -111,8 +111,8 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			} else if (onmouseup != null && onkeyup == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
-			/*} else if (onclick != null && onkeypress == null) {
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));*/
+			} else if (onclick != null && onkeypress == null) {
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 				
 			} else if (onmouseover != null && onfocus == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
