@@ -333,9 +333,12 @@ public class MarkEvaluationTest {
 		int criterio1 = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
-			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
-			if(ocorrencia.getCriterio().equals("1"))
+			
+			if(ocorrencia.getCriterio().equals("1")) {
+				assertTrue("Recommendation 1.5 should be ERROR",ocorrencia.isError());
 				criterio1++;
+			}
+				
 			
 		}
 		
@@ -395,9 +398,11 @@ public class MarkEvaluationTest {
 		int criterio3 = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
-			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
-			if(ocorrencia.getCriterio().equals("3"))
+			
+			if(ocorrencia.getCriterio().equals("3")){
 				criterio3++;
+				assertTrue("Recommendation 1.5 should be ERROR",ocorrencia.isError());
+			}
 		}
 		
 		assertEquals("Should return 7 occurrence with criteitio 3",7,criterio3);
@@ -419,9 +424,10 @@ public class MarkEvaluationTest {
 		int criterio4 = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
-			assertFalse("Recommendation 1 should be WARNING",ocorrencia.isError());
-			if(ocorrencia.getCriterio().equals("4"))
+			if(ocorrencia.getCriterio().equals("4")){
 				criterio4++;
+				assertFalse("Recommendation 1 should be WARNING",ocorrencia.isError());
+			}
 		}
 		
 		assertEquals("Should return 1 occurrence with criteitio 1",1,criterio4);
