@@ -1,6 +1,7 @@
 package br.com.checker.emag.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,7 @@ import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.TagType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -159,85 +161,95 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		String[] tags = {"h1","h2","h3","h4","h5","h6","a","p"};
+		List<String> tags = Arrays.asList("h1","h2","h3","h4","h5","h6","a","p");
 		
-		for (String tag : tags) {
 		
-			for (Element element : getDocument().getAllElements(tag)) {
+			boolean isError = false;
+			for (Element element : getDocument().getAllElements()) {
 				Attributes attribute = element.getAttributes();
-					if(attribute != null)
-						if(attribute.getCount()==0)
-							occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
+				
+				isError = tags.contains(element.getName());
+				
+					
+				if(element.isEmpty())
+					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
+				else if(attribute.getCount()==0)
+					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
 			}
 		
-			for (Element element : getDocument().getAllElements(tag)) {
-				if(element != null)
-					if(element.isEmpty()){
-						occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
-					}	
-			}
-		
-		}
+			
 		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation3() {
+		
+		
+		//CRITERIO 4
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		int cont = 0, niveis = 0;
+		int count = 0;
 		
 		for (Element element : getDocument().getAllElements("h1")){
-			if(cont>0){
-				occurrences.add(this.buildOccurrence("1.3", false,element.toString(), element, "4"));
+			if(count>0){
+				occurrences.add(this.buildOccurrence("1.3", true,element.toString(), element, "4"));
 			}else
-				cont++;
+				count++;
 		}
-	
-		List<Element> elementsObj = getDocument().getAllElements();
-		List<String> tagsH = new ArrayList<String>();
+		
+		if(count>0)
+			occurrences.add(this.buildOccurrence("1.3", true,getDocument().getFirstElement("h1").toString(), getDocument().getFirstElement("h1"), "4"));
 		
 		
-		for (Element htmlElement : elementsObj) {
-		    if (htmlElement.getName().matches("h[1-6]")) {
-		    	tagsH.add(htmlElement.getName());
+		//CRITERIO 3
+		boolean hasOtherH = false;
+		for(Element element : getDocument().getAllElements()) {
+			if (element.getName().matches("h[2-6]")) {
+				hasOtherH = true;
+				break;
 		    }
 		}
 		
-		if(!tagsH.isEmpty())
-			if(tagsH.get(0).equals("h1")){
-				for (int i = 1; i < tagsH.size(); i++) {
-					if(!(verificarNiveis(i, tagsH) > 0)){
-						Element elemento = getDocument().getFirstElement(tagsH.get(i));
-						occurrences.add(this.buildOccurrence("1.3", true, elemento.toString(), elemento,"2")); 
-					}
-				}
-			}else{
-				Element elemento = getDocument().getFirstElement(tagsH.get(0));
-				if(elemento != null)
-					occurrences.add(this.buildOccurrence("1.3", true, elemento.toString(), elemento,"2")); 
-			}	
-				
+		if(count >0 && !hasOtherH)
+			occurrences.add(this.buildOccurrence("1.3", false,getDocument().getFirstElement("h1").toString(), getDocument().getFirstElement("h1"), "3"));
 		
-		String[] tags = {"h1","h2","h3","h4","h5","h6"};
 		
-		int contTags = 0;
+		//CRITERIO 2
 		
-		for (String tag : tags) {
-			if(getDocument().getAllElements(tag).size() > 0)
-				contTags++;
+		String[] tags = {"h6","h5","h4","h3","h2","h1"};
+		
+		
+		for(int index = 0 ; index< tags.length ; index++){
+			
+			for(Element h : getDocument().getAllElements(tags[index])) {
+				if(!hasCorrectHierarchy(index, tags))
+					occurrences.add(this.buildOccurrence("1.3", true,h.toString(), h, "2"));
+			}
 		}
 		
-		if(contTags==0){
-			Element element = getDocument().getFirstElement("html");
-			occurrences.add(this.buildOccurrence("1.3", true,element.toString(), element, "1"));
-		}	
+		if(!hasH())
+			occurrences.add(this.buildOccurrence("1.3", true,getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
 			
-		if((contTags - cont) == 0){
-			Element element = getDocument().getFirstElement("html");
-			occurrences.add(this.buildOccurrence("1.3", false ,element.toString(), element, "3"));
-		}	
-		
 		return occurrences;
+	}
+	
+	private boolean hasCorrectHierarchy(int index,String[] tags) {
+		
+		for(int i = index+1;i<tags.length;i++ ){
+			if(getDocument().getFirstElement(tags[i])== null)
+				return false;
+		}
+		return true;
+	}
+	
+	private boolean hasH() {
+		
+		String[] tags = {"h6","h5","h4","h3","h2","h1"};
+		for(String h : tags){
+			if(getDocument().getFirstElement(h) !=null)
+				return true;
+		}
+		
+		return false;
 	}
 	
 	/*No documento NÃO PERMITE VERIFICAÇÃO AUTOMATIZADA*/
@@ -522,41 +534,11 @@ public class MarkEvaluation extends Evaluation {
 		return occurrences;
 	}
 	
-	
-	private boolean isLinkChild(Element element){
-		Element parent = element.getParentElement();
-		if(parent == null)
-			return false;
-		
-		if(parent.getStartTag().toString().contains("br"))
-			parent = parent.getParentElement();
-		
-		if(element.getParentElement().getStartTag().toString().contains("<a"))
-			return true;
-		else
-			return isLinkChild(element.getParentElement());
-		
-	}
-	
-	private int verificarNiveis(Integer posicao, List<String> tags){
-		for (int i = 0; i < posicao; i++) {
-			if(Integer.parseInt(tags.get(i).substring(1)) == Integer.parseInt(tags.get(posicao).substring(1))-1){
-				return Integer.parseInt(tags.get(i).substring(1));
-        	}
-		}	
-		return -1;
-	}
-	
 	private Occurrence buildOccurrence(String code, boolean error,
 			String tag, Element element,
 			String criterio) {
 		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK,criterio);
 	}
 	
-	private Occurrence buildOccurrence(String code, boolean error,
-			String tag, Element element) {
-		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK,null);
-	}
- 	
 	public OccurrenceClassification type () { return OccurrenceClassification.MARK;}
 }

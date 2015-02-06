@@ -77,30 +77,178 @@ public class MarkEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation2()).check();
 		
-		assertEquals("Should return Recommendation 2 occurrence","1.2",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
-		assertFalse("Recommendation 2 should be WARNING",occurrences.get(OccurrenceClassification.MARK).get(0).isError());
-		assertNotNull("Recoomendation 2 should not return line",occurrences.get(OccurrenceClassification.MARK).get(0).getLine());
+		assertEquals("Should return Recommendation 1.2 occurrence","1.2",occurrences.get(OccurrenceClassification.MARK).get(0).getCode());
+		
+		int warnings=0,erros =0;
+		
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 1.2 occurrence","1.2",ocorrencia.getCode());
+			if(ocorrencia.isError())
+				erros++;
+			else
+				warnings++;
+		}
+		
+		assertEquals("Should return 4 erros",4,erros);
+		assertEquals("Should return 3 warning",3,warnings);
 		
 	}
 	
 	@Test 
-	public void shouldCheckRecommedation3() {
+	public void shouldCheckCriterio4Recommedation3() {
 		StringBuilder html = new StringBuilder("<html>\n")
 			.append("<h1>Title1</h1>\n")
 			.append("<h1>Title1.2</h1>\n")
-			.append("<h2>Title2</h2>\n")
-			.append("<h4>Title3</h4>\n")
-			.append("<h6>Title6</h6>\n")
+			.append("<h1>Title1.3</h1>\n")
 			.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation3()).check();
 		
+		int criterio4=0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
-			assertEquals("Should return Recommendation 4 occurrence","1.3",ocorrencia.getCode());
-			assertTrue("Occurrences lines should be 3 - h1 , 2 - h1, 5- h4 or 6 - h6 ",
-							ocorrencia.getLine() == 3 || ocorrencia.getLine() == 2 || ocorrencia.getLine() == 5 || ocorrencia.getLine() == 6);
+			assertEquals("Should return Recommendation 1.3 occurrence","1.3",ocorrencia.getCode());
+			if("4".equals(ocorrencia.getCriterio())){
+				criterio4++;
+				assertTrue("Recommendation 1.3 criterio 4 should be ERROR",ocorrencia.isError());
+			}
 		}
+		
+		assertEquals("Should return 3 occurrence with criteitio 4",3,criterio4);
+	}
+	
+	@Test 
+	public void shouldCheckCriterio3Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("<h1>Title1.2</h1>\n")
+			.append("<h1>Title1.3</h1>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio3=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 1.3 occurrence","1.3",ocorrencia.getCode());
+			if("3".equals(ocorrencia.getCriterio())){
+				criterio3++;
+				assertFalse("Recommendation 1.3 criterio 3 should be WARNING",ocorrencia.isError());
+			}
+		}
+		
+		assertEquals("Should return 1 occurrence with criteitio 3",1,criterio3);
+	}
+	
+	
+	@Test 
+	public void shouldNotCheckCriterio3Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("<h2>Title1.2</h2>\n")
+			.append("<h3>Title1.3</h3>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("<h2>Title1.2</h2>\n")
+			.append("<h3>Title1.3</h3>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio3=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			if("3".equals(ocorrencia.getCriterio())) 
+				criterio3++;
+		}
+		
+		assertEquals("Should not return occurrences with criteitio 3",0,criterio3);
+	}
+	
+	@Test 
+	public void shouldCheckCriterio2Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("<h6>Title1</h6>\n")
+			.append("<h5>Title1.2</h5>\n")
+			.append("<h4>Title1.3</h4>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio2=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 1.3 occurrence","1.3",ocorrencia.getCode());
+			if("2".equals(ocorrencia.getCriterio())){
+				criterio2++;
+				assertTrue("Recommendation 1.3 criterio 2 should be ERROR",ocorrencia.isError());
+			}
+		}
+		
+		assertEquals("Should return 3 occurrence with criteitio 2",3,criterio2);
+	}
+	
+	@Test 
+	public void shouldChecNotkCriterio2Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("<h2>Title1.2</h2>\n")
+			.append("<h3>Title1.3</h3>\n")
+			.append("<h4>Title1.4</h4>\n")
+			.append("<h5>Title1.5</h5>\n")
+			.append("<h6>Title1.6</h6>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio2=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 1.3 occurrence","1.3",ocorrencia.getCode());
+			if("2".equals(ocorrencia.getCriterio())){
+				criterio2++;
+			}
+		}
+		
+		assertEquals("Should return no occurrences with criteitio 2",0,criterio2);
+	}
+	
+	@Test 
+	public void shouldChecNotkCriterio1Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio1=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			if("1".equals(ocorrencia.getCriterio())){
+				criterio1++;
+			}
+		}
+		
+		assertEquals("Should return no occurrences with criteitio 1",0,criterio1);
+	}
+	
+	@Test 
+	public void shouldCheckCriterio1Recommedation3() {
+		StringBuilder html = new StringBuilder("<html>\n")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(marking().recommendation3()).check();
+		
+		int criterio1=0;
+		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
+			assertEquals("Should return Recommendation 1.3 occurrence","1.3",ocorrencia.getCode());
+			if("1".equals(ocorrencia.getCriterio())){
+				criterio1++;
+				assertTrue("Recommendation 1.3 criterio 1 should be ERROR",ocorrencia.isError());
+			}
+		}
+		
+		assertEquals("Should return 1 occurrence with criteitio 2",1,criterio1);
 	}
 	
 	@Test
