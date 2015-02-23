@@ -63,14 +63,15 @@ public class MarkEvaluationTest {
 	
 	@Test
 	public void shouldAlwaysCheckRecommendation2() {
+		String a = "  ";
 		StringBuilder html = new StringBuilder("<html>")
 		.append("<head>")
 		.append("</head>")
 		.append("<BODY>")
 		.append("<h1></h1>")
 		.append("<p style=\"color:green;margin-left:20px;\"></p>")
-		.append("<a ></a>")
-		.append("<a ></a>")
+		.append("<a>   </a>")
+		.append("<a>"+a+"</a>")
 		.append("</BODY>")
 		.append("</HTML>");
 		
