@@ -383,13 +383,13 @@ public class MarkEvaluationTest {
 		.append("<fieldset><legend>legend</legend></fieldset>\n")
 		.append("<textarea></textarea>\n")
 		
-		.append("<a acesskey=\"acess0\">link</a>\n")
-		.append("<area acesskey=\"acess1\">area</area>\n")
-		.append("<button acesskey=\"acess2\">button</button>\n")
-		.append("<input acesskey=\"acess3\"></input>\n")
-		.append("<label acesskey=\"acess4\">label</a>\n")
-		.append("<fieldset><legend acesskey=\"acess5\">legend</legend></fieldset>\n")
-		.append("<textarea acesskey=\"acess6\"></textarea>\n")
+		.append("<a accesskey=\"acess0\">link</a>\n")
+		.append("<area accesskey=\"acess1\">area</area>\n")
+		.append("<button accesskey=\"acess2\">button</button>\n")
+		.append("<input accesskey=\"acess3\"></input>\n")
+		.append("<label accesskey=\"acess4\">label</a>\n")
+		.append("<fieldset><legend accesskey=\"acess5\">legend</legend></fieldset>\n")
+		.append("<textarea accesskey=\"acess6\"></textarea>\n")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -438,13 +438,13 @@ public class MarkEvaluationTest {
 	@Test
 	public void shouldCheckCriterio5Recommedation5() {
 		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<a acesskey=\"a\">link1</a>\n")
-		.append("<a acesskey=\"a\">link3</a>\n")
-		.append("<a acesskey=\"b\">link5</a>\n")
-		.append("<a acesskey=\"c\">link7</a>\n")
-		.append("<a acesskey=\"d\">link9</a>\n")
-		.append("<a acesskey=\"e\">link9</a>\n")
-		.append("<a acesskey=\"e\">link9</a>\n")
+		.append("<a accesskey=\"a\">link1</a>\n")
+		.append("<a accesskey=\"a\">link3</a>\n")
+		.append("<a accesskey=\"b\">link5</a>\n")
+		.append("<a accesskey=\"c\">link7</a>\n")
+		.append("<a accesskey=\"d\">link9</a>\n")
+		.append("<a accesskey=\"e\">link9</a>\n")
+		.append("<a accesskey=\"e\">link9</a>\n")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())

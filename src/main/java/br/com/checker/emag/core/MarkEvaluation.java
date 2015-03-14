@@ -9,7 +9,6 @@ import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
-import net.htmlparser.jericho.TagType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -150,7 +149,7 @@ public class MarkEvaluation extends Evaluation {
 		
 		for (Element element : getDocument().getAllElements("script")) {
 			
-			if(element != null)
+			if(element.getAttributeValue("src") ==null)
 				occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "6"));
 		}
 		
@@ -376,7 +375,7 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "3"));
 		}
 		
-		for (Element elemento : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
+		for (Element elemento : getDocument().getAllElements("accesskey", Pattern.compile(".*"))) {
 			
 			
 			if(duplicatedAcessKey(elemento))
@@ -387,7 +386,7 @@ public class MarkEvaluation extends Evaluation {
 	}
 	
 	private boolean hasAcessKey(Element element) {
-		String acessKey = element.getAttributeValue("acesskey");
+		String acessKey = element.getAttributeValue("accesskey");
 		
 		return StringUtils.isNotBlank(acessKey);
 	}
@@ -407,10 +406,10 @@ public class MarkEvaluation extends Evaluation {
 	}
 	
 	private boolean duplicatedAcessKey(Element element){
-		String value = element.getAttributeValue("acesskey");
+		String value = element.getAttributeValue("accesskey");
 		
-		for (Element elementToCompare : getDocument().getAllElements("acesskey", Pattern.compile(".*"))) {
-			String acessKey = elementToCompare.getAttributeValue("acesskey");
+		for (Element elementToCompare : getDocument().getAllElements("accesskey", Pattern.compile(".*"))) {
+			String acessKey = elementToCompare.getAttributeValue("accesskey");
 			if(acessKey.equals(value) && elementToCompare.getBegin() != element.getBegin())
 				return true;
 			
