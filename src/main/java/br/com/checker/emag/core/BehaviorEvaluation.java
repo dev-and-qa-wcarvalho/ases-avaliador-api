@@ -6,6 +6,7 @@ import java.util.List;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.Tag;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.BehaviorRecommendation;
@@ -80,7 +81,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 					  onmouseup = null, onkeyup = null,
 					  onclick = null, onkeypress = null,
 					  onmouseover = null,onfocus = null,
-					  onmouseout = null, onblur = null,dbclick = null;
+					  onmouseout = null, onblur = null,dbclick = null, ondblclick = null;
 			
 			if (element.getAttributes() != null) {
 				onmousedown = element.getAttributes().get("onmousedown");
@@ -99,28 +100,51 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				onblur = element.getAttributes().get("onblur");
 				
 				dbclick = element.getAttributes().get("dbclick");
+				ondblclick = element.getAttributes().get("ondblclick");
 			}
 			
 			if(dbclick!=null){
-				occurrences.add(this.buildOccurrence("2.1", false, element.toString(), element, "2"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));
+			}
+			
+			if(ondblclick!=null){
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));
 			}
 			
 			if (onmousedown != null && onkeydown == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
-				
-			} else if (onmouseup != null && onkeyup == null) {
+			}
+			
+			if (onmouseup != null && onkeyup == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
-				
-			} else if (onclick != null && onkeypress == null) {
+			}
+			/*if (onclick != null && onkeypress == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
-				
-			} else if (onmouseover != null && onfocus == null) {
+			}*/
+			if (onmouseover != null && onfocus == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
-				
-			} else if (onmouseout != null && onblur == null) {
+			}
+			if (onmouseout != null && onblur == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 			}
 		}
+		
+		String attributes[] = {"onafterprint","onbeforeprint","onbeforeunload","onerror", "onhashchange", "onload", "onmessage", "onoffline","ononline", "onpagehide","onpageshow","onpopstate",
+				"onresize", "onstorage", "onunloadnblur", "onblur","onchange", "oncontextmenu", "onfocus", "oninput","oninvalid","onreset","onsearch","onselect","onsubmit","onkeydown","onkeypress",
+				"onkeyup", "onclick","ondblclick", "ondrag","ondragend","ondragenter", "ondragleave", "ondragover", "ondragstart","ondrop","onmousedown", "onmousemove","onmouseout","onmouseover","onmouseup",
+				"onmousewheel", "onscroll", "onwheel", "oncopy", "oncut","onpaste", "onabort", "oncanplay", "oncanplaythrough","oncuechange","ondurationchange","onemptied","onended","onerror",
+				"onloadeddata","onloadedmetadata","onloadstart","onpause","onplay","onplaying","onprogress","onratechange","onseeked","onseeking","onstalled","onsuspend","ontimeupdate",
+				"onvolumechange","onwaiting","onerror","onshow","ontoggle"};
+		
+			for(Element element : getDocument().getAllElements()){
+				if(element != null){
+					for(String attribute : attributes){
+						if (element.getAttributeValue(attribute) != null) {
+							occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "3"));	
+						}
+					}
+				}
+			}
 		
 		return occurrences;
 	}
@@ -130,18 +154,43 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	private List<Occurrence> checkRecommendation11() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		boolean script = false;
-		boolean contAlter = false;
+		//boolean script = false;
+		//boolean contAlter = false;
 		
-		if(!getDocument().getAllElements("script").isEmpty())
+		/*if(!getDocument().getAllElements("script").isEmpty())
 			script = true;
 		
 		if(script)
 			if(getDocument().getAllElements("noscript").isEmpty())
-				occurrences.add(this.buildOccurrence("2.2", true, getDocument().getFirstElement("html").toString(), getDocument().getFirstElement("html"), "1"));
+				occurrences.add(this.buildOccurrence("2.2", true, getDocument().getFirstElement("html").toString(), getDocument().getFirstElement("html"), "1"));*/
+		
+		for(Element elementScript : getDocument().getAllElements("script")){
+			if((!elementScript.isEmpty()) && (elementScript.getAttributeValue("noscript") == null))
+			occurrences.add(this.buildOccurrence("2.2", true, elementScript.toString(), elementScript, "1"));
+		}
 			
+				
+		if(!getDocument().getAllElements("embed").isEmpty()){
+			for(Element embed : getDocument().getAllElements("embed"))
+				occurrences.add(this.buildOccurrence("2.2", false, embed.toString(), embed, "3"));
+		}	
+		
+		if(!getDocument().getAllElements("applet").isEmpty()){
+			for(Element applet : getDocument().getAllElements("applet"))
+				occurrences.add(this.buildOccurrence("2.2", false, applet.toString(), applet, "4"));
+		}
+		
 		
 		for (Element object : getDocument().getAllElements("object")) {
+			for(Element elemnet : object.getChildElements()){
+				if(!elemnet.getName().equals("param")){
+					occurrences.add(this.buildOccurrence("2.2", true, object.toString(), object, "2"));
+				}
+			}
+		}
+		
+
+		/*for (Element object : getDocument().getAllElements("object")) {
 			
 			for(Element elemnet : object.getChildElements()){
 				if(!elemnet.getName().equals("param")){
@@ -154,17 +203,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				contAlter = false;
 			}	
 			
-		}
-		
-		if(!getDocument().getAllElements("embed").isEmpty()){
-			for(Element embed : getDocument().getAllElements("embed"))
-				occurrences.add(this.buildOccurrence("2.2", false, embed.toString(), embed, "3"));
-		}	
-		
-		if(!getDocument().getAllElements("applet").isEmpty()){
-			for(Element applet : getDocument().getAllElements("applet"))
-				occurrences.add(this.buildOccurrence("2.2", false, applet.toString(), applet, "4"));
-		}
+		}*/
 		
 		return occurrences;
 	}
@@ -220,8 +259,9 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			hasMarquee = true;
 		}
 		
-		if (!hasBlink && !hasMarquee)
+		if (!hasBlink && !hasMarquee){
 			occurrences.add(new Occurrence("2.5", false, getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR,"1"));
+		}
 		
 		return occurrences;
 	}
@@ -229,11 +269,22 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 	private List<Occurrence> checkRecommendation15() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		
 		for (Element blink : getDocument().getAllElements("blink")) {
 			occurrences.add(this.buildOccurrence("2.6", true, blink.toString(), blink, "1"));
 		}
 		
 		for(Element marquee : getDocument().getAllElements("marquee")) {
+			
+			
+		/*	for(Element img : marquee.getAllElements("img")) {
+				Attribute src = img.getAttributes().get("src");
+				if(src != null)
+				if(img.getAttributeValue("src").contains(".gif")){
+					occurrences.add(this.buildOccurrence("2.6", false,marquee.toString(), marquee, "3"));
+				}
+			}*/
+			
 			occurrences.add(this.buildOccurrence("2.6", true, marquee.toString(), marquee, "2"));
 		}
 		

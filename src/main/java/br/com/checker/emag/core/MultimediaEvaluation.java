@@ -122,10 +122,10 @@ public class MultimediaEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element video : getDocument().getAllElements("object"))
-			occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+			occurrences.add(this.buildOccurrence("5.3", true, video.toString(), video, "1"));
 		
 		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+			occurrences.add(this.buildOccurrence("5.3", true, video.toString(), video, "1"));
 		
 		return occurrences;
 	}
