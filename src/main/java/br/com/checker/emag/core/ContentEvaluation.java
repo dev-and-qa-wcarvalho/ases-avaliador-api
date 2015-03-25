@@ -37,6 +37,7 @@ public class ContentEvaluation extends Evaluation{
 		public SpecificRecommendation recommendation25() { return new EvaluationRecommendation25();}
 		public SpecificRecommendation recommendation26() { return new EvaluationRecommendation26();}
 		public SpecificRecommendation recommendation27() { return new EvaluationRecommendation27();}
+		public SpecificRecommendation recommendation28() { return new EvaluationRecommendation28();}
 		
 	}
 	
@@ -73,7 +74,9 @@ public class ContentEvaluation extends Evaluation{
 	protected static class EvaluationRecommendation27 extends ContentRecommendation{
 		protected List<Occurrence> check() { return getEvaluation().checkRecommendation27();}
 	}
-	
+	protected static class EvaluationRecommendation28 extends ContentRecommendation{
+		protected List<Occurrence> check() { return getEvaluation().checkRecommendation28();}
+	}
 	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
@@ -88,6 +91,7 @@ public class ContentEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation25());
 		getOccurrences().addAll(checkRecommendation26());
 		getOccurrences().addAll(checkRecommendation27());
+		getOccurrences().addAll(checkRecommendation28());
 		
 		return getOccurrences();
 	}
@@ -103,21 +107,30 @@ public class ContentEvaluation extends Evaluation{
 			Attribute xmlLang = html.getAttributes().get("xml:lang");
 			Attribute xmlns = html.getAttributes().get("xmlns");
 			
-			if (lang == null && xmlLang == null) {
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "1"));
-			} else if (lang != null && lang.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "1"));
-			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) { 
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "1"));
+			String tagHtml = getDocument().getFirstStartTag("html").toString();
+			
+			if ( html.getAttributes().get("lang") == null){
+				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
 			}
 			
-			if (xmlLang == null && xmlns != null) {
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "2"));
-			} else if (xmlns != null && xmlLang.getValue().isEmpty()) {
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "2"));
-			} else if (xmlns != null && xmlns.getValue().isEmpty()) { 
-				occurrences.add(this.buildOccurrence("3.1", true, html.toString(), html, "2"));
+			if (lang == null && (xmlLang != null || xmlns != null)) {
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			} else if (lang != null && lang.getValue().isEmpty()) {
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			}else if (xmlns != null && xmlns.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
 			}
+			
+			/*if (lang == null && xmlns != null) {
+				occurrences.add(this.buildOccurrence("3.1", false, html.toString(), html, "2"));
+			} else if (xmlns != null && xmlLang.getValue().isEmpty()) {
+				occurrences.add(this.buildOccurrence("3.1", false, html.toString(), html, "2"));
+			} else if (xmlns != null && xmlns.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("3.1", false, html.toString(), html, "2"));
+			}
+*/			
 		}
 		
 		return occurrences;
@@ -128,11 +141,14 @@ public class ContentEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element element : getDocument().getAllElements()) {
-			
 			if(!element.getName().equals("html")){
-				if(element.getAttributeValue("lang") != null)
-					occurrences.add(this.buildOccurrence("3.2", false, element.toString(), element, "1"));
-					
+				
+				if(element.getName().equals("a") && element.getAttributeValue("href") != null){
+						if(element.getAttributeValue("href").contains("/?lang=")){
+							occurrences.add(this.buildOccurrence("3.2", false, element.toString(), element, "1"));
+						}
+				}else if(element.getAttributeValue("lang") != null)	
+						occurrences.add(this.buildOccurrence("3.2", false, element.toString(), element, "1"));
 			}
 		}
 	
@@ -329,7 +345,7 @@ public class ContentEvaluation extends Evaluation{
 		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute altAtt = img.getAttributes().get("alt");
-			if (altAtt != null) {
+			if (altAtt != null && !altAtt.getValue().isEmpty()) {
 				if(aMap.containsKey(altAtt.getValue())){
 					Attribute srcAtt = img.getAttributes().get("src");
 					if(srcAtt != null){
@@ -359,15 +375,29 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation23() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		boolean isMap = false;
+		
 		for (Element table : getDocument().getAllElements("img")) {
 			
 			Attribute usemap = table.getAttributes().get("usemap");
 			Attribute alt = table.getAttributes().get("alt");
-
-			if (usemap != null && alt == null)
+			
+			if (usemap != null && (alt == null || alt.getValue().isEmpty())){
 				occurrences.add(this.buildOccurrence("3.7", true, table.toString(), table, "1"));
+				isMap = true;
+			}
 			
 		}
+		
+		if(isMap)
+			for (Element map : getDocument().getAllElements("map")) {
+				for (Element area :map.getAllElements("area")) {
+					Attribute alt = area.getAttributes().get("alt");
+					if(alt == null || alt.getValue().isEmpty())
+						occurrences.add(this.buildOccurrence("3.7", true, map.toString(), map, "1"));
+				}
+			}
+		
 		
 		return occurrences;
 	}
@@ -397,8 +427,23 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation26() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		/*for (Element table : getDocument().getAllElements("table")) {
+			occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "1"));
+		}*/
+		
+		for (Element table : getDocument().getAllElements("table")) {
+			for(Element caption : table.getAllElements("caption")){
+				if(caption == null)
+					occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
+				else if(caption.isEmpty())
+					occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
+			}
+		}
+		
+		
 		for (Element table : getDocument().getAllElements("table")) {
 			Attribute summary = table.getAttributes().get("summary");
+			
 			boolean THusaScope = false;
 			boolean THusaId = false;
 			boolean THusaHeaders = false;
@@ -408,9 +453,10 @@ public class ContentEvaluation extends Evaluation{
 			boolean usaThead = false;
 			boolean usaTfoot = false;
 			boolean usaTbody = false;
+		 
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.10", true, table.toString(), table, "1"));
+				occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
@@ -428,8 +474,10 @@ public class ContentEvaluation extends Evaluation{
 			}
 			
 			if(!usaThead && !usaTbody && !usaTfoot){
-			
-			for (Element th : table.getAllElements("th")) {
+				
+				occurrences.add(this.buildOccurrence("3.10", true, table.getAllStartTags("table").get(0).toString(), table, "1"));
+				
+			/*for (Element th : table.getAllElements("th")) {
 				Attribute scope = th.getAttributes().get("scope");
 				Attribute headers = th.getAttributes().get("headers");
 				Attribute id = th.getAttributes().get("id");
@@ -461,7 +509,7 @@ public class ContentEvaluation extends Evaluation{
 				if(!TDusaScope && !TDusaHeaders  && !TDusaId){
 					occurrences.add(this.buildOccurrence("3.10", true, td.toString(), td, "1"));
 				}
-			}
+			}*/
 			
 		 }
 	   }
@@ -473,11 +521,11 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation27() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		String reg = "<p.*?>(.*)<\\/p.*?>";
+		//String reg = "<p.*?>(.*)<\\/p.*?>";
 		
 		for (Element paragrafo : getDocument().getAllElements("p")) {
 			
-			    Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
+			   /* Pattern p = Pattern.compile(reg,Pattern.CASE_INSENSITIVE);
 		        Matcher m = p.matcher(paragrafo);
 		       
 		        while(m.find()){
@@ -485,11 +533,44 @@ public class ContentEvaluation extends Evaluation{
 		        	
 		        	if(conteudoParagrafo.length() > 1000)
 						occurrences.add(this.buildOccurrence("3.11", false, paragrafo.toString(), paragrafo, "1"));
-		        }
+		        }*/
+		        
+		        
+			if(paragrafo.getContent().length() > 1000)
+				occurrences.add(this.buildOccurrence("3.11", false, paragrafo.toString(), paragrafo, "1"));
 		        
 		        String align = paragrafo.getAttributeValue("align");
 		        if("justify".equals(align))
 		        	occurrences.add(this.buildOccurrence("3.11", true, paragrafo.toString(), paragrafo, "2"));
+		        
+		        String style = paragrafo.getAttributeValue("style");
+			    if(style != null && style.contains("text-align:justify"))
+			       occurrences.add(this.buildOccurrence("3.11", true, paragrafo.toString(), paragrafo, "2"));
+		}
+		
+		
+		for (Element tags : getDocument().getAllElements()) {
+			if(!tags.getName().equals("p")){
+		       String style = tags.getAttributeValue("style");
+		       if(style != null && style.contains("text-align:justify"))
+		    	   occurrences.add(this.buildOccurrence("3.11", true, tags.toString(), tags, "3"));
+			}    
+		
+		}
+		return occurrences;
+	}
+	
+	private List<Occurrence> checkRecommendation28() {
+		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		
+		for (Element abbr : getDocument().getAllElements("abbr")) {
+			Attribute title = abbr.getAttributes().get("title");
+				if(title == null || title.getValue().equals(""))
+					occurrences.add(buildOccurrence("3.12", true, abbr.toString(), abbr, "1"));
+				
+			
+			if(abbr.getContent() == null)
+				occurrences.add(buildOccurrence("3.12", true, abbr.toString(), abbr, "1"));
 		}
 		
 		return occurrences;

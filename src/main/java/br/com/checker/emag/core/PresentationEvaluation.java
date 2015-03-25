@@ -19,16 +19,13 @@ public class PresentationEvaluation extends Evaluation{
 		@Override
 		protected PresentationEvaluation with(Source document) { return new PresentationEvaluation(document); }
 		
-		public SpecificRecommendation recommendation28() { return new EvaluationRecommendation28();}
 		public SpecificRecommendation recommendation29() { return new EvaluationRecommendation29();}
 		public SpecificRecommendation recommendation30() { return new EvaluationRecommendation30();}
 		public SpecificRecommendation recommendation31() { return new EvaluationRecommendation31();}
 		public SpecificRecommendation recommendation32() { return new EvaluationRecommendation32();}
 	}
 	
-	protected static class EvaluationRecommendation28 extends PresentationRecommendation{
-		protected List<Occurrence> check() { return getEvaluation().checkRecommendation28();}
-	}
+	
 	protected static class EvaluationRecommendation29 extends PresentationRecommendation{
 		protected List<Occurrence> check() { return getEvaluation().checkRecommendation29();}
 	}
@@ -45,7 +42,6 @@ public class PresentationEvaluation extends Evaluation{
 	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
-		getOccurrences().addAll(checkRecommendation28());
 		getOccurrences().addAll(checkRecommendation29());
 		getOccurrences().addAll(checkRecommendation30());
 		getOccurrences().addAll(checkRecommendation31());
@@ -54,18 +50,7 @@ public class PresentationEvaluation extends Evaluation{
 		return getOccurrences();
 	}
 	
-	private List<Occurrence> checkRecommendation28() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		for (Element abbr : getDocument().getAllElements("abbr")) {
-			Attribute title = abbr.getAttributes().get("title");
-				if(title == null || title.getValue().equals(""))
-					occurrences.add(buildOccurrence("3.12", true, abbr.toString(), abbr, "1"));
-				
-		}
-		
-		return occurrences;
-	}
+	
 	
 	private List<Occurrence> checkRecommendation29() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();

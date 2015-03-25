@@ -180,14 +180,19 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				occurrences.add(this.buildOccurrence("2.2", false, applet.toString(), applet, "4"));
 		}
 		
-		
 		for (Element object : getDocument().getAllElements("object")) {
-			for(Element elemnet : object.getChildElements()){
-				if(!elemnet.getName().equals("param")){
-					occurrences.add(this.buildOccurrence("2.2", true, object.toString(), object, "2"));
+			boolean isParam = false;
+			
+			for(Element element : object.getChildElements()){
+				if(element.getName().equals("param")){
+					isParam = true;
 				}
 			}
+			
+			if(!isParam)
+				occurrences.add(this.buildOccurrence("2.2", true, object.toString(), object, "2"));
 		}
+		
 		
 
 		/*for (Element object : getDocument().getAllElements("object")) {
