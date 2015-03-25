@@ -16,6 +16,7 @@ import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
 
+import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
 
@@ -97,10 +98,16 @@ public class MarkEvaluation extends Evaluation {
 			ValidationResponse response =
 				      new ValidatorBuilder().html().validate(getDocument().toString());
 			
-			if(!response.errors().isEmpty())
-				occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
-			else if (!response.warnings().isEmpty())
-				occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
+			
+			if(!response.errors().isEmpty()){
+				for(Defect error :response.errors()) {
+					occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
+				}
+			}else if (!response.warnings().isEmpty()){
+				for(Defect warn :response.warnings()) {
+					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
+				}
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

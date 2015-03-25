@@ -16,10 +16,12 @@ public abstract class Evaluation {
 
 	@Getter(AccessLevel.PROTECTED) private Source document;
 	@Getter(AccessLevel.PROTECTED) private List<Occurrence> occurrences;
+								   private String[] html;	
 	
 	protected Evaluation(Source document) {
 		this.document = document;
 		this.occurrences = new ArrayList<Occurrence>();
+		this.html = document.toString().split("\n");
 	}
 	
 	protected Occurrence buildOccurrence(String code,boolean error,String tag, 
@@ -29,6 +31,12 @@ public abstract class Evaluation {
 		int line = rcv.getRow();
 		int column = rcv.getColumn();
 		
+		return new Occurrence(line, column, code, error, tag,type,criterio);
+	}
+	
+	protected Occurrence buildOccurrence(String code, boolean error,int line,int column,OccurrenceClassification type,
+			String criterio  ){
+		String tag = this.html[line-1];
 		return new Occurrence(line, column, code, error, tag,type,criterio);
 	}
 	

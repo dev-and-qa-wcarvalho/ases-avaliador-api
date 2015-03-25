@@ -23,22 +23,7 @@ public class MarkEvaluationTest {
 	@Ignore
 	public void shouldCheckRecommedation1() {
 		StringBuilder html = new StringBuilder("<html>/n")
-		.append("<head>")
-		.append("<style>")
-		.append("body {background-color:lightgrey}")
-		.append("h1   {color:blue}")
-		.append("p    {color:green}")
-		.append("</style>")
-		.append("<script>")
-		.append("alert(\"javascript\");")
-		.append("</script>")
-		.append("</head>")
-		.append("<BODY>")
-		.append("<p style=\"color:green;margin-left:20px;\">Css Inline.</p>")
-		.append("<a href=\"javascript:void(0)\" onclick=\"fn()\">fn is called</a>")
-		.append("<a href=\"javascript:\" onclick=\"fn()\">fn is called too!</a>")
-		.append("</BODY>")
-		.append("</HTML>");
+		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(marking().recommendation1()).check();
