@@ -89,7 +89,7 @@ public class MultimediaEvaluationTest {
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
 			assertEquals("Should return Recommendation 35","5.3",occurrence.getCode());
-			assertFalse("Recommendation 35 should be WARNING",occurrence.isError());
+			assertTrue("Recommendation 35 should be WARNING",occurrence.isError());
 		}
 	}
 	

@@ -2,6 +2,7 @@ package br.com.checker.emag;
 
 import static br.com.checker.emag.core.Checker.content;
 import static br.com.checker.emag.core.Checker.from;
+import static br.com.checker.emag.core.Checker.presentation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +50,7 @@ public class ContentEvaluationTest {
 		html.append("</html>");
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation17()).check();
-		assertEquals("Should not return occurrences", 0,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 2 occurrences 2 ", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 	}
 	
 	@Test
@@ -480,12 +481,15 @@ assertEquals("Should return Recommendation 24","3.8",occurrences.get(OccurrenceC
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 													.with(content().recommendation26()).check();
 		
-		assertEquals("Should return 1 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
 			assertEquals("Should return Recommendation 26 occurrence","3.10",ocorrencia.getCode());
-			assertTrue("Recommendation 24 should be ERROR",ocorrencia.isError());
 		}
+		
+		assertFalse("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
+		
 	
 	}
 	
@@ -522,6 +526,56 @@ assertEquals("Should return Recommendation 24","3.8",occurrences.get(OccurrenceC
 		assertFalse("Recommendation 27 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 		assertEquals("Should return Recommendation 27 ","3.11",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).getCode());
 		assertTrue("Recommendation 27 should be ERRIR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(1).isError());
+		
+	}
+	
+	@Test
+	public void shouldCheckRecomendation28() {
+		/*StringBuilder html = new StringBuilder("<html");
+		html.append("<body bgcolor=\"#000\">")
+			.append(" <table bgcolor=\"#000\">")
+			.append("  <tr bgcolor=\"#000\">")
+			.append("   <td bgcolor=\"#000\">")
+			.append("   <td>")
+			.append("  </tr>")
+			.append(" </table>")
+			.append("</body>")
+			.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+					.with(presentation().recommendation28()).check();
+		
+		assertEquals("Should return 4 occurrences",4,occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).size());
+		
+		for(Occurrence occurrence : occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN)) {
+			assertEquals("Should return Recommendation 28 occurrence","28",occurrence.getCode());
+			assertTrue("Recomerndation 28 should be Error", occurrence.isError());
+		}*/
+		
+		StringBuilder html = new StringBuilder("<html> ");
+		   html.append("<abbr title=\"\"></abbr>");
+		   html.append("</html>");
+
+		   Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+					.with(content().recommendation28()).check();
+
+assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+assertEquals("Should return Recommendation 28","3.12",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+assertTrue("Recommendation 26 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		
+	}
+	
+	@Test
+	public void shouldCheckRecomendation28WithWarning() {
+		StringBuilder html = new StringBuilder("<html> ");
+		   html.append("<abbr title=\"\"></abbr>");
+		   html.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+					.with(content().recommendation28()).check();
+		
+		assertEquals("Should return 1 occurrences",1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertTrue("Recommendation 28 should be Warning",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 		
 	}
 	
