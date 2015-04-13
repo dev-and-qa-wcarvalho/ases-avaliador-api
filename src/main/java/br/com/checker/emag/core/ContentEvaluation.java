@@ -1,5 +1,9 @@
 package br.com.checker.emag.core;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -160,10 +164,10 @@ public class ContentEvaluation extends Evaluation{
 		
 		Element head = getDocument().getFirstElement("head");
 		
-		if(head == null) {
-			occurrences.add(new Occurrence("3.3", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION,"1"));
-		}else {
-		
+		//if(head == null) {
+			//occurrences.add(new Occurrence("3.3", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION,"1"));
+		//}else {
+		if(head != null) {
 			Element title = head.getFirstElement("title");
 			if (title == null) {
 				occurrences.add(this.buildOccurrence("3.3", true, head.toString(), head, "1"));
@@ -187,14 +191,23 @@ public class ContentEvaluation extends Evaluation{
 		for(Element  link : getDocument().getAllElements("a")){
 			String href = link.getAttributeValue("href");
 			String title = link.getAttributeValue("title");
+			String content = link.getContent().toString();
 			
-			if(isRegistroBr(href))
+			if(isRegistroBr(content))
 				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link, "1"));
 			
-			if(hasTitle(link) && !hasContent(link))
+			if(!hasContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"2"));
+			else if(hasImgWithoutAlt(link))
+					occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"2"));
 			
-			if(!hasTitle(link) && !hasContent(link) && hasImgWithoutAlt(link))
+			if(hasTitle(link) && isNotAlt(link))
+				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"3"));
+			
+			/*if(!hasTitle(link) && !hasContent(link) && hasImgWithoutAlt(link))
+				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"4"));*/
+			
+			if(hasImgWithoutAlt(link))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"4"));
 			
 			if(hasLeiaMaisDescription(link))
@@ -203,19 +216,71 @@ public class ContentEvaluation extends Evaluation{
 			if(hasDiferenteContentSameLink(link))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"6"));
 			
-			if(hasSameContentDiferentLink(link))
-				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"7"));
-			
 			if(isTitleEqualsContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"8"));
 			
-			if(StringUtils.isNotBlank(title) && title.length() > 500)
-				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link,"9"));
+			if(hasSameContentDiferentLink(link))
+				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"7"));
 			
+			if(link != null  && hasLongContent(link))
+				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link,"9"));
+	
+			if(link != null  && isLinkUnavailable(link))
+				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"10"));
 			
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean isLinkUnavailable(Element link){
+		int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
+		int codResponse = 0;
+		
+		String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
+		
+		if(!IsMatch(link.getAttributeValue("href"),regex))
+	    	return true;
+		
+		try {
+			URL u = new URL(link.getAttributeValue("href")); 
+			HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
+			huc.setRequestMethod("GET"); 
+			//huc.setRequestMethod("HEAD");
+			huc.connect();
+			codResponse = huc.getResponseCode();
+			huc.disconnect();
+		} catch (MalformedURLException e) {
+			return true;
+		} catch (IOException e) {
+			return true;
+		} 
+	  
+	    /*if(huc.getResponseCode() != HttpURLConnection.HTTP_OK)
+	    	System.out.println(link.toString());*/
+	    for(int cod : codErro)
+	    	if(codResponse == cod)	return true;
+	    
+	    return false;
+	}
+	
+	 private static boolean IsMatch(String s, String pattern) {
+	        try {
+	            Pattern patt = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+	            Matcher matcher = patt.matcher(s);
+	            return matcher.matches();
+	        } catch (RuntimeException e) {
+	        return false;
+	    }  
+	 }    
+	
+	private boolean isNotAlt(Element link) {
+		String alt = link.getAttributeValue("alt");
+		return alt == null || StringUtils.isBlank(alt);
+	}
+	
+	private boolean hasLongContent(Element link) {
+		return link.getContent().getTextExtractor().toString().length() > 500 ? true : false;
 	}
 	
 	private boolean hasContent(Element link) {
@@ -256,7 +321,7 @@ public class ContentEvaluation extends Evaluation{
 		if(StringUtils.isBlank(href)) return false;
 		Pattern pattern;
 		for(String registro:hrefRegistroBr){
-			pattern = Pattern.compile("(.*)("+registro+")$");
+			pattern = Pattern.compile("(.*)("+registro+").*$");
 			if(pattern.matcher(href.toUpperCase()).find()) return true;
 		}
 		
@@ -284,13 +349,20 @@ public class ContentEvaluation extends Evaluation{
 		if(StringUtils.isBlank(href)) return  false;
 		String otherContent;
 		String otherHref;
+		
+		List<String> linksVerificados = new ArrayList<String>();
+		
 		for(Element otherLink:getDocument().getAllElements("a")){
 			
 			if(otherLink.getBegin() == link.getBegin()) continue;
 			otherContent = otherLink.getContent().getTextExtractor().toString();
 			otherHref = otherLink.getAttributeValue("href");
 			if(StringUtils.isBlank(otherHref))continue;
-			if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)) return true;
+			if(!linksVerificados.contains(content))
+			if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)){ 
+				linksVerificados.add(content);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -417,7 +489,7 @@ public class ContentEvaluation extends Evaluation{
 			if (summary == null || summary.getValue().equals("")) 
 				occurrences.add(buildOccurrence("3.9", false, table.toString(), table, "1"));
 			
-			if(table.getAllElements("caption").isEmpty())
+			if(table.getAllElements("caption").isEmpty() || table.getAllElements("caption") == null)
 				occurrences.add(buildOccurrence("3.9", false, table.toString(), table, "1"));
 		}
 		
@@ -433,10 +505,8 @@ public class ContentEvaluation extends Evaluation{
 		
 		for (Element table : getDocument().getAllElements("table")) {
 			for(Element caption : table.getAllElements("caption")){
-				if(caption == null)
-					occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
-				else if(caption.isEmpty())
-					occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
+				if(caption == null || caption.isEmpty())
+					occurrences.add(buildOccurrence("3.10", true, table.toString(), table, "1"));
 			}
 		}
 		
@@ -456,7 +526,7 @@ public class ContentEvaluation extends Evaluation{
 		 
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.10", false, table.toString(), table, "2"));
+				occurrences.add(buildOccurrence("3.10", true, table.toString(), table, "1"));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
@@ -473,11 +543,11 @@ public class ContentEvaluation extends Evaluation{
 					usaTbody = true;
 			}
 			
-			if(!usaThead && !usaTbody && !usaTfoot){
+			/*if(!usaThead && !usaTbody && !usaTfoot){
 				
-				occurrences.add(this.buildOccurrence("3.10", true, table.getAllStartTags("table").get(0).toString(), table, "1"));
+				//occurrences.add(this.buildOccurrence("3.10", true, table.getAllStartTags("table").get(0).toString(), table, "1"));
 				
-			/*for (Element th : table.getAllElements("th")) {
+			for (Element th : table.getAllElements("th")) {
 				Attribute scope = th.getAttributes().get("scope");
 				Attribute headers = th.getAttributes().get("headers");
 				Attribute id = th.getAttributes().get("id");
@@ -509,9 +579,9 @@ public class ContentEvaluation extends Evaluation{
 				if(!TDusaScope && !TDusaHeaders  && !TDusaId){
 					occurrences.add(this.buildOccurrence("3.10", true, td.toString(), td, "1"));
 				}
-			}*/
+			}
 			
-		 }
+		 }*/
 	   }
 		
 		return occurrences;
@@ -584,7 +654,7 @@ public class ContentEvaluation extends Evaluation{
 	
 	public OccurrenceClassification type () { return OccurrenceClassification.CONTENT_INFORMATION;}
 	
-	private String[] hrefRegistroBr = {"COM.BR","ECO.BR","EMP.BR","NET.BR","EDU.BR",
+	private String[] hrefRegistroBr = {"COM","COM.BR","ECO.BR","EMP.BR","NET.BR","EDU.BR",
 			"ADM.BR","ADV.BR","ARQ.BR","ATO.BR","BIO.BR","BMD.BR","CIM.BR","CNG.BR",
 			"CNT.BR","ECN.BR","ENG.BR","ETI.B","FND.BR","FOT.BR","FST.BR","GGF.BR","JOR.BR",
 			"LEL.BR","MAT.BR","MED.BR","MUS.BR","NOT.BR","NTR.BR","ODO.BR","PPG.BR","PRO.BR", 
