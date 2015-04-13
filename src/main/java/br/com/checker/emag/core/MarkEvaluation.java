@@ -453,7 +453,7 @@ public class MarkEvaluation extends Evaluation {
 		for (int i = 0; i < element.size() -1 ; i++) {
 			firstElement = element.get(i);
 			secondElement = element.get(pos);
-			if(firstElement.getName().equals("a"))
+			if(firstElement.getEndTag() != null && firstElement.getName().equals("a"))
 			 	end = firstElement.getEndTag().getEnd();
 			 	begin = secondElement.getStartTag().getBegin();
 				if(element.get(i).getName().equals(element.get(pos).getName()) && (end == begin) ){

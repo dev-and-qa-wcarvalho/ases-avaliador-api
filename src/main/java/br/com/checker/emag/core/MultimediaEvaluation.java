@@ -96,8 +96,7 @@ public class MultimediaEvaluation extends Evaluation{
 		}
 		
 		for (Element video : this.getDocument().getAllElements("video")) {
-			String descricao = video.getTextExtractor().toString().trim();
-			if(descricao.length() == 0)
+			if(video.getTextExtractor().toString().isEmpty())
 				occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
 		}
 		
@@ -113,6 +112,11 @@ public class MultimediaEvaluation extends Evaluation{
 			if(data != null && (data.getValue().contains("mp3") || data.getValue().contains("wma") || data.getValue().contains("wav")))
 				occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
 	
+		}
+		
+		for (Element audio : getDocument().getAllElements("audio")) {
+			if(audio.getTextExtractor().toString().isEmpty())
+				occurrences.add(this.buildOccurrence("5.2", false, audio.toString(), audio, "1"));
 		}
 		
 		return occurrences;
