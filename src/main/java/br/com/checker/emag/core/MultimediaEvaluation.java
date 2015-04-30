@@ -69,29 +69,30 @@ public class MultimediaEvaluation extends Evaluation{
 			
 			Attribute value = video.getAttributes().get("src");
 			if (value != null){
-				if (value.getValue().contains(".mp4")
+				/*if (value.getValue().contains(".mp4")
 						|| value.getValue().contains(".avi")
 						|| value.getValue().contains(".flv")
 						|| value.getValue().contains(".rmvb")
 						|| value.getValue().contains(".WebM")
-						|| value.getValue().contains(".Ogg")) {
+						|| value.getValue().contains(".Ogg")) {*/
 					occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
-				}
+				//}
 			
 			}
 		}
 		
 		for (Element video : this.getDocument().getAllElements("object")) {
-				Attribute value = video.getAttributes().get("data");
-				if (value != null)
-					if (value.getValue().contains(".mp4")
+				Attribute src = video.getAttributes().get("src");
+				
+				if (src != null)
+				/*	if (value.getValue().contains(".mp4")
 							|| value.getValue().contains(".avi")
 							|| value.getValue().contains(".flv")
 							|| value.getValue().contains(".rmvb")
 							|| value.getValue().contains(".WebM")
-							|| value.getValue().contains(".Ogg")) {
+							|| value.getValue().contains(".Ogg")) {*/
 						occurrences.add(this.buildOccurrence("5.1", false, video.toString(), video, "1"));
-					}
+					//}
 				
 		}
 		
@@ -106,12 +107,18 @@ public class MultimediaEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation34() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element video : getDocument().getAllElements("object")) {
-			Attribute data = video.getAttributes().get("data");
+		for (Element video : getDocument().getAllElements("embed")){
 			
-			if(data != null && (data.getValue().contains("mp3") || data.getValue().contains("wma") || data.getValue().contains("wav")))
+			Attribute value = video.getAttributes().get("src");
+			if (value != null)
+					occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
+		}
+		
+		for (Element video : this.getDocument().getAllElements("object")) {
+			Attribute src = video.getAttributes().get("src");
+			
+			if (src != null)
 				occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
-	
 		}
 		
 		for (Element audio : getDocument().getAllElements("audio")) {
@@ -125,11 +132,21 @@ public class MultimediaEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation35() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element video : getDocument().getAllElements("object"))
-			occurrences.add(this.buildOccurrence("5.3", true, video.toString(), video, "1"));
+		for (Element video : getDocument().getAllElements("object")){
+			Attribute src = video.getAttributes().get("src");
+			
+			if (src != null)
+				occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+			
+		}	
 		
-		for (Element video : getDocument().getAllElements("embed"))
-			occurrences.add(this.buildOccurrence("5.3", true, video.toString(), video, "1"));
+		for (Element video : this.getDocument().getAllElements("video")) {
+			if(video.getTextExtractor().toString().isEmpty())
+				occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+		}
+		
+	/*	for (Element video : getDocument().getAllElements("embed"))
+			occurrences.add(this.buildOccurrence("5.3", true, video.toString(), video, "1"));*/
 		
 		return occurrences;
 	}
@@ -137,7 +154,7 @@ public class MultimediaEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation36() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element musica : getDocument().getAllElements("embed")){
+		/*for (Element musica : getDocument().getAllElements("embed")){
 			
 
 			Attribute type = musica.getAttributes().get("type");
@@ -187,6 +204,44 @@ public class MultimediaEvaluation extends Evaluation{
 					}
 				}	
 			}
+		}*/
+
+
+		
+		for (Element video : getDocument().getAllElements("embed")){
+			
+			Attribute value = video.getAttributes().get("src");
+			if (value != null){
+				/*if (value.getValue().contains(".mp4")
+						|| value.getValue().contains(".avi")
+						|| value.getValue().contains(".flv")
+						|| value.getValue().contains(".rmvb")
+						|| value.getValue().contains(".WebM")
+						|| value.getValue().contains(".Ogg")) {*/
+					occurrences.add(this.buildOccurrence("5.4", false, video.toString(), video, "1"));
+				//}
+			
+			}
+		}
+		
+		for (Element video : this.getDocument().getAllElements("object")) {
+			Attribute src = video.getAttributes().get("src");
+			
+			if (src != null)
+				/*	if (value.getValue().contains(".mp4")
+							|| value.getValue().contains(".avi")
+							|| value.getValue().contains(".flv")
+							|| value.getValue().contains(".rmvb")
+							|| value.getValue().contains(".WebM")
+							|| value.getValue().contains(".Ogg")) {*/
+						occurrences.add(this.buildOccurrence("5.4", false, video.toString(), video, "1"));
+					//}
+				
+		}
+		
+		for (Element video : this.getDocument().getAllElements("audio")) {
+			if(video.getTextExtractor().toString().isEmpty())
+				occurrences.add(this.buildOccurrence("5.4", false, video.toString(), video, "1"));
 		}
 		
 		return occurrences;
