@@ -42,7 +42,7 @@ public class MultimediaEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation33()).check();
 		
-		assertEquals("Should return 5 occurrences", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
 			assertEquals("Should return Recommendation 33","5.1",occurrence.getCode());
@@ -57,12 +57,17 @@ public class MultimediaEvaluationTest {
 		html.append("<object data=\"teste.mp3\"></object>");
 		html.append("<object data=\"teste.wma\"></object>");
 		html.append("<object data=\"teste.wav\"></object>");
+		html.append("<embed src=\"helloworld.swf\">");
+		html.append("<embed>");
+		html.append("<embed src=\"\">");
+		
+		
 		html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation34()).check();
 		
-		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
 			assertEquals("Should return Recommendation 34","5.2",occurrence.getCode());
@@ -76,7 +81,9 @@ public class MultimediaEvaluationTest {
 		html.append("<embed></embed>");
 		html.append("<embed></embed>");
 		html.append("<object></object>");
-		html.append("<object value=\"teste.mp4\"></object>");
+		html.append("<video></video>");
+		html.append("<video>Teste</video>");
+		html.append("<object value=\"teste.mp4\" src=\"\"></object>");
 		html.append("<object value=\"teste.avi\"></object>");
 		html.append("<object value=\"teste.flv\"></object>");
 		html.append("<object value=\"teste.rmvb\"></object>");
@@ -85,11 +92,11 @@ public class MultimediaEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation35()).check();
 		
-		assertEquals("Should return 7 occurrences", 7,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.MULTIMEDIA) ) {
 			assertEquals("Should return Recommendation 35","5.3",occurrence.getCode());
-			assertTrue("Recommendation 35 should be WARNING",occurrence.isError());
+			assertFalse("Recommendation 35 should be WARNING",occurrence.isError());
 		}
 	}
 	
@@ -103,11 +110,18 @@ public class MultimediaEvaluationTest {
 				html.append("<param name=\"autoplay\" value=\"false\" />");
 				html.append("<param name=\"autostart\" value=\"0\" />");
 				html.append("</object>");
+				
+				html.append("<audio controls>");
+				html.append("<source src=\"horse.ogg\" type=\"audio/ogg\">");
+				html.append("</audio>");
+				
+				
+				  
 				html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(multimedia().recommendation36()).check();
-		assertEquals("Should return 3 occurrence", 3,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
+		assertEquals("Should return 2 occurrence", 2,occurrences.get(OccurrenceClassification.MULTIMEDIA).size());
 		assertEquals("Should return Recommendation 36 ","5.4",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).getCode());
 		assertFalse("Recommendation 36 should be WARNING",occurrences.get(OccurrenceClassification.MULTIMEDIA).get(0).isError());
 		
