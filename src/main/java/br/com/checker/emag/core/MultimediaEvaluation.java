@@ -107,18 +107,18 @@ public class MultimediaEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation34() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element video : getDocument().getAllElements("embed")){
+		for (Element audio : getDocument().getAllElements("embed")){
 			
-			Attribute value = video.getAttributes().get("src");
+			Attribute value = audio.getAttributes().get("src");
 			if (value != null)
-					occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
+					occurrences.add(this.buildOccurrence("5.2", false, audio.toString(), audio, "1"));
 		}
 		
-		for (Element video : this.getDocument().getAllElements("object")) {
-			Attribute src = video.getAttributes().get("src");
+		for (Element audio : this.getDocument().getAllElements("object")) {
+			Attribute src = audio.getAttributes().get("src");
 			
 			if (src != null)
-				occurrences.add(this.buildOccurrence("5.2", false, video.toString(), video, "1"));
+				occurrences.add(this.buildOccurrence("5.2", false, audio.toString(), audio, "1"));
 		}
 		
 		for (Element audio : getDocument().getAllElements("audio")) {
@@ -126,16 +126,32 @@ public class MultimediaEvaluation extends Evaluation{
 				occurrences.add(this.buildOccurrence("5.2", false, audio.toString(), audio, "1"));
 		}
 		
+		
 		return occurrences;
 	}
 	
 	private List<Occurrence> checkRecommendation35() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		for (Element video : getDocument().getAllElements("object")){
-			Attribute src = video.getAttributes().get("src");
+		for (Element video : getDocument().getAllElements("embed")){
 			
+			Attribute src = video.getAttributes().get("src");
 			if (src != null)
+					occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+			
+			Attribute data = video.getAttributes().get("data");
+			if (data != null)
+					occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+		}
+		
+		for (Element video : getDocument().getAllElements("object")){
+			
+			Attribute src = video.getAttributes().get("src");
+			if (src != null)
+				occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
+			
+			Attribute data = video.getAttributes().get("data");
+			if (data != null)
 				occurrences.add(this.buildOccurrence("5.3", false, video.toString(), video, "1"));
 			
 		}	
@@ -242,6 +258,12 @@ public class MultimediaEvaluation extends Evaluation{
 		for (Element video : this.getDocument().getAllElements("audio")) {
 			if(video.getTextExtractor().toString().isEmpty())
 				occurrences.add(this.buildOccurrence("5.4", false, video.toString(), video, "1"));
+		}
+		
+		for (Element audio : getDocument().getAllElements("audio")) {
+			Attribute value = audio.getAttributes().get("controls");
+			if (value == null)
+					occurrences.add(this.buildOccurrence("5.4", false, audio.toString(), audio, "1"));
 		}
 		
 		return occurrences;

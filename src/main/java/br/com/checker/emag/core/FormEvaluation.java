@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+import net.htmlparser.jericho.Tag;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.FormRecommendation;
@@ -85,16 +86,32 @@ public class FormEvaluation extends Evaluation{
 		for (Element input : this.getDocument().getAllElements("input")) {
 			Attribute type = input.getAttributes().get("type");
 			if (type != null) {
+				
 				if (type.getValue().equals("image")) {
 					Attribute alt = input.getAttributes().get("alt");
 					if (alt == null || alt.getValue().isEmpty()) {
 						occurrences.add(this.buildOccurrence("6.1", true, input.toString(), input, "1"));
 					}
 				}
-				if (type.getValue().equals("submit") || type.getValue().equals("reset") || type.getValue().equals("button")) {
+				
+				if (type.getValue().equals("submit")) {
 					Attribute value = input.getAttributes().get("value");
 					if (value == null || value.getValue().isEmpty()) {
-						occurrences.add(this.buildOccurrence("6.1", true,input.toString(), input, "1"));
+						occurrences.add(this.buildOccurrence("6.1", false,input.toString(), input, "1"));
+					}
+				}
+				
+				if (type.getValue().equals("reset")) {
+					Attribute value = input.getAttributes().get("value");
+					if (value != null || !value.getValue().isEmpty()) {
+						occurrences.add(this.buildOccurrence("6.1", false,input.toString(), input, "1"));
+					}
+				}
+				
+				if (type.getValue().equals("button")) {
+					Attribute value = input.getAttributes().get("value");
+					if (value != null || !value.getValue().isEmpty()) {
+						occurrences.add(this.buildOccurrence("6.1", false,input.toString(), input, "1"));
 					}
 				}
 			}
@@ -186,6 +203,15 @@ public class FormEvaluation extends Evaluation{
 			}
 			
 			
+			for (Element select : form.getAllElements("select")){
+				Attribute id = select.getAttributes().get("id");
+				Attribute name = select.getAttributes().get("name");
+				if (id == null || id.toString().isEmpty() || name == null || name.toString().isEmpty()) {
+					occurrences.add(this.buildOccurrence("6.2", true, select.toString(), select,"1"));
+					
+				}
+			}
+			
 			
 		}
 		
@@ -206,22 +232,53 @@ public class FormEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation41() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		String[] eventos = {"onchange", "onblur","onfocus", "onformchange",
+		String[] eventos1 = {"onchange", "onblur","onfocus", "onformchange",
 				      		"onforminput","oninput","oninvalid","onreset",
 				      		"onselect","onsubmit","onkeydown","onkeypress",
-				      		"onkeyup", "onclick","ondblclick","ondrag",
-				      		"ondragend","ondragenter","ondragleave","ondragover",
-				      		"ondragstart","ondrop","onmousedown","onmousemove",
-				      		"onmouseout","onmouseover","onmouseup", 
-				      		"onmousewheel","onscrol"};
+				      		"onkeyup", "onclick"};
 		
-		for (Element elemento : this.getDocument().getAllElements()) {
+		
+		String[] eventos2 = {"ondblclick","ondrag",
+		  		"ondragend","ondragenter","ondragleave","ondragover",
+		  		"ondragstart","ondrop","onmousedown","onmousemove",
+		  		"onmouseout","onmouseover","onmouseup", 
+		  		"onmousewheel","onscrol"};
+		
+		
+		for (Element elemento : this.getDocument().getAllElements("form")) {
 			if(isSubmitResetOrButton(elemento)) continue;
 			
-			for(String evento : eventos){
+			/*for(String evento : eventos){
 				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("6.4", false, elemento.toString(), elemento, "1"));
+			}*/
+			
+			for(Element elementoForm : elemento.getAllElements()){
+				for(String evento : eventos1){
+					if (eventExists(elementoForm,evento)){
+							occurrences.add(this.buildOccurrence("6.4", false, 
+									elementoForm.getName().equals("select") || elementoForm.getName().equals("form") 
+									? elementoForm.getStartTag()+"</"+elementoForm.getName()+">"
+									: elementoForm.toString(), elementoForm, "1"));
+					}	
+				}
+			}
+					
+			/*for(String evento : eventos){
+				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("6.4", false, elemento.toString(), elemento, "1"));
+			}*/
+			
+			for(Element elementoForm : elemento.getAllElements()){
+				for(String evento : eventos2){
+					if (eventExists(elementoForm,evento)){
+							occurrences.add(this.buildOccurrence("6.4", false, 
+									elementoForm.getName().equals("select") || elementoForm.getName().equals("form") 
+									? elementoForm.getStartTag()+"</"+elementoForm.getName()+">"
+									: elementoForm.toString(), elementoForm, "2"));
+					}	
+				}
 			}
 		}
+		
 		
 		return occurrences;
 	}
@@ -259,9 +316,12 @@ public class FormEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element form : this.getDocument().getAllElements("form")) {
+			
+			String tagForm = form.getStartTag()+"</form>";
+			
+			
 			if (form.getAllElements("fieldset").isEmpty()) {
-				occurrences.add(this.buildOccurrence("6.7", false, form
-								.toString(), form, "1"));
+				occurrences.add(this.buildOccurrence("6.7", false, tagForm, form, "1"));
 			} else {
 				for (Element fieldset : form.getAllElements("fieldset")) {
 					if (fieldset.getAllElements("legend").isEmpty()) {

@@ -36,7 +36,10 @@ public abstract class Evaluation {
 	
 	protected Occurrence buildOccurrence(String code, boolean error,int line,int column,OccurrenceClassification type,
 			String criterio  ){
-		String tag = this.html[line-1];
+		//String tag = this.html[line-1];
+		
+		String tag = line > 0 ? this.html[line-1] : this.html[line];
+		
 		return new Occurrence(line, column, code, error, tag,type,criterio);
 	}
 	

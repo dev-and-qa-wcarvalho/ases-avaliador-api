@@ -113,7 +113,7 @@ public class ContentEvaluation extends Evaluation{
 			
 			String tagHtml = getDocument().getFirstStartTag("html").toString();
 			
-			if ( html.getAttributes().get("lang") == null){
+			if ( lang == null && xmlLang == null){
 				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
 			}
 			
@@ -170,7 +170,7 @@ public class ContentEvaluation extends Evaluation{
 		if(head != null) {
 			Element title = head.getFirstElement("title");
 			if (title == null) {
-				occurrences.add(this.buildOccurrence("3.3", true, head.toString(), head, "1"));
+				occurrences.add(this.buildOccurrence("3.3", true, "Sem fonte (não existe título na página)", head, "1"));
 			} else if (title.isEmpty()) {
 				occurrences.add(buildOccurrence("3.3", true, title.toString(), title, "1"));
 			}
@@ -382,7 +382,7 @@ public class ContentEvaluation extends Evaluation{
 		
 		String[] parts = null;
 		
-		String[] descricoes = {"figura", "imagem", "alt", "descriÃ§Ã£o", "foto"};
+		String[] descricoes = {"figura", "imagem", "alt", "descrição", "foto"};
 		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
