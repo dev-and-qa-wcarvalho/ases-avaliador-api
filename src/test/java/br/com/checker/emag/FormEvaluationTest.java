@@ -20,8 +20,6 @@ public class FormEvaluationTest {
 	public void shouldCheckRecommedation38() {
 		StringBuilder html = new StringBuilder("<html>");
 		html.append("<form>");
-		html.append("<input type=\"image\" src=\"img_submit.gif\" alt=\"Submit\"></input>");
-		html.append("<input type=\"image\" src=\"img_submit.gif\"></input> ");
 		html.append("<input type=\"submit\" value=\"\"></input>");
 		html.append("<input type=\"reset\" value=\"\"></input>");
 		html.append("<input type=\"button\" value=\"\"></input>");
@@ -31,13 +29,34 @@ public class FormEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation38()).check();
 		
-		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.FORM).size());
+		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
 			assertEquals("Should return Recommendation 38","6.1",occurrence.getCode());
-			assertTrue("Recommendation 38 should be ERROR",occurrence.isError());
+			assertFalse("Recommendation 38 should be ERROR",occurrence.isError());
 		}
 	}
+	
+	@Test
+	public void shouldCheckWarningRecommedation38() {
+		StringBuilder html = new StringBuilder("<html>");
+		html.append("<form>");
+		html.append("<input type=\"image\" src=\"img_submit.gif\" alt=\"Submit\"></input>");
+		html.append("<input type=\"image\" src=\"img_submit.gif\"></input> ");
+		html.append("</form>");
+		html.append("</html>");
+		
+		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
+				  													.with(form().recommendation38()).check();
+		
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.FORM).size());
+		
+		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
+			assertEquals("Should return Recommendation 38","6.1",occurrence.getCode());
+			assertTrue("Recommendation 38 should be WARNING",occurrence.isError());
+		}
+	}
+	
 	
 	@Test
 	public void shouldCheckRecommendation39(){
@@ -142,7 +161,7 @@ public class FormEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation41()).check();
 		
-		assertEquals("Should return 0 occurrence", 0,occurrences.get(OccurrenceClassification.FORM).size());
+		assertEquals("Should return 3 occurrence", 3,occurrences.get(OccurrenceClassification.FORM).size());
 		
 	}
 	
