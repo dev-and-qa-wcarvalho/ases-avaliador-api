@@ -136,6 +136,9 @@ public class ContentEvaluationTest {
 		StringBuilder html = new StringBuilder("<html> ");
 								   html.append("<a href=\"www.teste.com.br\">teste</a>");
 								   html.append("<a title=\"teste\"></a>");
+								   html.append("<a title=\"teste2\" href=\"link1\">link teste</a>");
+								   html.append("<a title=\"teste-teste\" href=\"link2\">link teste</a>");
+								   html.append("<a title=\"teste\">Leia mais</a>");
 								   html.append("<a><img alt=\"\" src=\"teste.img\"/></a>");
 								   html.append("<a><img alt=\"imagem de teste\" src=\"teste.img\"/></a>");
 								   html.append("</html>");
@@ -143,15 +146,16 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
-		assertEquals("Should return 9 occurrences", 9,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 11 occurrences", 11,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 	}
 	
 	@Test
 	public void shouldCheckRecommedation21LeiaMais() {
 		
 		StringBuilder html = new StringBuilder("<html> ");
-								   html.append("<a title=\"teste\" href=\"teste.html\">clique aqui meu filho!!!</a>");
+								   html.append("<a title=\"teste\" href=\"teste.html\">clique aqui!!!</a>");
 								   html.append("<a title=\"teste\" href=\"teste2.html\">leia mais</a>");
+								   html.append("<a title=\"teste\" href=\"teste2.html\"></a>");
 								   html.append("<a><img alt=\"saiba mais\" src=\"teste.img\"/></a>");
 								   html.append("<a><img alt=\"veja mais\" src=\"teste.img\"/></a>");
 								   html.append("<a title=\"teste\" href=\"teste3.html\">acesse a lista</a>");
@@ -198,7 +202,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
-		assertEquals("Should return 5 occurrences", 5,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
 			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
@@ -249,7 +253,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
-		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertTrue("Recommendation 21 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
@@ -324,6 +328,7 @@ public class ContentEvaluationTest {
 		 html.append("<head>");
 		 html.append("</head>");
 		 html.append(" <body>");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" height=\"42\" width=\"42\">");
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"imagem\" height=\"42\" width=\"42\">");
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"alt\" height=\"42\" width=\"42\">");
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"descrição\" height=\"42\" width=\"42\">");
