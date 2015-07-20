@@ -193,7 +193,7 @@ public class ContentEvaluation extends Evaluation{
 			String title = link.getAttributeValue("title");
 			String content = link.getContent().toString();
 			
-			if(isRegistroBr(content))
+			if(hasEqualsContentHref(link) &&isRegistroBr(content))
 				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link, "1"));
 			
 			if(!hasContent(link))
@@ -201,7 +201,8 @@ public class ContentEvaluation extends Evaluation{
 			else if(hasImgWithoutAlt(link))
 					occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"2"));
 			
-			if(hasTitle(link) && isNotAlt(link))
+			//if(hasTitle(link) && isNotAlt(link))
+			if(hasTitle(link) && !hasContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"3"));
 			
 			/*if(!hasTitle(link) && !hasContent(link) && hasImgWithoutAlt(link))
@@ -234,32 +235,36 @@ public class ContentEvaluation extends Evaluation{
 	}
 	
 	private boolean isLinkUnavailable(Element link){
-		int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
-		int codResponse = 0;
 		
-		String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
-		
-		if(!IsMatch(link.getAttributeValue("href"),regex))
-	    	return true;
-		
-		try {
-			URL u = new URL(link.getAttributeValue("href")); 
-			HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
-			huc.setRequestMethod("GET"); 
-			//huc.setRequestMethod("HEAD");
-			huc.connect();
-			codResponse = huc.getResponseCode();
-			huc.disconnect();
-		} catch (MalformedURLException e) {
-			return true;
-		} catch (IOException e) {
-			return true;
-		} 
-	  
-	    /*if(huc.getResponseCode() != HttpURLConnection.HTTP_OK)
-	    	System.out.println(link.toString());*/
-	    for(int cod : codErro)
-	    	if(codResponse == cod)	return true;
+		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").contains("javascript")){
+			int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
+			int codResponse = 0;
+			
+			String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
+			
+			if(!IsMatch(link.getAttributeValue("href"),regex))
+		    	return true;
+			
+			try {
+				URL u = new URL(link.getAttributeValue("href")); 
+				HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
+				huc.setRequestMethod("GET"); 
+				//huc.setRequestMethod("HEAD");
+				huc.connect();
+				codResponse = huc.getResponseCode();
+				huc.disconnect();
+			} catch (MalformedURLException e) {
+				return true;
+			} catch (IOException e) {
+				return true;
+			} 
+		  
+		    /*if(huc.getResponseCode() != HttpURLConnection.HTTP_OK)
+		    	System.out.println(link.toString());*/
+		    for(int cod : codErro)
+		    	if(codResponse == cod)	return true;
+	    
+		}
 	    
 	    return false;
 	}
@@ -326,6 +331,13 @@ public class ContentEvaluation extends Evaluation{
 		}
 		
 		return false;
+	}
+	
+	
+	private boolean hasEqualsContentHref(Element link) {
+		String content = link.getContent().getTextExtractor().toString();
+		String href = link.getAttributeValue("href");
+		return content.equals(href);
 	}
 	
 	private boolean hasDiferenteContentSameLink(Element link) {
@@ -664,6 +676,6 @@ public class ContentEvaluation extends Evaluation{
 			"AM.BR","COOP.BR","FM.BR","G12.BR","GOV.BR","MIL.BR","ORG.BR","PSI.BR","B.BR",
 			"JUS.BR","LEG.BR","MP.BR"};
 	
-	private String[] leiaMais = {"clique aqui","leia mais","saiba mais","veja mais","acesse a lista"};
+	private String[] leiaMais = {"clique aqui","leia mais","saiba mais","veja mais","acesse a lista", "mais"};
 	
 }

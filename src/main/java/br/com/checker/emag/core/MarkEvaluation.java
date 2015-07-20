@@ -2,6 +2,8 @@ package br.com.checker.emag.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -132,6 +134,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 		}
 		
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
+		
 		for (Element element : getDocument().getAllElements()) {
 			String value = element.getAttributeValue("style");
 			
@@ -159,7 +168,6 @@ public class MarkEvaluation extends Evaluation {
 			if(element.getAttributeValue("src") ==null)
 				occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "6"));
 		}
-		
 		
 		return occurrences;
 	}
@@ -477,16 +485,16 @@ public class MarkEvaluation extends Evaluation {
 			Element footer = getDocument().getFirstElement("footer");
 			
 			if(header == null)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <HEADER>", getDocument().getFirstElement(),"1"));
 			
 			if(nav == null)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <NAV>", getDocument().getFirstElement(),"2"));
 			
 			if(section == null)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <SECTION>", getDocument().getFirstElement(),"3"));
 			
 			if(footer == null)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <FOOTER>", getDocument().getFirstElement(),"4"));
 			
 			
 			boolean hasBanner = false;
@@ -509,13 +517,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 			
 			if(!hasBanner)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - banner", getDocument().getFirstElement(),"1"));
 			
 			if(!hasNavigation)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - navigation", getDocument().getFirstElement(),"6"));
 			
 			if(!hasMain)
-				occurrences.add(this.buildOccurrence("1.8", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - main", getDocument().getFirstElement(),"7"));
 		}
 		
 		

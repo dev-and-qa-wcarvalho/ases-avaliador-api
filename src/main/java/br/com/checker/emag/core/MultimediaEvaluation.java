@@ -227,7 +227,9 @@ public class MultimediaEvaluation extends Evaluation{
 		for (Element video : getDocument().getAllElements("embed")){
 			
 			Attribute value = video.getAttributes().get("src");
-			if (value != null){
+			Attribute data = video.getAttributes().get("data");
+			
+			if (value != null || data != null){
 				/*if (value.getValue().contains(".mp4")
 						|| value.getValue().contains(".avi")
 						|| value.getValue().contains(".flv")
@@ -242,8 +244,9 @@ public class MultimediaEvaluation extends Evaluation{
 		
 		for (Element video : this.getDocument().getAllElements("object")) {
 			Attribute src = video.getAttributes().get("src");
+			Attribute data = video.getAttributes().get("data");
 			
-			if (src != null)
+			if (src != null || data != null)
 				/*	if (value.getValue().contains(".mp4")
 							|| value.getValue().contains(".avi")
 							|| value.getValue().contains(".flv")
@@ -255,10 +258,10 @@ public class MultimediaEvaluation extends Evaluation{
 				
 		}
 		
-		for (Element video : this.getDocument().getAllElements("audio")) {
-			if(video.getTextExtractor().toString().isEmpty())
-				occurrences.add(this.buildOccurrence("5.4", false, video.toString(), video, "1"));
-		}
+		/*for (Element audio : this.getDocument().getAllElements("audio")) {
+			if(audio.getTextExtractor().toString().isEmpty())
+				occurrences.add(this.buildOccurrence("5.4", false, audio.toString(), audio, "1"));
+		}*/
 		
 		for (Element audio : getDocument().getAllElements("audio")) {
 			Attribute value = audio.getAttributes().get("controls");
