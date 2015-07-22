@@ -269,7 +269,6 @@ public class FormEvaluation extends Evaluation{
 			}*/
 			
 			for(Element elementoForm : elemento.getAllElements()){
-				if(isSubmitResetOrButton(elementoForm)) continue;
 				for(String evento : eventos2){
 					if (eventExists(elementoForm,evento)){
 							occurrences.add(this.buildOccurrence("6.4", false, 
@@ -291,13 +290,14 @@ public class FormEvaluation extends Evaluation{
 	
 	private boolean isSubmitResetOrButton(Element elemento){
 
-		String type = elemento.getAttributeValue("type");
-		if (type != null) {
-			return (type.equals("submit") ||
-					type.equals("reset") ||
-					type.equals("button"));
+		if(elemento != null && elemento.getName().equals("input")){
+			String type = elemento.getAttributeValue("type");
+			if (type != null) {
+				return (type.equals("submit") ||
+						type.equals("reset") ||
+						type.equals("button"));
+			}
 		}
-		
 		return false;
 	}
 	
