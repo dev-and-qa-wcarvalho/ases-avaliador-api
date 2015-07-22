@@ -103,14 +103,14 @@ public class FormEvaluation extends Evaluation{
 				
 				if (type.getValue().equals("reset")) {
 					Attribute value = input.getAttributes().get("value");
-					if (value != null || !value.getValue().isEmpty()) {
+					if (value != null) {
 						occurrences.add(this.buildOccurrence("6.1", false,input.toString(), input, "1"));
 					}
 				}
 				
 				if (type.getValue().equals("button")) {
 					Attribute value = input.getAttributes().get("value");
-					if (value != null || !value.getValue().isEmpty()) {
+					if (value != null) {
 						occurrences.add(this.buildOccurrence("6.1", false,input.toString(), input, "1"));
 					}
 				}
@@ -123,7 +123,7 @@ public class FormEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element form : this.getDocument().getAllElements("form")) {
-			for (Element label : form.getAllElements("label")) {
+			/*for (Element label : form.getAllElements("label")) {
 				Attribute attrFor = label.getAttributes().get("for");
 				if (attrFor == null || attrFor.getValue().isEmpty()) {
 					occurrences.add(this.buildOccurrence("6.2", true, label.toString(), label, "1"));
@@ -149,7 +149,7 @@ public class FormEvaluation extends Evaluation{
 						occurrences.add(this.buildOccurrence("6.2", true, label.toString(), label,"1"));
 					}
 				}
-			}
+			}*/
 			
 			for (Element input : form.getAllElements("input")) {
 				Attribute type = input.getAttributes().get("type");
@@ -246,13 +246,14 @@ public class FormEvaluation extends Evaluation{
 		
 		
 		for (Element elemento : this.getDocument().getAllElements("form")) {
-			if(isSubmitResetOrButton(elemento)) continue;
+			//if(isSubmitResetOrButton(elemento)) continue;
 			
 			/*for(String evento : eventos){
 				if (eventExists(elemento,evento)) occurrences.add(this.buildOccurrence("6.4", false, elemento.toString(), elemento, "1"));
 			}*/
 			
 			for(Element elementoForm : elemento.getAllElements()){
+				if(isSubmitResetOrButton(elementoForm)) continue;
 				for(String evento : eventos1){
 					if (eventExists(elementoForm,evento)){
 							occurrences.add(this.buildOccurrence("6.4", false, 
@@ -268,6 +269,7 @@ public class FormEvaluation extends Evaluation{
 			}*/
 			
 			for(Element elementoForm : elemento.getAllElements()){
+				if(isSubmitResetOrButton(elementoForm)) continue;
 				for(String evento : eventos2){
 					if (eventExists(elementoForm,evento)){
 							occurrences.add(this.buildOccurrence("6.4", false, 
@@ -317,11 +319,11 @@ public class FormEvaluation extends Evaluation{
 		
 		for (Element form : this.getDocument().getAllElements("form")) {
 			
-			String tagForm = form.getStartTag()+"</form>";
+			//String tagForm = form.getStartTag()+"</form>";
 			
 			
 			if (form.getAllElements("fieldset").isEmpty()) {
-				occurrences.add(this.buildOccurrence("6.7", false, tagForm, form, "1"));
+				occurrences.add(this.buildOccurrence("6.7", false, form.getStartTag().toString(), form, "1"));
 			} else {
 				for (Element fieldset : form.getAllElements("fieldset")) {
 					if (fieldset.getAllElements("legend").isEmpty()) {

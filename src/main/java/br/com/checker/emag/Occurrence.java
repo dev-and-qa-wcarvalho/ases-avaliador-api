@@ -1,10 +1,12 @@
 package br.com.checker.emag;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
-public @Getter class Occurrence implements Comparable<Occurrence>{
+
+public @Setter @Getter  class Occurrence implements Comparable<Occurrence>{
 	
 	private Integer line;
 	private Integer column;
@@ -13,6 +15,8 @@ public @Getter class Occurrence implements Comparable<Occurrence>{
 	private String tag;
 	private OccurrenceClassification type;
 	private String criterio;
+	private String posLineOccurrence;
+	
 	
 	public Occurrence(int line, int column, String code, boolean error,
 			String tag,

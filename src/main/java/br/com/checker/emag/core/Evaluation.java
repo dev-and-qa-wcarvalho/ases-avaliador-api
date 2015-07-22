@@ -38,7 +38,12 @@ public abstract class Evaluation {
 			String criterio  ){
 		//String tag = this.html[line-1];
 		
-		String tag = line > 0 ? this.html[line-1] : this.html[line];
+		String tag = "";
+		
+		if(line == -1)
+			tag = this.html[line+1];
+		else
+			tag = line > 0 ? this.html[line-1] : this.html[line];
 		
 		return new Occurrence(line, column, code, error, tag,type,criterio);
 	}
