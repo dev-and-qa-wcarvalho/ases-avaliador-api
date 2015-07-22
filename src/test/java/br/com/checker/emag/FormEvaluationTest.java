@@ -77,7 +77,7 @@ public class FormEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(form().recommendation39()).check();
 		
-		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.FORM).size());
+		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.FORM).size());
 		
 		for(Occurrence occurrence :occurrences.get(OccurrenceClassification.FORM) ) {
 			assertEquals("Should return Recommendation 39","6.2",occurrence.getCode());
@@ -154,7 +154,10 @@ public class FormEvaluationTest {
 		html.append("<form>");
 		html.append("<input type=\"button\" onchange=\"test();\"></input>");
 		html.append("<input type=\"reset\" onblur=\"test();\"></input>");
+		html.append("<button type=\"submit\" onfocus=\"test();\"></button>");
 		html.append("<input type=\"submit\" onfocus=\"test();\"></input>");
+		html.append("<button type=\"reset\" onfocus=\"test();\"></button>");
+		html.append("<button type=\"submit\" onfocus=\"test();\"></button>");
 		html.append("</form>");
 		html.append("</html>");
 		

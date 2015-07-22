@@ -339,7 +339,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation22()).check();
 		
-		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 4 occurrences", 4,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
