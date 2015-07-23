@@ -137,6 +137,8 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				"onvolumechange","onwaiting","onerror","onshow","ontoggle"};
 		
 			for(Element element : getDocument().getAllElements()){
+				
+				if(!isTagForm(element))
 				if(element != null){
 					for(String attribute : attributes){
 						if (element.getAttributeValue(attribute) != null) {
@@ -303,6 +305,27 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		return occurrences;
 	}
+	
+	private boolean isTagForm(Element element){
+		
+		List<String> tagsForm = new ArrayList<String>();
+		tagsForm.add("form");
+		tagsForm.add("input");
+		tagsForm.add("fieldset");
+		tagsForm.add("legend");
+		tagsForm.add("label");
+		tagsForm.add("textarea");
+		tagsForm.add("select");
+		tagsForm.add("option");
+		tagsForm.add("optgroup");
+		tagsForm.add("button");
+		
+		if(element != null)
+			return tagsForm.contains(element.getName());
+		
+		return false;
+	}
+	
 	
 	private List<Occurrence> checkRecommendation16() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
