@@ -177,8 +177,25 @@ public class MarkEvaluation extends Evaluation {
 		
 		List<String> tags = Arrays.asList("h1","h2","h3","h4","h5","h6","a","p");
 		
+			for (String tag : tags) {
+				for (Element element : getDocument().getAllElements(tag)) {
+					if(element.getAttributes().getCount()==0)
+						occurrences.add(this.buildOccurrence("1.2", true, element.toString(), element, "1"));
+					else if(element.getTextExtractor().toString().isEmpty())
+						occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
+				}
+				
+			}
 		
-			boolean isError = false;
+			//Sorting
+			Collections.sort(occurrences, new Comparator<Occurrence>() {
+			    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+		            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+		        }
+		    });
+		
+		
+			/*boolean isError = false;
 			for (Element element : getDocument().getAllElements()) {
 				Attributes attribute = element.getAttributes();
 				
@@ -189,7 +206,7 @@ public class MarkEvaluation extends Evaluation {
 					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
 				else if(attribute.getCount()==0)
 					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
-			}
+			}*/
 		
 			
 		
@@ -242,7 +259,17 @@ public class MarkEvaluation extends Evaluation {
 		}
 		
 		if(!hasH())
-			occurrences.add(this.buildOccurrence("1.3", true,"Sem fonte (os n√≠veis de t√≠tulo n√£o foram utilizados)", getDocument().getFirstElement(), "1"));
+			occurrences.add(this.buildOccurrence("1.3", true,"Sem fonte (os nÌveis de tÌtulo n„o foram utilizados)", getDocument().getFirstElement(), "1"));
+		
+		
+		
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
+		
 			
 		return occurrences;
 	}
@@ -438,12 +465,12 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element table : getDocument().getAllElements("table"))
-			occurrences.add(this.buildOccurrence("1.6", false, table.toString(), table, "1"));
+			occurrences.add(this.buildOccurrence("1.6", false, table.getStartTag()+"</table>", table, "1"));
 		
 		for (Element table : getDocument().getAllElements("table")){
 			Element tagsForm = table.getFirstElement("form");
 			if(tagsForm != null)
-				occurrences.add(this.buildOccurrence("1.6", true, table.toString(), table, "2"));
+				occurrences.add(this.buildOccurrence("1.6", true, table.getStartTag()+"</table>", table, "2"));
 		}
 		
 		return occurrences;

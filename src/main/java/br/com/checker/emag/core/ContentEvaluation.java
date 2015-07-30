@@ -171,6 +171,7 @@ public class ContentEvaluation extends Evaluation{
 			Element title = head.getFirstElement("title");
 			if (title == null) {
 				occurrences.add(this.buildOccurrence("3.3", true, "Sem fonte (não existe título na página)", head, "1"));
+				//occurrences.add(new Occurrence("3.3", true, "Sem fonte (não existe título na página)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
 			} else if (title.isEmpty()) {
 				occurrences.add(buildOccurrence("3.3", true, title.toString(), title, "1"));
 			}
@@ -193,7 +194,7 @@ public class ContentEvaluation extends Evaluation{
 			String title = link.getAttributeValue("title");
 			String content = link.getContent().toString();
 			
-			if(hasEqualsContentHref(link) &&isRegistroBr(content))
+			if(hasEqualsContentHref(link) && isRegistroBr(content))
 				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link, "1"));
 			
 			if(!hasContent(link))
@@ -236,7 +237,7 @@ public class ContentEvaluation extends Evaluation{
 	
 	private boolean isLinkUnavailable(Element link){
 		
-		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").contains("javascript")){
+		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
 			int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
 			int codResponse = 0;
 			
@@ -336,7 +337,12 @@ public class ContentEvaluation extends Evaluation{
 	
 	private boolean hasEqualsContentHref(Element link) {
 		String content = link.getContent().getTextExtractor().toString();
+		if(content != null && !content.isEmpty())
+			content = content.replace("http://","").replaceFirst("(/$)", "");
+		
 		String href = link.getAttributeValue("href");
+		if(href != null && !href.isEmpty())
+			href = href.replace("http://","").replaceFirst("(/$)", "");
 		return content.equals(href);
 	}
 	
@@ -357,18 +363,34 @@ public class ContentEvaluation extends Evaluation{
 	
 	private boolean hasSameContentDiferentLink(Element link) {
 		String content = link.getContent().getTextExtractor().toString();
+		
+		if(content != null)
+			content = content.replace("http://","").replaceFirst("(/$)", "");
+		
 		String href = link.getAttributeValue("href");
+		
+		if(href != null)
+			href = href.replace("http://","").replaceFirst("(/$)", "");
+		
 		if(StringUtils.isBlank(href)) return  false;
 		String otherContent;
 		String otherHref;
 		
 		List<String> linksVerificados = new ArrayList<String>();
 		
-		for(Element otherLink:getDocument().getAllElements("a")){
+		for(Element otherLink : getDocument().getAllElements("a")){
 			
 			if(otherLink.getBegin() == link.getBegin()) continue;
 			otherContent = otherLink.getContent().getTextExtractor().toString();
+			
+			if(otherContent != null)
+				otherContent = otherContent.replace("http://","").replaceFirst("(/$)", "");
+			
 			otherHref = otherLink.getAttributeValue("href");
+			
+			if(otherHref != null)
+				otherHref = otherHref.replace("http://","").replaceFirst("(/$)", "");
+			
 			if(StringUtils.isBlank(otherHref))continue;
 			if(!linksVerificados.contains(content))
 			if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)){ 
@@ -499,10 +521,10 @@ public class ContentEvaluation extends Evaluation{
 			Attribute summary = table.getAttributes().get("summary");
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.9", false, table.toString(), table, "1"));
+				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString()+"</table>", table, "1"));
 			
 			if(table.getAllElements("caption").isEmpty() || table.getAllElements("caption") == null)
-				occurrences.add(buildOccurrence("3.9", false, table.toString(), table, "1"));
+				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString()+"</table>", table, "1"));
 		}
 		
 		return occurrences;
@@ -518,7 +540,7 @@ public class ContentEvaluation extends Evaluation{
 		for (Element table : getDocument().getAllElements("table")) {
 			for(Element caption : table.getAllElements("caption")){
 				if(caption == null || caption.isEmpty())
-					occurrences.add(buildOccurrence("3.10", true, table.toString(), table, "1"));
+					occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString()+"</table>", table, "1"));
 			}
 		}
 		
@@ -538,7 +560,7 @@ public class ContentEvaluation extends Evaluation{
 		 
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.10", true, table.toString(), table, "1"));
+				occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString()+"</table>", table, "1"));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
