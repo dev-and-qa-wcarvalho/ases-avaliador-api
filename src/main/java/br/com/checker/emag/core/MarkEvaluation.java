@@ -100,8 +100,20 @@ public class MarkEvaluation extends Evaluation {
 			ValidationResponse response =
 				      new ValidatorBuilder().html().validate(getDocument().toString());
 			
+			if (!response.warnings().isEmpty()){
+				for(Defect warn :response.warnings()) {
+					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
+					//occurrences.add(this.buildOccurrence("1.1", false, warn.source().toString().isEmpty() ? warn.message() : warn.source(), getDocument().getFirstElement(), "1"));
+				}
+			}	
 			
 			if(!response.errors().isEmpty()){
+				for(Defect error :response.errors()) {
+					occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
+					//occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "1"));
+				}
+			}
+			/*if(!response.errors().isEmpty()){
 				for(Defect error :response.errors()) {
 					occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
 				}
@@ -109,30 +121,54 @@ public class MarkEvaluation extends Evaluation {
 				for(Defect warn :response.warnings()) {
 					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
 				}
-			}
+			}*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+		try {
+			ValidationResponse response =
+				      new ValidatorBuilder().css().validate(getDocument().getSource().toString());
 			
-		String css = "";
+		
+				for(Defect warn :response.warnings()) {
+					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
+					//occurrences.add(this.buildOccurrence("1.1", false, warn.source(), getDocument().getFirstElement(), "2"));
+				}
+		
+				for(Defect error :response.errors()) {
+					occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
+					///occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "2"));
+				}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		/*String css = "";
 		for (Element element : getDocument().getAllElements("style")) 
 				css+= element.getContent().toString();
 			
 		if(StringUtils.isNotBlank(css)){	
+		
 			try {
 				ValidationResponse response =
 					      new ValidatorBuilder().css().validate(css);
 				
 				if(!response.errors().isEmpty())
-					occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
+					occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "2"));
+					//occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
+					
 				else if (!response.warnings().isEmpty())
-					occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
-				
+					occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "2"));
+					//occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
+					
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		//Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
@@ -154,18 +190,27 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "4"));
 		}
 		
+		
+		List<String> eventos = new ArrayList<String>( Arrays.asList("onclick", "ondblclick")); 
+		
+		
 		for (Element element : getDocument().getAllElements()) {
 			if(element.getAttributes() != null){
-				String script = element.getAttributes().getTextExtractor().toString();
-				if(script.contains("javascript")){
-					occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "5"));
+				//String script = element.getAttributes().getTextExtractor().toString();
+				for (Attribute  attribute : element.getAttributes()) {
+					if(eventos.contains(attribute.getName()))
+						occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "5"));
 				}
+				
+			/*	if(script.contains("javascript")){
+					occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "5"));
+				}*/
 			}
 		}
 		
 		for (Element element : getDocument().getAllElements("script")) {
-			
-			if(element.getAttributeValue("src") ==null)
+			//if(element.getAttributeValue("src") ==null)
+			if(element != null)
 				occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "6"));
 		}
 		
@@ -259,7 +304,7 @@ public class MarkEvaluation extends Evaluation {
 		}
 		
 		if(!hasH())
-			occurrences.add(this.buildOccurrence("1.3", true,"Sem fonte (os n�veis de t�tulo n�o foram utilizados)", getDocument().getFirstElement(), "1"));
+			occurrences.add(this.buildOccurrence("1.3", true,"Sem fonte (os níveis de título não foram utilizados)", getDocument().getFirstElement(), "1"));
 		
 		
 		
@@ -367,60 +412,101 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		Element firstLink =  getDocument().getFirstElement("href", Pattern.compile(".*"));
-		if(firstLink == null){
+		
+		if(firstLink != null && firstLink.getAttributeValue("href").substring(0,1).equals("#"))
+			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));
+		
+		/*if(firstLink == null){
 			occurrences.add(this.buildOccurrence("1.5", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "4"));
 		}
 		else if(firstLink.getAttributeValue("href") == null || !firstLink.getAttributeValue("href").contains("#")){
 			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));
-		}
+		}*/
+		
+		
+		boolean existAcessKey = false;
 		
 		for (Element area : getDocument().getAllElements("area")) {
-			if(!hasAcessKey(area))
-				occurrences.add(this.buildOccurrence("1.5", true, area.toString(), area, "3"));
+			if(hasAcessKey(area))
+				existAcessKey = true;
+			/*if(!hasAcessKey(area))
+				occurrences.add(this.buildOccurrence("1.5", true, area.toString(), area, "3"));*/
 		}
 		
+		if(!existAcessKey)
 		for (Element button : getDocument().getAllElements("button")) {
-			if(!hasAcessKey(button))
-				occurrences.add(this.buildOccurrence("1.5", true, button.toString(), button, "3"));
+			if(hasAcessKey(button))
+				existAcessKey = true;
+			/*if(!hasAcessKey(button))
+				occurrences.add(this.buildOccurrence("1.5", true, button.toString(), button, "3"));*/
 		}
 		
+		if(!existAcessKey)
 		for (Element input : getDocument().getAllElements("input")) {
-			if(!hasAcessKey(input))
-				occurrences.add(this.buildOccurrence("1.5", true, input.toString(), input, "3"));
+			if(hasAcessKey(input))
+				existAcessKey = true;
+			/*if(!hasAcessKey(input))
+				occurrences.add(this.buildOccurrence("1.5", true, input.toString(), input, "3"));*/
 		}
 		
+		if(!existAcessKey)
 		for (Element label : getDocument().getAllElements("label")) {
-			if(!hasAcessKey(label))
-				occurrences.add(this.buildOccurrence("1.5", true, label.toString(), label, "3"));
+			if(hasAcessKey(label))
+				existAcessKey = true;
+			/*if(!hasAcessKey(label))
+				occurrences.add(this.buildOccurrence("1.5", true, label.toString(), label, "3"));*/
 		}
 		
+		if(!existAcessKey)
 		for (Element legend : getDocument().getAllElements("legend")) {
-			if(!hasAcessKey(legend))
-				occurrences.add(this.buildOccurrence("1.5", true, legend.toString(), legend, "3"));
+			if(hasAcessKey(legend))
+				existAcessKey = true;
+			/*if(!hasAcessKey(legend))
+				occurrences.add(this.buildOccurrence("1.5", true, legend.toString(), legend, "3"));*/
 		}
+		
+		if(!existAcessKey)
 		for (Element textarea : getDocument().getAllElements("textarea")) {
-			if(!hasAcessKey(textarea))
-				occurrences.add(this.buildOccurrence("1.5", true, textarea.toString(), textarea, "3"));
+			if(hasAcessKey(textarea))
+				existAcessKey = true;
+			/*if(!hasAcessKey(textarea))
+				occurrences.add(this.buildOccurrence("1.5", true, textarea.toString(), textarea, "3"));*/
 		}
 		
 		String href;
+		boolean existAnchor = false;
+		
 	
 		for (Element link : getDocument().getAllElements("a")) {
 			href = link.getAttributeValue("href");
-			if(href != null && href.contains("#")){
+			if(href != null && href.contains("#"))
 				if(!hasAnchor(href.substring(1)))
 					occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));
-			}else{
+			/*}else{
 				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "1"));
-			}
+			}*/
 			
-			if(!hasAcessKey(link))
-				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "3"));
+			//if(href != null && href.contains("#"))
+					
+			/*if(href != null && href.length() == 1 && href.toString().equals("#"))
+				existAnchor = true;*/
+			if(href != null && href.contains("#"))
+					existAnchor = true;
+			
+			if(hasAcessKey(link))
+				existAcessKey = true;
+			
+			/*if(!hasAcessKey(link))
+				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "3"));*/
 		}
 		
+		if(!existAnchor)
+			occurrences.add(this.buildOccurrence("1.5", true, "Sem código fonte a ser exibido. Não existe(m) âncora(s) na página", getDocument().getFirstElement(), "1"));
+		
+		if(!existAcessKey)
+			occurrences.add(this.buildOccurrence("1.5", true, "Sem código fonte a ser exibido. Não existe(m) accesskey(s) na página", getDocument().getFirstElement(), "3"));
+		
 		for (Element elemento : getDocument().getAllElements("accesskey", Pattern.compile(".*"))) {
-			
-			
 			if(duplicatedAcessKey(elemento))
 				occurrences.add(this.buildOccurrence("1.5", false, elemento.toString(), elemento,"5"));
 		}
@@ -545,13 +631,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 			
 			if(!hasBanner)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - banner", getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - banner", getDocument().getFirstElement(),"1"));
 			
 			if(!hasNavigation)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - navigation", getDocument().getFirstElement(),"6"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - navigation", getDocument().getFirstElement(),"6"));
 			
 			if(!hasMain)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não exiete LANDMARKS na página - main", getDocument().getFirstElement(),"7"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - main", getDocument().getFirstElement(),"7"));
 		}
 		
 		

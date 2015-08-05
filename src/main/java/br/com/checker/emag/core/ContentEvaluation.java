@@ -170,8 +170,8 @@ public class ContentEvaluation extends Evaluation{
 		if(head != null) {
 			Element title = head.getFirstElement("title");
 			if (title == null) {
-				occurrences.add(this.buildOccurrence("3.3", true, "Sem fonte (não existe título na página)", head, "1"));
-				//occurrences.add(new Occurrence("3.3", true, "Sem fonte (não existe título na página)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
+				occurrences.add(this.buildOccurrence("3.3", true, "Sem fonte (nÃ£oo existe tÃ­tulo na pÃ¡gina)", head, "1"));
+				//occurrences.add(new Occurrence("3.3", true, "Sem fonte (nï¿½o existe tï¿½tulo na pï¿½gina)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
 			} else if (title.isEmpty()) {
 				occurrences.add(buildOccurrence("3.3", true, title.toString(), title, "1"));
 			}
@@ -416,7 +416,7 @@ public class ContentEvaluation extends Evaluation{
 		
 		String[] parts = null;
 		
-		String[] descricoes = {"figura", "imagem", "alt", "descrição", "foto"};
+		String[] descricoes = {"figura", "imagem", "alt", "descriï¿½ï¿½o", "foto"};
 		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
