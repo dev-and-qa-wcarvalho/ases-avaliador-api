@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
@@ -13,6 +15,7 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
 
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
@@ -20,6 +23,7 @@ import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
 
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
+import com.jcabi.w3c.Validator;
 import com.jcabi.w3c.ValidatorBuilder;
 
 public class MarkEvaluation extends Evaluation {
@@ -102,14 +106,16 @@ public class MarkEvaluation extends Evaluation {
 			
 			if (!response.warnings().isEmpty()){
 				for(Defect warn :response.warnings()) {
-					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
+					occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"1"));
+					//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
 					//occurrences.add(this.buildOccurrence("1.1", false, warn.source().toString().isEmpty() ? warn.message() : warn.source(), getDocument().getFirstElement(), "1"));
 				}
 			}	
 			
 			if(!response.errors().isEmpty()){
 				for(Defect error :response.errors()) {
-					occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
+					occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"1"));
+					//occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
 					//occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "1"));
 				}
 			}
@@ -134,12 +140,14 @@ public class MarkEvaluation extends Evaluation {
 			
 		
 				for(Defect warn :response.warnings()) {
-					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
+					//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
+					occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"2"));
 					//occurrences.add(this.buildOccurrence("1.1", false, warn.source(), getDocument().getFirstElement(), "2"));
 				}
 		
 				for(Defect error :response.errors()) {
-					occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
+					//occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
+					occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"2"));
 					///occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "2"));
 				}
 			
@@ -291,8 +299,8 @@ public class MarkEvaluation extends Evaluation {
 		
 		//CRITERIO 2
 		
-		//String[] tags = {"h6","h5","h4","h3","h2","h1"};
-		String[] tags = {"h1","h2","h3","h4","h5","h6"};
+		/*String[] tags = {"h6","h5","h4","h3","h2","h1"};
+		//String[] tags = {"h1","h2","h3","h4","h5","h6"};
 		
 		
 		for(int index = 0 ; index< tags.length ; index++){
@@ -301,12 +309,32 @@ public class MarkEvaluation extends Evaluation {
 				if(!hasCorrectHierarchy(index, tags))
 					occurrences.add(this.buildOccurrence("1.3", true,h.toString(), h, "2"));
 			}
+		}*/
+		
+		
+		
+		List<Element> elementsObj = getDocument().getAllElements();
+		List<String> tagsH = new ArrayList<String>();
+		List<Element> elementTag = new ArrayList<Element>();
+		
+		for (Element htmlElement : elementsObj) {
+		    if (htmlElement.getName().matches("h[1-6]")) {
+		    	tagsH.add(htmlElement.getName());
+		    	elementTag.add(htmlElement);
+		    }
+		}
+		
+		for (int i = 1; i < tagsH.size(); i++) {
+			int atual = Integer.parseInt(tagsH.get(i).substring(1));
+			int anterior = Integer.parseInt(tagsH.get(i-1).substring(1));
+			
+			if(!tagsH.get(i).toString().equals(tagsH.get(i-1).toString()))
+			if(anterior!=(atual-1))
+				occurrences.add(this.buildOccurrence("1.3", true,elementTag.get(i).toString(), elementTag.get(i), "2"));
 		}
 		
 		if(!hasH())
-			occurrences.add(this.buildOccurrence("1.3", true,"Sem fonte (os níveis de título não foram utilizados)", getDocument().getFirstElement(), "1"));
-		
-		
+			occurrences.add(this.buildOccurrence("1.3", true,"Observa&ccedil;&atilde;o - Sem fonte (os n&iacute;veis de t&iacute;tulo n&atilde;o foram utilizados)", getDocument().getFirstElement(), "1"));
 		
 		//Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
@@ -317,6 +345,15 @@ public class MarkEvaluation extends Evaluation {
 		
 			
 		return occurrences;
+	}
+	
+	private int verificarNiveis(Integer posicao, List<String> tags){
+		for (int i = 0; i < posicao; i++) {
+			if(Integer.parseInt( tags.get(i).substring(1)) == Integer.parseInt(tags.get(posicao).substring(1))-1){
+				return Integer.parseInt(tags.get(i).substring(1));
+        	}
+		}	
+		return -1;
 	}
 	
 	private boolean hasCorrectHierarchy(int index,String[] tags) {
@@ -383,7 +420,7 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.4", false,textarea.toString(), textarea, "3"));
 		}
 		
-		Element section =  this.getDocument().getFirstElement("section");
+		/*Element section =  this.getDocument().getFirstElement("section");
 		
 		if(section !=null){
 
@@ -392,7 +429,22 @@ public class MarkEvaluation extends Evaluation {
 				if(this.getRow(nav) < firstSectionRow)
 					occurrences.add(this.buildOccurrence("1.4", false,nav.toString(), nav, "1"));
 			}
+		}*/
+		
+		
+		
+		for(Element nav : this.getDocument().getAllElements("nav")){
+			if(nav !=null){
+				int firstNavRow =  this.getRow(nav);
+				for(Element section : this.getDocument().getAllElements("section")){
+					if(firstNavRow < this.getRow(section))
+						occurrences.add(this.buildOccurrence("1.4", false,section.getStartTag().toString(), section, "1"));
+				}
+			}
 		}
+		
+		
+		
 		
 		return occurrences;
 	}
@@ -411,9 +463,9 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation5() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		Element firstLink =  getDocument().getFirstElement("href", Pattern.compile(".*"));
+		Element firstLink =  getDocument().getFirstElement("href", Pattern.compile(".*#.*"));
 		
-		if(firstLink != null && firstLink.getAttributeValue("href").substring(0,1).equals("#"))
+		if(firstLink != null)
 			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));
 		
 		/*if(firstLink == null){
@@ -479,9 +531,25 @@ public class MarkEvaluation extends Evaluation {
 	
 		for (Element link : getDocument().getAllElements("a")) {
 			href = link.getAttributeValue("href");
-			if(href != null && href.contains("#"))
-				if(!hasAnchor(href.substring(1)))
+			
+			/*if(href != null && (href.length() > 1 && !href.substring(0,2).equals("?#"))){
+				///occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));
+				if(!(href.length()==1 && href.substring(1).equals("#")))
+				if(href.substring(1).equals("#") && !this.hasLinkSemAncora(href))
 					occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));
+			}*/
+			
+			if(href != null && href.length() > 1 && !href.substring(0,2).equals("?#")){
+				if(href.substring(0,1).equals("#"))
+					if(!this.hasLinkRefAncora(link))
+					occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));
+			}
+			
+			
+			
+			/*if(href != null && href.contains("#"))
+				if(!hasAnchor(href.substring(1)))
+					occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "2"));*/
 			/*}else{
 				occurrences.add(this.buildOccurrence("1.5", true, link.toString(), link, "1"));
 			}*/
@@ -501,10 +569,10 @@ public class MarkEvaluation extends Evaluation {
 		}
 		
 		if(!existAnchor)
-			occurrences.add(this.buildOccurrence("1.5", true, "Sem código fonte a ser exibido. Não existe(m) âncora(s) na página", getDocument().getFirstElement(), "1"));
+			occurrences.add(this.buildOccurrence("1.5", true, "Observa&ccedil;&atilde;o - Sem fonte (n&atilde;o foram encontrados &acirc;ncoras que permitam saltar pelas diferentes se&ccedil;&otilde;es da p&aacute;gina)", getDocument().getFirstElement(), "1"));
 		
 		if(!existAcessKey)
-			occurrences.add(this.buildOccurrence("1.5", true, "Sem código fonte a ser exibido. Não existe(m) accesskey(s) na página", getDocument().getFirstElement(), "3"));
+			occurrences.add(this.buildOccurrence("1.5", true, "Observa&ccedil;&atilde;o - Sem fonte ( n&atilde;o existe(m) accesskey(s) na página)", getDocument().getFirstElement(), "3"));
 		
 		for (Element elemento : getDocument().getAllElements("accesskey", Pattern.compile(".*"))) {
 			if(duplicatedAcessKey(elemento))
@@ -512,6 +580,20 @@ public class MarkEvaluation extends Evaluation {
 		}
 		
 		return occurrences;
+	}
+	
+	private boolean hasLinkRefAncora(Element link) {
+		boolean existeAncora = false;
+		String href = link.getAttributeValue("href");
+		String ancora = href.substring(1, href.length());
+		
+		for (Element a : getDocument().getAllElements("a")){ 
+			if(a.getAttributeValue("name") != null && a.getAttributeValue("name").equals(ancora)){
+				existeAncora = true;
+			}
+		}
+		
+		return existeAncora;
 	}
 	
 	private boolean hasAcessKey(Element element) {
@@ -551,12 +633,26 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element table : getDocument().getAllElements("table"))
-			occurrences.add(this.buildOccurrence("1.6", false, table.getStartTag()+"</table>", table, "1"));
+			occurrences.add(this.buildOccurrence("1.6", false, table.getStartTag().toString(), table, "1"));
+		
+		
+		int firstFormRow = 0;
+		
+		List<Integer> linhasOcorrForm = new ArrayList<Integer>();
 		
 		for (Element table : getDocument().getAllElements("table")){
-			Element tagsForm = table.getFirstElement("form");
-			if(tagsForm != null)
-				occurrences.add(this.buildOccurrence("1.6", true, table.getStartTag()+"</table>", table, "2"));
+			//Element tagsForm = table.getFirstElement("form");
+			
+			Element form = table.getContent().getFirstElement("form");
+			
+			if(form != null){
+			   firstFormRow = this.getRow(form);
+			   if(!linhasOcorrForm.contains(firstFormRow)){
+				   occurrences.add(this.buildOccurrence("1.6", true, form.getStartTag().toString(), form, "2"));
+				   linhasOcorrForm.add(firstFormRow);
+			   }
+			}
+			
 		}
 		
 		return occurrences;
@@ -599,16 +695,16 @@ public class MarkEvaluation extends Evaluation {
 			Element footer = getDocument().getFirstElement("footer");
 			
 			if(header == null)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <HEADER>", getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <HEADER>)", getDocument().getFirstElement(),"1"));
 			
 			if(nav == null)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <NAV>", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <NAV>)", getDocument().getFirstElement(),"1"));
 			
 			if(section == null)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <SECTION>", getDocument().getFirstElement(),"3"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <SECTION>)", getDocument().getFirstElement(),"1"));
 			
 			if(footer == null)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe tag <FOOTER>", getDocument().getFirstElement(),"4"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <FOOTER>)", getDocument().getFirstElement(),"1"));
 			
 			
 			boolean hasBanner = false;
@@ -631,13 +727,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 			
 			if(!hasBanner)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - banner", getDocument().getFirstElement(),"1"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - banner)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasNavigation)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - navigation", getDocument().getFirstElement(),"6"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - navigation)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasMain)
-				occurrences.add(this.buildOccurrence("1.8", false, "Não existe LANDMARKS na página - main", getDocument().getFirstElement(),"7"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - main)", getDocument().getFirstElement(),"2"));
 		}
 		
 		

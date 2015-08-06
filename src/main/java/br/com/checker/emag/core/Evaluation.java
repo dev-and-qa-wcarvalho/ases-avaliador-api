@@ -61,6 +61,13 @@ public abstract class Evaluation {
 		return new Occurrence(line, column, code, error, tag,type);
 	}
 	
+	protected Occurrence buildOccurrence(int line, int column, String code, boolean error,
+			String tag,
+			OccurrenceClassification type,
+			String criterio) {
+		return new Occurrence( line, column,  code, error, tag,	type, criterio);
+	}
+	
 	public abstract OccurrenceClassification type ();
 	public abstract List<Occurrence> check();
 	
