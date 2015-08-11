@@ -1,5 +1,9 @@
 package br.com.checker.emag.core;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -133,23 +137,28 @@ public class MarkEvaluation extends Evaluation {
 			e.printStackTrace();
 		}
 		
+		String css = "";
+		for (Element element : getDocument().getAllElements("style")) 
+				css+= element.getContent().toString();
 		
 		try {
-			ValidationResponse response =
-				      new ValidatorBuilder().css().validate(getDocument().getSource().toString());
+			if(StringUtils.isNotBlank(css)){
+				ValidationResponse response =
+					      new ValidatorBuilder().css().validate(css);
+				
 			
-		
-				for(Defect warn :response.warnings()) {
-					//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
-					occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"2"));
-					//occurrences.add(this.buildOccurrence("1.1", false, warn.source(), getDocument().getFirstElement(), "2"));
-				}
-		
-				for(Defect error :response.errors()) {
-					//occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
-					occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"2"));
-					///occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "2"));
-				}
+					for(Defect warn :response.warnings()) {
+						//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
+						occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"2"));
+						//occurrences.add(this.buildOccurrence("1.1", false, warn.source(), getDocument().getFirstElement(), "2"));
+					}
+			
+					for(Defect error :response.errors()) {
+						//occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
+						occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"2"));
+						///occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "2"));
+					}
+			}	
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -463,10 +472,21 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation5() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		Element firstLink =  getDocument().getFirstElement("href", Pattern.compile(".*#.*"));
+		/*Element firstLink =  getDocument().getFirstElement("href", Pattern.compile("#.*"));
 		
 		if(firstLink != null)
-			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));
+			occurrences.add(this.buildOccurrence("1.5", false, firstLink.toString(), firstLink, "4"));*/
+		
+		for (Element link : getDocument().getAllElements("a")) {
+			String contLink = link.getAttributeValue("href");
+			if(contLink != null && contLink.length() > 1 && contLink.substring(0,1).equals("#")){
+				occurrences.add(this.buildOccurrence("1.5", false, link.toString(), link, "4")); break;
+			}	
+			
+		}
+		
+		
+		
 		
 		/*if(firstLink == null){
 			occurrences.add(this.buildOccurrence("1.5", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "4"));
@@ -578,6 +598,14 @@ public class MarkEvaluation extends Evaluation {
 			if(duplicatedAcessKey(elemento))
 				occurrences.add(this.buildOccurrence("1.5", false, elemento.toString(), elemento,"5"));
 		}
+		
+		
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
 		
 		return occurrences;
 	}
@@ -727,13 +755,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 			
 			if(!hasBanner)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - banner)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <BANNER>)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasNavigation)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - navigation)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <NAVIGATION>)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasMain)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - main)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <MAIN>)", getDocument().getFirstElement(),"2"));
 		}
 		
 		
