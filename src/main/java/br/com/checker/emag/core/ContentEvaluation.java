@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,22 @@ public class ContentEvaluation extends Evaluation{
 			
 			String tagHtml = getDocument().getFirstStartTag("html").toString();
 			
+			
+			/*if ( lang == null && xmlLang == null){
+				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
+			}
+			
+			if(xmlLang != null && !(lang == null || xmlLang == null)){
+				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
+			}else if (lang != null && lang.getValue().isEmpty()) {
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			}else if (xmlns != null && xmlns.getValue().isEmpty()) { 
+				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
+			}*/
+			
+			
 			if ( lang == null && xmlLang == null){
 				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
 			}
@@ -170,7 +188,7 @@ public class ContentEvaluation extends Evaluation{
 		if(head != null) {
 			Element title = head.getFirstElement("title");
 			if (title == null) {
-				occurrences.add(this.buildOccurrence("3.3", true, "Sem fonte (nãoo existe título na página)", head, "1"));
+				occurrences.add(this.buildOccurrence("3.3", true, " Observa&ccedil;&atilde;o – Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)", head, "1"));
 				//occurrences.add(new Occurrence("3.3", true, "Sem fonte (n�o existe t�tulo na p�gina)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
 			} else if (title.isEmpty()) {
 				occurrences.add(buildOccurrence("3.3", true, title.toString(), title, "1"));
@@ -308,7 +326,20 @@ public class ContentEvaluation extends Evaluation{
 		String content = link.getContent().getTextExtractor().toString();
 		String altImg = link.getFirstElement("img")!=null ? link.getFirstElement("img").getAttributeValue("alt") : "" ;
 		
-		Pattern pattern;
+		for(String leiaMais:this.leiaMais){
+		
+			if(title!=null)
+				if(title.toLowerCase().equals(leiaMais)) return true;
+			
+			if(content!=null)
+				if(content.toLowerCase().equals(leiaMais)) return true;
+			
+			if(altImg!=null)
+				if(altImg.toLowerCase().equals(leiaMais)) return true;
+		}
+		
+		
+	/*	Pattern pattern;
 		for(String leiaMais:this.leiaMais){
 			pattern = Pattern.compile("("+leiaMais+")");
 			if(title!=null)
@@ -319,7 +350,7 @@ public class ContentEvaluation extends Evaluation{
 			
 			if(altImg!=null)
 				if(pattern.matcher(altImg.toLowerCase()).find()) return true;
-		}
+		}*/
 		
 		return false;
 	}
@@ -362,7 +393,8 @@ public class ContentEvaluation extends Evaluation{
 	}
 	
 	private boolean hasSameContentDiferentLink(Element link) {
-		String content = link.getContent().getTextExtractor().toString();
+		//String content = link.getContent().getTextExtractor().toString();
+		String content = link.getContent().toString();
 		
 		if(content != null)
 			content = content.replace("http://","").replaceFirst("(/$)", "");
@@ -381,7 +413,8 @@ public class ContentEvaluation extends Evaluation{
 		for(Element otherLink : getDocument().getAllElements("a")){
 			
 			if(otherLink.getBegin() == link.getBegin()) continue;
-			otherContent = otherLink.getContent().getTextExtractor().toString();
+			otherContent = otherLink.getContent().toString();
+			//otherContent = otherLink.getContent().getTextExtractor().toString();
 			
 			if(otherContent != null)
 				otherContent = otherContent.replace("http://","").replaceFirst("(/$)", "");
@@ -392,11 +425,12 @@ public class ContentEvaluation extends Evaluation{
 				otherHref = otherHref.replace("http://","").replaceFirst("(/$)", "");
 			
 			if(StringUtils.isBlank(otherHref))continue;
-			if(!linksVerificados.contains(content))
-			if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)){ 
+			if(!linksVerificados.contains(content)){
+				if(content.toLowerCase().equals(otherContent.toLowerCase()) && !href.equals(otherHref)){ 
 				linksVerificados.add(content);
 				return true;
 			}
+			}	
 		}
 		return false;
 	}
@@ -416,7 +450,7 @@ public class ContentEvaluation extends Evaluation{
 		
 		String[] parts = null;
 		
-		String[] descricoes = {"figura", "imagem", "alt", "descri��o", "foto"};
+		String[] descricoes = {"figura", "imagem", "alt", "descrição", "foto"};
 		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
@@ -521,10 +555,10 @@ public class ContentEvaluation extends Evaluation{
 			Attribute summary = table.getAttributes().get("summary");
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString()+"</table>", table, "1"));
+				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString(), table, "1"));
 			
 			if(table.getAllElements("caption").isEmpty() || table.getAllElements("caption") == null)
-				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString()+"</table>", table, "1"));
+				occurrences.add(buildOccurrence("3.9", false, table.getStartTag().toString(), table, "1"));
 		}
 		
 		return occurrences;
@@ -540,7 +574,7 @@ public class ContentEvaluation extends Evaluation{
 		for (Element table : getDocument().getAllElements("table")) {
 			for(Element caption : table.getAllElements("caption")){
 				if(caption == null || caption.isEmpty())
-					occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString()+"</table>", table, "1"));
+					occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString(), table, "1"));
 			}
 		}
 		
@@ -560,7 +594,7 @@ public class ContentEvaluation extends Evaluation{
 		 
 			
 			if (summary == null || summary.getValue().equals("")) 
-				occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString()+"</table>", table, "1"));
+				occurrences.add(buildOccurrence("3.10", true, table.getStartTag().toString(), table, "1"));
 			
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)
@@ -617,6 +651,12 @@ public class ContentEvaluation extends Evaluation{
 			
 		 }*/
 	   }
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
 		
 		return occurrences;
 
