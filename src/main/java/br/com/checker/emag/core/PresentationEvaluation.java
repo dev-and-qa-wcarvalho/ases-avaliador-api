@@ -1,11 +1,14 @@
 package br.com.checker.emag.core;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import fj.data.hlist.HPre.HBool;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
+import br.com.checker.emag.AvaliadorContraste;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.PresentationRecommendation;
@@ -55,32 +58,67 @@ public class PresentationEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation29() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
+		Color color = null;
+		
 		boolean temBgcolor = false;
 		for (Element bgcolor : getDocument().getAllElements("body")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
+				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
+				color = new Color(rgb);
+				avaliadorContraste.setCores(color, color);
+				avaliadorContraste.avaliar();
+				
+				if(avaliadorContraste.getContraste() < new Double("4.5"))
+					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("table")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+
+				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
+				color = new Color(rgb);
+				avaliadorContraste.setCores(color, color);
+				avaliadorContraste.avaliar();
+				
+				if(avaliadorContraste.getContraste() < new Double("4.5"))
+					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("td")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
+				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
+				color = new Color(rgb);
+				avaliadorContraste.setCores(color, color);
+				avaliadorContraste.avaliar();
+				
+				if(avaliadorContraste.getContraste() < new Double("4.5"))
+					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
 				temBgcolor = true;
 			}
 		}
 		for (Element bgcolor : getDocument().getAllElements("tr")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
-				occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
+				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
+				color = new Color(rgb);
+				avaliadorContraste.setCores(color, color);
+				avaliadorContraste.avaliar();
+				
+				if(avaliadorContraste.getContraste() < new Double("4.5"))
+					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
+				
 				temBgcolor = true;
 			}
 		}	
