@@ -187,13 +187,6 @@ public class MarkEvaluation extends Evaluation {
 			}
 		}*/
 		
-		//Sorting
-		Collections.sort(occurrences, new Comparator<Occurrence>() {
-		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
-	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
-	        }
-	    });
-		
 		for (Element element : getDocument().getAllElements()) {
 			String value = element.getAttributeValue("style");
 			
@@ -230,6 +223,8 @@ public class MarkEvaluation extends Evaluation {
 			if(element != null)
 				occurrences.add(this.buildOccurrence("1.1", false, element.toString(), element, "6"));
 		}
+		
+		this.oder(occurrences);
 		
 		return occurrences;
 	}
@@ -780,9 +775,19 @@ public class MarkEvaluation extends Evaluation {
 			}
 		}
 		
-		if(!hasBlankLink)
-			occurrences.add(new Occurrence("1.9", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK));
+		/*if(!hasBlankLink)
+			occurrences.add(new Occurrence("1.9", false,this.getDocument().getFirstElement().toString(),OccurrenceClassification.MARK));*/
 		
+		return occurrences;
+	}
+	
+	private List<Occurrence> oder(List occurrences){
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
 		return occurrences;
 	}
 	

@@ -1,6 +1,8 @@
 package br.com.checker.emag.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -280,6 +282,7 @@ public class FormEvaluation extends Evaluation{
 			}
 		}
 		
+		this.oder(occurrences);
 		
 		return occurrences;
 	}
@@ -348,6 +351,16 @@ public class FormEvaluation extends Evaluation{
 			}
 		}
 		
+		return occurrences;
+	}
+	
+	private List<Occurrence> oder(List occurrences){
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
 		return occurrences;
 	}
 	

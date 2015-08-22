@@ -123,8 +123,8 @@ public class PresentationEvaluation extends Evaluation{
 			}
 		}	
 		
-		if(!temBgcolor)
-			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
+		/*if(!temBgcolor)
+			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));*/
 		
 		return occurrences;
 	}

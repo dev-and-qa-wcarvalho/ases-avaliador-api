@@ -129,9 +129,13 @@ public class ContentEvaluation extends Evaluation{
 			}else if (xmlns != null && xmlns.getValue().isEmpty()) { 
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html, "2"));
 			}*/
+					
 			
+			if (lang == null){
+				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
+			}
 			
-			if ( lang == null && xmlLang == null){
+			if (xmlLang == null){
 				occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html, "1"));
 			}
 			
@@ -180,20 +184,20 @@ public class ContentEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation19() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		Element head = getDocument().getFirstElement("head");
+		//Element head = getDocument().getFirstElement("head");
 		
 		//if(head == null) {
 			//occurrences.add(new Occurrence("3.3", true, getDocument().getFirstElement().toString(),OccurrenceClassification.CONTENT_INFORMATION,"1"));
 		//}else {
-		if(head != null) {
-			Element title = head.getFirstElement("title");
+		//if(head != null) {
+			Element title = getDocument().getFirstElement("title");
 			if (title == null) {
-				occurrences.add(this.buildOccurrence("3.3", true, " Observa&ccedil;&atilde;o – Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)", head, "1"));
+				occurrences.add(this.buildOccurrence("3.3", true, " Observa&ccedil;&atilde;o – Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)", getDocument().getFirstElement(), "1"));
 				//occurrences.add(new Occurrence("3.3", true, "Sem fonte (n�o existe t�tulo na p�gina)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
 			} else if (title.isEmpty()) {
 				occurrences.add(buildOccurrence("3.3", true, title.toString(), title, "1"));
 			}
-		}
+		//}
 		
 		return occurrences;
 	}
@@ -255,7 +259,9 @@ public class ContentEvaluation extends Evaluation{
 	
 	private boolean isLinkUnavailable(Element link){
 		
-		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
+		//if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
+		if(link.getAttributeValue("href") != null && link.getAttributeValue("href").contains("http://")){
+			
 			int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
 			int codResponse = 0;
 			
@@ -507,7 +513,7 @@ public class ContentEvaluation extends Evaluation{
 			}
 		}
 		
-		
+		this.oder(occurrences);
 		
 		return occurrences;
 	}
@@ -739,5 +745,15 @@ public class ContentEvaluation extends Evaluation{
 			"JUS.BR","LEG.BR","MP.BR"};
 	
 	private String[] leiaMais = {"clique aqui","leia mais","saiba mais","veja mais","acesse a lista", "mais"};
+	
+	private List<Occurrence> oder(List occurrences){
+		//Sorting
+		Collections.sort(occurrences, new Comparator<Occurrence>() {
+		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
+	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
+	        }
+	    });
+		return occurrences;
+	}
 	
 }

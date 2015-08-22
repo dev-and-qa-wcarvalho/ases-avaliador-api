@@ -274,11 +274,15 @@ public class MultimediaEvaluation extends Evaluation{
 	
 	private List<Occurrence> checkRecommendation37() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		for (Element video : getDocument().getAllElements("object")) {
+		/*for (Element video : getDocument().getAllElements("object")) {
 			
 			if (video.toString().contains("swf")) 
 				occurrences.add(this.buildOccurrence("5.5", false, video.toString(), video, "1"));
-		}
+		}*/
+		
+		occurrences.add(new Occurrence("5.5", false, getDocument().getFirstElement().toString(),OccurrenceClassification.MULTIMEDIA,"1"));
+		
+		
 		return occurrences;
 	}
 	

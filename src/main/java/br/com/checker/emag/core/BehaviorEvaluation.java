@@ -228,8 +228,8 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 		}
 		
-		if(!temMetaRefresh)
-			occurrences.add(new Occurrence("2.3", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));
+		/*if(!temMetaRefresh)
+			occurrences.add(new Occurrence("2.3", false, this.getDocument().getFirstElement().toString(),OccurrenceClassification.BEHAVIOR));*/
 		
 		return occurrences;
 	}
