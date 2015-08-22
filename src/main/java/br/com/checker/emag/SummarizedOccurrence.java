@@ -1,6 +1,8 @@
 package br.com.checker.emag;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,7 +18,8 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	
 	private String checkPoint;
 	private boolean isError;
-	private Set<Integer> lines;
+	//private Set<Integer> lines;
+	private List<Integer> lines;
 	private String sourceCode;
 	private OccurrenceClassification type;
 	private Map<String, String> mapDescription = new HashMap<String, String>();
@@ -70,7 +73,7 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 	        
 	}
 	
-	private SummarizedOccurrence(String checkPoint, boolean isError, Set<Integer> lines,
+	private SummarizedOccurrence(String checkPoint, boolean isError, List<Integer> lines/*Set<Integer> lines*/,
 			OccurrenceClassification type,String sourceCode) {
 		
 		this.checkPoint = checkPoint;
@@ -88,7 +91,8 @@ public @Getter class SummarizedOccurrence implements Comparable<SummarizedOccurr
 		
 		private String checkPoint;
 		private boolean isError;
-		private Set<Integer> lines = new TreeSet<Integer>();
+		//private Set<Integer> lines = new TreeSet<Integer>();
+		private List<Integer> lines = new ArrayList<Integer>();
 		private StringBuilder sourceCode = new StringBuilder();
 		private OccurrenceClassification type;
 		
