@@ -236,10 +236,19 @@ public class MarkEvaluation extends Evaluation {
 		
 			for (String tag : tags) {
 				for (Element element : getDocument().getAllElements(tag)) {
-					if(element.getAttributes().getCount()==0)
+					/*if(element.getAttributes().getCount()==0)
 						occurrences.add(this.buildOccurrence("1.2", true, element.toString(), element, "1"));
-					else if(element.getTextExtractor().toString().isEmpty())
+					else*/ 
+					if(element.getTextExtractor().toString().isEmpty())
 						occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
+					else{
+						
+						Element img =  element.getFirstElement("img");
+						if(img != null)
+							if(img.getAttributeValue("alt").equals("") || img.getAttributeValue("alt").isEmpty())
+								occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
+						
+					}
 				}
 				
 			}
@@ -318,24 +327,44 @@ public class MarkEvaluation extends Evaluation {
 		
 		
 		List<Element> elementsObj = getDocument().getAllElements();
-		List<String> tagsH = new ArrayList<String>();
-		List<Element> elementTag = new ArrayList<Element>();
+		//List<String> tagsH = new ArrayList<String>();
+		//List<Element> elementTag = new ArrayList<Element>();
 		
 		for (Element htmlElement : elementsObj) {
 		    if (htmlElement.getName().matches("h[1-6]")) {
+		    	int tagId = Integer.parseInt(htmlElement.getName().substring(1));
+		    	
+		    	if(tagId > 1)
+		    	for (int  i = tagId-1; i >= 1; i--) {
+		    		Element h = getDocument().getFirstElement("h"+i);
+		    		if(h != null)
+		    			if(this.getRow(getDocument().getFirstElement("h"+i)) > this.getRow(htmlElement)){
+		    				occurrences.add(this.buildOccurrence("1.3", true,htmlElement.toString(), htmlElement, "2"));
+		    				break;
+		    			}	
+		    		
+		    	}
+		    	/*
+		    	
 		    	tagsH.add(htmlElement.getName());
-		    	elementTag.add(htmlElement);
+		    	elementTag.add(htmlElement);*/
 		    }
 		}
 		
-		for (int i = 1; i < tagsH.size(); i++) {
+		/*for (int i = 1; i < tagsH.size(); i++) {
 			int atual = Integer.parseInt(tagsH.get(i).substring(1));
 			int anterior = Integer.parseInt(tagsH.get(i-1).substring(1));
+			
+			
+			//if(!tagsH.get(i).toString().equals(tagsH.get(i-1).toString()))
+			if(anterior  > atual)
+				occurrences.add(this.buildOccurrence("1.3", true,elementTag.get(i).toString(), elementTag.get(i), "2"));
 			
 			if(!tagsH.get(i).toString().equals(tagsH.get(i-1).toString()))
 			if(anterior!=(atual-1))
 				occurrences.add(this.buildOccurrence("1.3", true,elementTag.get(i).toString(), elementTag.get(i), "2"));
-		}
+			
+		}*/
 		
 		if(!hasH())
 			occurrences.add(this.buildOccurrence("1.3", true,"Observa&ccedil;&atilde;o - Sem fonte (os n&iacute;veis de t&iacute;tulo n&atilde;o foram utilizados)", getDocument().getFirstElement(), "1"));
@@ -440,7 +469,9 @@ public class MarkEvaluation extends Evaluation {
 		for(Element nav : this.getDocument().getAllElements("nav")){
 			if(nav !=null){
 				int firstNavRow =  this.getRow(nav);
+				
 				for(Element section : this.getDocument().getAllElements("section")){
+					
 					if(firstNavRow < this.getRow(section))
 						occurrences.add(this.buildOccurrence("1.4", false,section.getStartTag().toString(), section, "1"));
 				}
@@ -542,7 +573,7 @@ public class MarkEvaluation extends Evaluation {
 		
 		String href;
 		boolean existAnchor = false;
-		
+				
 	
 		for (Element link : getDocument().getAllElements("a")) {
 			href = link.getAttributeValue("href");
