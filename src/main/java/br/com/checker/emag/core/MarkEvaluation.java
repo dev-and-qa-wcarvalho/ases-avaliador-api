@@ -759,7 +759,8 @@ public class MarkEvaluation extends Evaluation {
 			
 			if(footer == null)
 				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <FOOTER>)", getDocument().getFirstElement(),"1"));
-			
+		
+		}else{
 			
 			boolean hasBanner = false;
 			boolean hasNavigation = false;
@@ -788,8 +789,8 @@ public class MarkEvaluation extends Evaluation {
 			
 			if(!hasMain)
 				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <MAIN>)", getDocument().getFirstElement(),"2"));
+	
 		}
-		
 		
 		return occurrences;
 	}

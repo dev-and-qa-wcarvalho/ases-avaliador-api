@@ -259,8 +259,7 @@ public class ContentEvaluation extends Evaluation{
 	
 	private boolean isLinkUnavailable(Element link){
 		
-		//if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
-		if(link.getAttributeValue("href") != null && link.getAttributeValue("href").contains("http://")){
+		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
 			
 			int[] codErro ={400, 401,402, 403,404, 405, 406, 407, 408,409, 410, 411, 412, 414,415, 416, 417, 418,422, 423,424,425,426,450,499,500,501,502,503,504,505};
 			int codResponse = 0;
@@ -487,9 +486,60 @@ public class ContentEvaluation extends Evaluation{
 			
 		}
 		
-		Map<String, String> aMap = new HashMap<String, String>();
+		
+		Map<String, Element> aMap = new HashMap<String, Element>();
+		
+		
 		
 		for (Element img : getDocument().getAllElements("img")) {
+			
+			Attribute src = img.getAttributes().get("src");
+			Attribute alt = img.getAttributes().get("alt");
+			
+			boolean isVerificado = false;
+			
+			if (alt != null && !alt.getValue().isEmpty()) {
+				
+				if(!aMap.containsKey(src.getValue())){
+					
+					int rowImgVerificado = this.getRow(img);
+					
+					for (Element imgA : getDocument().getAllElements("img")) {
+						int rowImgA = this.getRow(imgA);
+						
+						if(rowImgA > rowImgVerificado){
+						
+							Attribute srcAtt = imgA.getAttributes().get("src");
+							Attribute altAtt = imgA.getAttributes().get("alt");
+						
+							if (altAtt != null && !altAtt.getValue().isEmpty()) {
+								if(alt.getValue().equals(altAtt.getValue())){
+									if(srcAtt != null){
+										if(!src.getValue().equals(srcAtt.getValue())){
+											occurrences.add(buildOccurrence("3.6", false, imgA.toString(), imgA, "5"));
+											aMap.put(srcAtt.getValue(), img);
+											isVerificado = true;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				aMap.put(src.getValue(), img);
+				
+				if(isVerificado)
+					occurrences.add(buildOccurrence("3.6", false, img.toString(), img, "5"));
+			}
+		}
+		
+		
+		/*Map<String, String> aMap = new HashMap<String, String>();
+		
+		for (Element img : getDocument().getAllElements("img")) {
+			
+			Attribute src = img.getAttributes().get("src");
 			Attribute altAtt = img.getAttributes().get("alt");
 			if (altAtt != null && !altAtt.getValue().isEmpty()) {
 				if(aMap.containsKey(altAtt.getValue())){
@@ -502,7 +552,7 @@ public class ContentEvaluation extends Evaluation{
 					aMap.put(altAtt.getValue(), img.toString());
 				}
 			}
-		}
+		}*/
 		
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
