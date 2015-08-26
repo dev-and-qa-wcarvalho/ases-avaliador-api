@@ -782,13 +782,13 @@ public class MarkEvaluation extends Evaluation {
 			}
 			
 			if(!hasBanner)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <BANNER>)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o  existe tag com atributo ROLE e conte&uacute;do BANNER)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasNavigation)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <NAVIGATION>)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag com atributo ROLE e conte&uacute;do NAVIGATION)", getDocument().getFirstElement(),"2"));
 			
 			if(!hasMain)
-				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe LANDMARKS na p&aacute;gina - <MAIN>)", getDocument().getFirstElement(),"2"));
+				occurrences.add(this.buildOccurrence("1.8", false, "Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag com atributo ROLE e conte&uacute;do MAIN)", getDocument().getFirstElement(),"2"));
 	
 		}
 		
