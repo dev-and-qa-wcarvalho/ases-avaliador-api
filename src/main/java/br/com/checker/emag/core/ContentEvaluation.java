@@ -500,6 +500,7 @@ public class ContentEvaluation extends Evaluation{
 			
 			if (alt != null && !alt.getValue().isEmpty()) {
 				
+				if(src != null)
 				if(!aMap.containsKey(src.getValue())){
 					
 					int rowImgVerificado = this.getRow(img);
@@ -527,6 +528,7 @@ public class ContentEvaluation extends Evaluation{
 					}
 				}
 				
+				if(src != null)
 				aMap.put(src.getValue(), img);
 				
 				if(isVerificado)
