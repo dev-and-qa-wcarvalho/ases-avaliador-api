@@ -118,6 +118,7 @@ public class BehaviorEvaluationTest {
 		StringBuilder html = new StringBuilder("<<html>")
 							.append("<head>")
 							.append("<title>teste</title>")
+							.append("<meta http-equiv=\"refresh\" content=\"20; url='http://www.exemplo.com/'\" />")
 							.append("</head>")
 							.append("</html>");
 		

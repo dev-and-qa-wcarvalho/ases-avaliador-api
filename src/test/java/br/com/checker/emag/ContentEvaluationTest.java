@@ -27,7 +27,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation17()).check();
 		
-		assertEquals("Should return 2 occurrences", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 3 occurrences", 3,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 17 occurrence","3.1",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
 		assertTrue("Recommendation 16 should be ERROR",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
@@ -35,7 +35,7 @@ public class ContentEvaluationTest {
 	
 	@Test
 	public void shouldNotCheckRecommedation17() {
-		StringBuilder html = new StringBuilder("<html lang=\"en\">");
+		StringBuilder html = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">");
 		html.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -50,7 +50,7 @@ public class ContentEvaluationTest {
 		html.append("</html>");
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation17()).check();
-		assertEquals("Should return 1 occurrences 1 ", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 2 occurrences 2 ", 2,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 	}
 	
 	@Test
@@ -164,7 +164,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
-		assertEquals("Should return 15 occurrences", 15,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 14 occurrences", 14,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.CONTENT_INFORMATION)) {
 			assertEquals("Should return Recommendation 21 occurrence","3.5",ocorrencia.getCode());
@@ -331,7 +331,7 @@ public class ContentEvaluationTest {
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" height=\"42\" width=\"42\">");
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"imagem\" height=\"42\" width=\"42\">");
 		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"alt\" height=\"42\" width=\"42\">");
-		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"descrição\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"/pasta/pasta/smiley.gif\" alt=\"descriÃ§Ã£o\" height=\"42\" width=\"42\">");
 		 html.append("</body>");
 		 html.append("</html>");
 		 html.append("<html> ");
@@ -353,8 +353,8 @@ public class ContentEvaluationTest {
 		 html.append("<head>");
 		 html.append("</head>");
 		 html.append(" <body>");
-		 html.append("<img src=\"smiley.gif\" alt=\"arquivo descrição\" height=\"42\" width=\"42\">");
-		 html.append("<img src=\"/pasta/smiley.gif\" alt=\"arquivo descrição\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"smiley.gif\" alt=\"descriÃ§Ã£o\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"/pasta/smiley.gif\" alt=\"arquivo descriÃ§Ã£o\" height=\"42\" width=\"42\">");
 		 html.append("</body>");
 		 html.append("</html>");
 		 html.append("<html> ");
@@ -364,7 +364,7 @@ public class ContentEvaluationTest {
 		
 		assertEquals("Should return 1 occurrences", 1,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 		assertEquals("Should return Recommendation 22","3.6",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-		assertFalse("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+		assertTrue("Recommendation 22 should be WARNING",occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
 	}
 	
 	@Test
@@ -375,7 +375,7 @@ public class ContentEvaluationTest {
 		 html.append("<head>");
 		 html.append("</head>");
 		 html.append(" <body>");
-		 html.append("<img src=\"smiley.gif\" alt=\"arquivo descrição\" title=\"arquivo descrição\" height=\"42\" width=\"42\">");
+		 html.append("<img src=\"smiley.gif\" alt=\"arquivo descriï¿½ï¿½o\" title=\"arquivo descriï¿½ï¿½o\" height=\"42\" width=\"42\">");
 		 html.append("</body>");
 		 html.append("</html>");
 		 html.append("<html> ");

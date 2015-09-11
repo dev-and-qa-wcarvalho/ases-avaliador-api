@@ -50,7 +50,7 @@ public class PresentationEvaluationTest {
 		StringBuilder html = new StringBuilder("<html");
 			html.append("<body>")
 			.append(" <table>")
-			.append("  <tr>")
+			.append("  <tr bgcolor=\"#E6E6FA\">")
 			.append("   <td>")
 			.append("   <td>")
 			.append("  </tr>")
@@ -62,7 +62,7 @@ public class PresentationEvaluationTest {
 					.with(presentation().recommendation29()).check();
 		
 		assertEquals("Should return 1 occurrences",1,occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).size());
-		assertFalse("Recommendation 29 should be WARNING",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
+		assertTrue("Recommendation 29 should be WARNING",occurrences.get(OccurrenceClassification.PRESENTATION_DESIGN).get(0).isError());
 		
 	}
 	

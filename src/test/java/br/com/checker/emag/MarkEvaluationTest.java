@@ -50,14 +50,31 @@ public class MarkEvaluationTest {
 	public void shouldAlwaysCheckRecommendation2() {
 		String a = "  ";
 		StringBuilder html = new StringBuilder("<html>")
-		.append("<head>")
+		.append("<img alt=\"\"/>")
+		.append("<p>")
+		.append("<img alt=\"\"/>")
+		.append("</p>")
+		.append("<p>")
+		.append("<img alt=\"teste\"/>")
+		.append("</p>")
+		.append("<h1>")
+		.append("<img alt=\"\"/>")
+		.append("</h1>")
+		.append("<a href=\"teste\">")
+		.append("<img alt=\"\"/>")
+		.append("</a>")
+		.append("<h2>")
+		.append("<img alt=\"\"/>")
+		.append("</h2>")
+		
+		/*.append("<head>")
 		.append("</head>")
 		.append("<BODY>")
 		.append("<h1></h1>")
 		.append("<p style=\"color:green;margin-left:20px;\"></p>")
 		.append("<a>   </a>")
 		.append("<a>"+a+"</a>")
-		.append("</BODY>")
+		.append("</BODY>")*/
 		.append("</HTML>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -76,7 +93,7 @@ public class MarkEvaluationTest {
 		}
 		
 		assertEquals("Should return 4 erros",4,erros);
-		assertEquals("Should return 3 warning",3,warnings);
+		assertEquals("Should return 10 warning",10,warnings);
 		
 	}
 	
@@ -100,7 +117,7 @@ public class MarkEvaluationTest {
 			}
 		}
 		
-		assertEquals("Should return 3 occurrence with criteitio 4",3,criterio4);
+		assertEquals("Should return 2 occurrence with criteitio 2",2,criterio4);
 	}
 	
 	@Test 
@@ -305,11 +322,11 @@ public class MarkEvaluationTest {
 	
 	@Test
 	public void shouldCheckCriterio1Recommedation5() {
-		StringBuilder html = new StringBuilder("<html>\n")
-		.append("<a href=\"a\">link1</a>\n")
-		.append("<a href=\"a\">link3</a>\n")
-		.append("<a href=\"#b\">link5</a>\n")
-		.append("<a href=\"#c\">link5</a>\n")
+		StringBuilder html = new StringBuilder("<html>")
+		.append("<a href=\"a\">link1</a>")
+		.append("<a href=\"a\">link3</a>")
+		.append("<a href=\"#b\">link5</a>")
+		.append("<a href=\"#c\">link5</a>")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -328,7 +345,7 @@ public class MarkEvaluationTest {
 			
 		}
 		
-		assertEquals("Should return 2 occurrence with criteitio 1",2,criterio1);
+		assertEquals("Should not return occurrence with criteitio 1",0,criterio1);
 	
 	}
 	
@@ -347,34 +364,42 @@ public class MarkEvaluationTest {
 		int criterio2 = 0;
 		for(Occurrence ocorrencia : occurrences.get(OccurrenceClassification.MARK)) {
 			assertEquals("Should return Recommendation 5 occurrence","1.5",ocorrencia.getCode());
-			assertTrue("Recommendation 1 should be ERROR",ocorrencia.isError());
-			if(ocorrencia.getCriterio().equals("2"))
+			
+			if(ocorrencia.getCriterio().equals("3"))
+				assertTrue("Recommendation 5 criteitio 3 should be ERROR",ocorrencia.isError());
+			
+			if(ocorrencia.getCriterio().equals("4"))
+				assertFalse("Recommendation 5 criteitio 4 not ERROR",ocorrencia.isError());
+			
+			if(ocorrencia.getCriterio().equals("2")){
+				assertTrue("Recommendation 5 criteitio 2 should be ERROR",ocorrencia.isError());
 				criterio2++;
+			}	
 		}
 		
-		assertEquals("Should return 1 occurrence with criteitio 1",1,criterio2);
+		assertEquals("Should return 1 occurrence with criteitio 2",1,criterio2);
 	
 	}
 	
 	@Test
 	public void shouldCheckCriterio3Recommedation5() {
-		StringBuilder html = new StringBuilder("<html>\n")
+		StringBuilder html = new StringBuilder("<html>")
 		
-		.append("<a>link</a>\n")
-		.append("<area>area</area>\n")
-		.append("<button>button</button>\n")
-		.append("<input></input>\n")
-		.append("<label>label</a>\n")
-		.append("<fieldset><legend>legend</legend></fieldset>\n")
-		.append("<textarea></textarea>\n")
+		.append("<a>link</a>")
+		.append("<area>area</area>")
+		.append("<button>button</button>")
+		.append("<input></input>")
+		.append("<label>label</a>")
+		.append("<fieldset><legend>legend</legend></fieldset>")
+		.append("<textarea></textarea>")
 		
-		.append("<a accesskey=\"acess0\">link</a>\n")
-		.append("<area accesskey=\"acess1\">area</area>\n")
-		.append("<button accesskey=\"acess2\">button</button>\n")
-		.append("<input accesskey=\"acess3\"></input>\n")
-		.append("<label accesskey=\"acess4\">label</a>\n")
-		.append("<fieldset><legend accesskey=\"acess5\">legend</legend></fieldset>\n")
-		.append("<textarea accesskey=\"acess6\"></textarea>\n")
+		/*.append("<a accesskey=\"acess0\">link</a>")
+		.append("<area accesskey=\"acess1\">area</area>")
+		.append("<button accesskey=\"acess2\">button</button>")
+		.append("<input accesskey=\"acess3\"></input>")
+		.append("<label accesskey=\"acess4\">label</a>")
+		.append("<fieldset><legend accesskey=\"acess5\">legend</legend></fieldset>")
+		.append("<textarea accesskey=\"acess6\"></textarea>")*/
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -391,7 +416,7 @@ public class MarkEvaluationTest {
 			}
 		}
 		
-		assertEquals("Should return 7 occurrence with criteitio 3",7,criterio3);
+		assertEquals("Should return 1 occurrence with criteitio 1",1,criterio3);
 	
 	}
 	
@@ -519,9 +544,6 @@ public class MarkEvaluationTest {
 		StringBuilder html = new StringBuilder("<!DOCTYPE html>")
 		.append("<html>\n")
 		.append("<HEADER></HEADER>\n")
-		.append("<NAV></NAV>\n")
-		.append("<SECTION></SECTION>\n")
-		.append("<FOOTER></FOOTER>\n")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
@@ -589,7 +611,7 @@ public class MarkEvaluationTest {
 		StringBuilder html = new StringBuilder("<html>\n")
 		.append("<p id=\"menu\">")
 		.append("<a href=\"teste.html\">teste 1</a>")
-		.append("<a href=\"teste2.html\">teste 2</a>")
+		.append("<a href=\"teste2.html\" target=\"_blank\">teste 2</a>")
 		.append("</html>");
 		
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
