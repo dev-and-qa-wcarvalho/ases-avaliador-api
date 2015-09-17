@@ -244,27 +244,13 @@ public class MarkEvaluation extends Evaluation {
 					if(element != null){
 						Element img =  element.getFirstElement("img");
 						if(img != null){
-							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty()){
+							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
 									occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString(), element, "1"));
-							}else{
-								if(element.getContent().toString().isEmpty() || element.getContent().toString().equals(""))
-									occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString(), element, "1"));
-							}
+						}else{
+							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals(""))
+								occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString(), element, "1"));
 						}
 					}
-						
-					/*
-					
-					if(element.getTextExtractor().toString().isEmpty())
-						occurrences.add(this.buildOccurrence("1.2", true, element.toString(), element, "1"));
-					else{
-						
-						Element img =  element.getFirstElement("img");
-						if(img != null)
-							if(img.getAttributes().get("alt").getValue().equals("") || img.getAttributeValue("alt").isEmpty())
-								occurrences.add(this.buildOccurrence("1.2", true, element.toString(), element, "1"));
-						
-					}*/
 				}
 				
 			}
@@ -274,29 +260,15 @@ public class MarkEvaluation extends Evaluation {
 				
 				if(element != null){
 					Element img =  element.getFirstElement("img");
-					
 					if(img != null){
-						
 						if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
 							occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString(), element, "1"));
-					
 					}else{
-						if(element.getSource().toString().trim().equals("")){
+						if(element.getSource().toString().trim().equals(""))
 							occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString(), element, "1"));
-						}
-						/*if(element.getTextExtractor().toString().isEmpty())
-							occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));*/
 					}
 				}
-					/*
-					if(element.getTextExtractor().toString().isEmpty())
-						occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
-					else{
-						Element img =  element.getFirstElement("img");
-						if(img != null)
-							if(img.getAttributeValue("alt").equals("") || img.getAttributeValue("alt").isEmpty())
-								occurrences.add(this.buildOccurrence("1.2", false, element.toString(), element, "1"));
-					}*/
+				
 			}
 			
 			this.oder(occurrences);
@@ -368,92 +340,18 @@ public class MarkEvaluation extends Evaluation {
 		
 		
 		List<Element> elementsObj = getDocument().getAllElements();
-		//List<String> tagsH = new ArrayList<String>();
-		//List<Element> elementTag = new ArrayList<Element>();
 		
-		boolean achou = false;
-		int limhaMinima= 0;
-		
+		int anterior = 1;
 		for (Element htmlElement : elementsObj) {
 		    if (htmlElement.getName().matches("h[1-6]")) {
 		    	int tagId = Integer.parseInt(htmlElement.getName().substring(1));
-		    	
-		    	//System.out.println("Tag verificada: "+htmlElement.getName());
-		    	
-		   		if(tagId == 1)
-		   			limhaMinima = this.getRow(htmlElement);
-		   		
-		   		
-		    	List<Element> elementsObj2 = getDocument().getAllElements();
-		    	
-		    	int verificar = tagId-1;
-		    	
-		    	if(tagId > 1){
-			    	for (Element htmlElement2 : elementsObj2) {
-					    if (htmlElement2.getName().matches("h[1-6]")) {
-					    	
-					    	if(this.getRow(htmlElement2) < this.getRow(htmlElement) && this.getRow(htmlElement2) >= limhaMinima){
-					    		int tagId2 = Integer.parseInt(htmlElement2.getName().substring(1));
-					    		if(verificar == tagId2)
-					    			achou = true;
-					    			//System.out.println("====> verificando: "+htmlElement2.getName()+" --- : "+verificar+" = "+ tagId2);
-					    	}
-					    }
-			    	}   
-			    	
-			    	if(!achou)
-			    		occurrences.add(this.buildOccurrence("1.3", true,htmlElement.toString(), htmlElement, "2"));
-			    		//System.out.println("Pegou: "+htmlElement.getName());
-			    		achou = false;
-		    	}
-		    	
-		    	
-		    	
-		    	/*if(tagId==1)
-		    		tagsH.clear();
-		    	*/
-		    	
-		    	/*
-		    	if(tagId > 1)
-		    	for (int  i = tagId-1; i >= 1; i--) {
-		    		
-		    		
-		    		Element h = getDocument().getFirstElement("h"+i);
-		    		
-		    		
-		    		
-		    		if(h != null)
-		    			if(this.getRow(getDocument().getFirstElement("h"+i)) > this.getRow(htmlElement)){
-		    						    				
-		    				//System.out.println("====> verificando: "+h.toString());		
+		    		if(!(tagId <= anterior)){
+		    			if(!(tagId == anterior+1))
 		    				occurrences.add(this.buildOccurrence("1.3", true,htmlElement.toString(), htmlElement, "2"));
-		    				break;
-		    			}	
-		    		
-		    	}*/
-		    	
-		    	//System.out.println("------------------------------------------------------------------");
-		    	/*
-		    	
-		    	tagsH.add(htmlElement.getName());
-		    	elementTag.add(htmlElement);*/
+		    		}
+		    	anterior = tagId;
 		    }
 		}
-		
-		/*for (int i = 1; i < tagsH.size(); i++) {
-			int atual = Integer.parseInt(tagsH.get(i).substring(1));
-			int anterior = Integer.parseInt(tagsH.get(i-1).substring(1));
-			
-			
-			//if(!tagsH.get(i).toString().equals(tagsH.get(i-1).toString()))
-			if(anterior  > atual)
-				occurrences.add(this.buildOccurrence("1.3", true,elementTag.get(i).toString(), elementTag.get(i), "2"));
-			
-			if(!tagsH.get(i).toString().equals(tagsH.get(i-1).toString()))
-			if(anterior!=(atual-1))
-				occurrences.add(this.buildOccurrence("1.3", true,elementTag.get(i).toString(), elementTag.get(i), "2"));
-			
-		}*/
 		
 		if(!hasH())
 			occurrences.add(this.buildOccurrence("1.3", true,"Observa&ccedil;&atilde;o - Sem fonte (os n&iacute;veis de t&iacute;tulo n&atilde;o foram utilizados)", getDocument().getFirstElement(), "1"));
@@ -719,13 +617,7 @@ public class MarkEvaluation extends Evaluation {
 				occurrences.add(this.buildOccurrence("1.5", false, elemento.toString(), elemento,"5"));
 		}
 		
-		
-		//Sorting
-		Collections.sort(occurrences, new Comparator<Occurrence>() {
-		    public int compare(Occurrence  occurrence1, Occurrence  occurrence2){
-	            return  occurrence1.getLine().compareTo(occurrence2.getLine());
-	        }
-	    });
+		this.oder(occurrences);
 		
 		return occurrences;
 	}
