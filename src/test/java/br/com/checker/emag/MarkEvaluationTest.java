@@ -170,8 +170,10 @@ public class MarkEvaluationTest {
 	@Test 
 	public void shouldCheckCriterio2Recommedation3() {
 		StringBuilder html = new StringBuilder("<html>\n")
-			.append("<h6>Title1</h6>\n")
-			.append("<h5>Title1.2</h5>\n")
+			.append("<h1>Title1</h1>\n")
+			.append("<h3>Title1.2</h3>\n")
+			.append("<h4>Title1.3</h4>\n")
+			.append("<h1>Title1.3</h1>\n")
 			.append("<h4>Title1.3</h4>\n")
 			.append("</html>");
 		
@@ -187,7 +189,7 @@ public class MarkEvaluationTest {
 			}
 		}
 		
-		assertEquals("Should return 3 occurrence with criteitio 2",3,criterio2);
+		assertEquals("Should return 2 occurrence with criteitio 2",2,criterio2);
 	}
 	
 	@Test 
