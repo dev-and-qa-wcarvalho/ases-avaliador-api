@@ -245,10 +245,10 @@ public class MarkEvaluation extends Evaluation {
 						Element img =  element.getFirstElement("img");
 						if(img != null){
 							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
-									occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString(), element, "1"));
+									occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString()+"<"+element.getName()+">", element, "1"));
 						}else{
 							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals(""))
-								occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString(), element, "1"));
+								occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString()+"<"+element.getName()+">", element, "1"));
 						}
 					}
 				}
@@ -257,18 +257,18 @@ public class MarkEvaluation extends Evaluation {
 			
 			
 			for (Element element : getDocument().getAllElements()) {
-				
-				if(element != null){
-					Element img =  element.getFirstElement("img");
-					if(img != null){
-						if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
-							occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString(), element, "1"));
-					}else{
-						if(element.getSource().toString().trim().equals(""))
-							occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString(), element, "1"));
+				if(!tags.contains(element.getName())){
+					if(element != null){
+						Element img =  element.getFirstElement("img");
+						if(img != null){
+							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
+								occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString()+"<"+element.getName()+">", element, "1"));
+						}else{
+							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals(""))
+								occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString()+"<"+element.getName()+">", element, "1"));
+						}
 					}
 				}
-				
 			}
 			
 			this.oder(occurrences);
