@@ -259,8 +259,12 @@ public class MarkEvaluation extends Evaluation {
 				
 			}
 			
+			List<Integer> linhasImg = new ArrayList<Integer>();
+			tags = Arrays.asList("Doctype","script","meta","style","head","h1","h2","h3","h4","h5","h6","a","p");
+			
 			for (Element element : getDocument().getAllElements()) {
 				if(!tags.contains(element.getName())){
+					
 					if(element != null){
 						
 						String endTag =   element.getEndTag() == null ? "" : element.getEndTag().toString();
@@ -268,12 +272,16 @@ public class MarkEvaluation extends Evaluation {
 						Element img =  element.getFirstElement("img");
 						
 						if(img != null){
-							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
-								occurrences.add(this.buildOccurrence("1.2", false, img.toString(), element, "1"));
+							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty()){
+								if(!linhasImg.contains(this.getRow(img)));								
+									occurrences.add(this.buildOccurrence("1.2", false, img.toString(), img, "1"));
+									linhasImg.add(this.getRow(img));	
+							}	
 								
 						}else{
-							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals(""))
+							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals("")){
 								occurrences.add(this.buildOccurrence("1.2", false, element.getStartTag().toString() + endTag, element, "1"));
+							}	
 								
 						}
 					}
