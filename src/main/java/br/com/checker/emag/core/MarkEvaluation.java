@@ -161,6 +161,7 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		List<String> tags = Arrays.asList("h1","h2","h3","h4","h5","h6","a","p");
+		List<Integer> linhasImg = new ArrayList<Integer>();
 		
 			for (String tag : tags) {
 				for (Element element : getDocument().getAllElements(tag)) {
@@ -175,8 +176,13 @@ public class MarkEvaluation extends Evaluation {
 						Element img =  element.getFirstElement("img");
 						
 						if(img != null){
-							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty())
-									occurrences.add(this.buildOccurrence("1.2", true,element.getStartTag().toString() + endTag, element, "1"));
+							if(img.getAttributes().get("alt") != null && img.getAttributes().get("alt").getValue().isEmpty()){
+								
+								if(!linhasImg.contains(this.getRow(img))){
+									occurrences.add(this.buildOccurrence("1.2", true,img.getStartTag().toString(), img, "1"));
+								}	
+								linhasImg.add(this.getRow(img));
+							}	
 						}else{
 							if(element.getContent().toString().isEmpty() || element.getContent().toString().trim().equals("")){
 								occurrences.add(this.buildOccurrence("1.2", true, element.getStartTag().toString() + endTag, element, "1"));
@@ -187,14 +193,15 @@ public class MarkEvaluation extends Evaluation {
 				
 			}
 			
-			List<Integer> linhasImg = new ArrayList<Integer>();
+			linhasImg = new ArrayList<Integer>();
+			
 			tags = Arrays.asList("!doctype","script","meta","style","head","link","h1","h2","h3","h4","h5","h6","a","p");
 			
 			for (Element element : getDocument().getAllElements()) {
 				if(!tags.contains(element.getName())){
 					
-					if(element != null){
-						
+					if(element != null && !(element.getName().equals("!--"))){
+					
 						String endTag =   element.getEndTag() == null ? "" : element.getEndTag().toString();
 						
 						Element img =  element.getFirstElement("img");
@@ -234,8 +241,9 @@ public class MarkEvaluation extends Evaluation {
 				else if(attribute.getCount()==0)
 					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
 			}*/
+		
 			
-			
+		
 		return occurrences;
 	}
 	
