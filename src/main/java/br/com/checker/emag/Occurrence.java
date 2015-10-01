@@ -56,6 +56,15 @@ public @Setter @Getter  class Occurrence implements Comparable<Occurrence>{
 		this(code, error, tag, type,null);
 	}
 	
+	
+	public boolean isCssEvaluation(){
+		return this.tag!=null && this.tag.startsWith("www") && this.criterio.equals("2");
+	}
+	
+	public boolean isHtmlEvaluation(){
+		return this.tag!=null && this.tag.startsWith("www") && this.criterio.equals("1");
+	}
+	
 	public String getTag() {
 	
 		this.tag = this.tag.replaceAll("<", "&lt;");

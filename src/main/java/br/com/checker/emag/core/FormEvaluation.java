@@ -24,6 +24,9 @@ public class FormEvaluation extends Evaluation{
 		@Override
 		protected FormEvaluation with(Source document) { return new FormEvaluation(document); }
 		
+		@Override
+		protected FormEvaluation with(Source document,String url) { return new FormEvaluation(document); }
+		
 		public SpecificRecommendation recommendation38() { return new EvaluationRecommendation38();}
 		public SpecificRecommendation recommendation39() { return new EvaluationRecommendation39();}
 		public SpecificRecommendation recommendation40() { return new EvaluationRecommendation40();}

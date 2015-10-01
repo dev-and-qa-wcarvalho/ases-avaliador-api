@@ -2,6 +2,8 @@ package br.com.checker.emag.core;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import fj.data.hlist.HPre.HBool;
@@ -12,15 +14,24 @@ import br.com.checker.emag.AvaliadorContraste;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.PresentationRecommendation;
+import br.com.checker.emag.util.WebAgent;
 
 public class PresentationEvaluation extends Evaluation{
-
-	private PresentationEvaluation(Source document) { super(document); }
+	
+	
+	private PresentationEvaluation(Source document) { super(document); } 
+	
+	private PresentationEvaluation(Source document,String url) { 
+		super(document,url);
+	}
 	
 	public static class PresentationEvaluationBuilder extends EvaluationBuilder {
 		
 		@Override
 		protected PresentationEvaluation with(Source document) { return new PresentationEvaluation(document); }
+		
+		@Override
+		protected PresentationEvaluation with(Source document,String url) { return new PresentationEvaluation(document,url); }
 		
 		public SpecificRecommendation recommendation29() { return new EvaluationRecommendation29();}
 		public SpecificRecommendation recommendation30() { return new EvaluationRecommendation30();}
@@ -125,7 +136,7 @@ public class PresentationEvaluation extends Evaluation{
 		
 		/*if(!temBgcolor)
 			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));*/
-		
+		Collections.sort(occurrences);
 		return occurrences;
 	}
 	
@@ -147,16 +158,39 @@ public class PresentationEvaluation extends Evaluation{
 		
 		for (Element style : getDocument().getAllElements("style")) {
 			
-			if(style.toString().contains("a:focus") || style.toString().contains("a:hover"))
-				occurrences.add(buildOccurrence("4.4", false, style.toString(), style, "1"));
+			if(!style.toString().contains("a:focus") && !style.toString().contains("a:hover"))
+				occurrences.add(buildOccurrence("4.4", true, style.toString(), style, "1"));
 		}
 		
 		for (Element style : getDocument().getAllElements("a")) {
 			Attribute attribute = style.getAttributes().get("style");
 			if(attribute != null)
-				if(attribute.toString().contains("a:focus") || attribute.toString().contains("a:hover"))
-					occurrences.add(buildOccurrence("4.4", false, style.toString(), style, "1"));
+				if(!attribute.toString().contains("a:focus") && !attribute.toString().contains("a:hover"))
+					occurrences.add(buildOccurrence("4.4", true, style.toString(), style, "1"));
 		}
+		
+		
+			String href = null;
+			boolean avalia = false;
+			for(Element link : getDocument().getAllElements("link")) {
+				href = link.getAttributeValue("href");
+				if(href.startsWith("www"))href= "http://"+href;
+				
+				avalia = getUrl()!=null || href.startsWith("http");
+				
+				if(href.contains(".css") && avalia) {
+					
+					if(!href.startsWith("http")) href = getUrl()+href;
+					
+					String content = WebAgent.from(href).withGetRequest().execute().getContent();
+					
+					 if (content!=null && !content.contains("a:hover") && !content.contains("a:focus")){
+						 occurrences.add(buildOccurrence("4.4", true, link.toString(), link, "1"));
+					 }
+				}
+				
+			}
+		Collections.sort(occurrences);
 		
 		return occurrences;
 	}
@@ -166,6 +200,7 @@ public class PresentationEvaluation extends Evaluation{
 			String criterio) {
 		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.PRESENTATION_DESIGN,criterio);
 	}
+	
 	
 	private Occurrence buildOccurrence(String code, boolean error,
 			String tag, Element element) {

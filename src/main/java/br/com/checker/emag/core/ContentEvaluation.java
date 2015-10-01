@@ -27,10 +27,17 @@ public class ContentEvaluation extends Evaluation{
 
 	private ContentEvaluation(Source document) { super(document); }
 	
+	private ContentEvaluation(Source document,String url) { 
+		super(document,url);
+	}
+	
 	public static class ContentEvaluationBuilder extends EvaluationBuilder {
 		
 		@Override
 		protected ContentEvaluation with(Source document) { return new ContentEvaluation(document); }
+		
+		@Override
+		protected ContentEvaluation with(Source document,String url) { return new ContentEvaluation(document,url); }
 		
 		public SpecificRecommendation recommendation17() { return new EvaluationRecommendation17();}
 		public SpecificRecommendation recommendation18() { return new EvaluationRecommendation18();}
@@ -249,7 +256,7 @@ public class ContentEvaluation extends Evaluation{
 			if(link != null  && hasLongContent(link))
 				occurrences.add(this.buildOccurrence("3.5", false, link.toString(), link,"9"));
 	
-			if(link != null  && isLinkUnavailable(link))
+			if(link != null  && isLinkUnavailable(link,getUrl()))
 				occurrences.add(this.buildOccurrence("3.5", true, link.toString(), link,"10"));
 			
 		}
@@ -257,7 +264,24 @@ public class ContentEvaluation extends Evaluation{
 		return occurrences;
 	}
 	
-	private boolean isLinkUnavailable(Element link){
+	
+	public static void main(String ...arg){
+		String href = "http://www.abc.com/../../Content/ABC/docs/Manual_SulSul_Final-Diagramado_Corrigido_23-04-2014.pdf";
+		
+		
+		
+		//System.out.println(url);
+	}
+	
+	private boolean isLinkUnavailable(Element link,String url){
+		
+		String href = link.getAttributeValue("href");
+		
+		if(href!=null && href.startsWith("www"))
+			href = "http://"+href;
+		
+		if(href!=null && !href.startsWith("http") && url !=null)	
+			href = url+link.getAttributeValue("href");
 		
 		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
 			
@@ -266,11 +290,16 @@ public class ContentEvaluation extends Evaluation{
 			
 			String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
 			
-			if(!IsMatch(link.getAttributeValue("href"),regex))
+			if(!IsMatch(href,regex))
 		    	return true;
 			
 			try {
-				URL u = new URL(link.getAttributeValue("href")); 
+				String[] test = href.split("\\../");
+				String newurl="";
+				for(String tes : test)
+					newurl=newurl+tes.trim();
+				
+				URL u = new URL(newurl); 
 				HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
 				huc.setRequestMethod("GET"); 
 				//huc.setRequestMethod("HEAD");

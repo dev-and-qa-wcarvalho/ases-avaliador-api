@@ -20,6 +20,9 @@ public class BehaviorEvaluation extends Evaluation{
 		@Override
 		protected BehaviorEvaluation with(Source document) { return new BehaviorEvaluation(document); }
 		
+		@Override
+		protected BehaviorEvaluation with(Source document,String url) { return new BehaviorEvaluation(document); }
+		
 		public SpecificRecommendation recommendation10() { return new EvaluationRecommendation10();}
 		public SpecificRecommendation recommendation11() { return new EvaluationRecommendation11();}
 		public SpecificRecommendation recommendation12() { return new EvaluationRecommendation12();}

@@ -1,43 +1,44 @@
 package br.com.checker.emag.core;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
-import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
 
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
+import br.com.checker.emag.util.WebAgent;
 
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
-import com.jcabi.w3c.Validator;
 import com.jcabi.w3c.ValidatorBuilder;
 
 public class MarkEvaluation extends Evaluation {
+	
 
 	private MarkEvaluation(Source document) { super(document); }
+	
+	private MarkEvaluation(Source document,String url) { 
+		super(document,url);
+	}
 	
 	public static class MarkEvaluationBuilder extends EvaluationBuilder {
 		
 		@Override
 		protected MarkEvaluation with(Source document) { return new MarkEvaluation(document); }
+		
+		
+		@Override
+		protected MarkEvaluation with(Source document,String url) { return new MarkEvaluation(document,url); }
 		
 		public SpecificRecommendation recommendation1() { return new EvaluationRecommendation1();}
 		public SpecificRecommendation recommendation2() { return new EvaluationRecommendation2();}
@@ -104,88 +105,15 @@ public class MarkEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation1() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		try {
-			ValidationResponse response =
-				      new ValidatorBuilder().html().validate(getDocument().toString());
-			
-			if (!response.warnings().isEmpty()){
-				for(Defect warn :response.warnings()) {
-					occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"1"));
-					//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
-					//occurrences.add(this.buildOccurrence("1.1", false, warn.source().toString().isEmpty() ? warn.message() : warn.source(), getDocument().getFirstElement(), "1"));
-				}
-			}	
-			
-			if(!response.errors().isEmpty()){
-				for(Defect error :response.errors()) {
-					occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"1"));
-					//occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
-					//occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "1"));
-				}
-			}
-			/*if(!response.errors().isEmpty()){
-				for(Defect error :response.errors()) {
-					occurrences.add(buildOccurrence("1.1", true,error.line(),error.column(),OccurrenceClassification.MARK,"1"));
-				}
-			}else if (!response.warnings().isEmpty()){
-				for(Defect warn :response.warnings()) {
-					occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"1"));
-				}
-			}*/
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(getUrl()!=null){		
+			String url = getUrl().substring(7);
+			occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement(), "1"));
 		}
 		
-		String css = "";
-		for (Element element : getDocument().getAllElements("style")) 
-				css+= element.getContent().toString();
-		
-		try {
-			if(StringUtils.isNotBlank(css)){
-				ValidationResponse response =
-					      new ValidatorBuilder().css().validate(css);
-				
-			
-					for(Defect warn :response.warnings()) {
-						//occurrences.add(buildOccurrence("1.1", false,warn.line(),warn.column(),OccurrenceClassification.MARK,"2"));
-						occurrences.add(buildOccurrence(warn.line(), warn.column(), "1.1", false, warn.source().toString().isEmpty() ? warn.message() : "["+warn.message()+"] "+warn.source(), OccurrenceClassification.MARK,"2"));
-						//occurrences.add(this.buildOccurrence("1.1", false, warn.source(), getDocument().getFirstElement(), "2"));
-					}
-			
-					for(Defect error :response.errors()) {
-						//occurrences.add(buildOccurrence("1.1", false,error.line(),error.column(),OccurrenceClassification.MARK,"2"));
-						occurrences.add(buildOccurrence(error.line(), error.column(), "1.1", true, error.source().toString().isEmpty() ? error.message() : "["+error.message()+"] "+error.source(), OccurrenceClassification.MARK,"2"));
-						///occurrences.add(this.buildOccurrence("1.1", true, error.source().toString().isEmpty() ? error.message() : error.source(), getDocument().getFirstElement(), "2"));
-					}
-			}	
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(getUrl()!=null){		
+			String url = getUrl().substring(7);
+			occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement().getFirstElement(), "2"));
 		}
-		
-		/*String css = "";
-		for (Element element : getDocument().getAllElements("style")) 
-				css+= element.getContent().toString();
-			
-		if(StringUtils.isNotBlank(css)){	
-		
-			try {
-				ValidationResponse response =
-					      new ValidatorBuilder().css().validate(css);
-				
-				if(!response.errors().isEmpty())
-					occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "2"));
-					//occurrences.add(this.buildOccurrence("1.1", true, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
-					
-				else if (!response.warnings().isEmpty())
-					occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "2"));
-					//occurrences.add(this.buildOccurrence("1.1", false, getDocument().getFirstElement().toString(), getDocument().getFirstElement(), "1"));
-					
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}*/
 		
 		for (Element element : getDocument().getAllElements()) {
 			String value = element.getAttributeValue("style");
@@ -306,9 +234,8 @@ public class MarkEvaluation extends Evaluation {
 				else if(attribute.getCount()==0)
 					occurrences.add(this.buildOccurrence("1.2", isError, element.toString(), element, "1"));
 			}*/
-		
 			
-		
+			
 		return occurrences;
 	}
 	

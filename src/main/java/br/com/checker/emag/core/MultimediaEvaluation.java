@@ -19,6 +19,9 @@ public class MultimediaEvaluation extends Evaluation{
 		@Override
 		protected MultimediaEvaluation with(Source document) { return new MultimediaEvaluation(document); }
 		
+		@Override
+		protected MultimediaEvaluation with(Source document,String url) { return new MultimediaEvaluation(document); }
+		
 		public SpecificRecommendation recommendation33() { return new EvaluationRecommendation33();}
 		public SpecificRecommendation recommendation34() { return new EvaluationRecommendation34();}
 		public SpecificRecommendation recommendation35() { return new EvaluationRecommendation35();}

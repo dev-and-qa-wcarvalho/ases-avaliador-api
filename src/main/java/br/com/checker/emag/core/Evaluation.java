@@ -17,11 +17,17 @@ public abstract class Evaluation {
 	@Getter(AccessLevel.PROTECTED) private Source document;
 	@Getter(AccessLevel.PROTECTED) private List<Occurrence> occurrences;
 								   private String[] html;	
+	@Getter(AccessLevel.PROTECTED) private String url;
 	
 	protected Evaluation(Source document) {
 		this.document = document;
 		this.occurrences = new ArrayList<Occurrence>();
 		this.html = document.toString().split("\n");
+	}
+	
+	protected Evaluation(Source document,String url) {
+		this(document);
+		this.url = url;
 	}
 	
 	protected Occurrence buildOccurrence(String code,boolean error,String tag, 
@@ -73,5 +79,6 @@ public abstract class Evaluation {
 	
 	protected static abstract class EvaluationBuilder {
 		protected abstract Evaluation with(Source document);
+		protected abstract Evaluation with(Source document,String url);
 	}
 }

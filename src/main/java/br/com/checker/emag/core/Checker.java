@@ -28,6 +28,7 @@ public class Checker {
 	
 	private Source document;
 	private Map<OccurrenceClassification,List<Occurrence>> occurrencesMap = new HashMap<OccurrenceClassification, List<Occurrence>>();;
+	private String url;
 	
 	private Checker(String html) { 
 		
@@ -35,7 +36,14 @@ public class Checker {
 		this.document.fullSequentialParse();
 	}
 	
+	private Checker(String html,String url) { 
+		this(html);
+		this.url = url;
+	}
+	
 	public static Checker from(String html) { return new Checker(html); }
+	
+	public static Checker from(String html,String url) { return new Checker(html,url); }
 	
 	public static Checker from(BufferedReader reader) throws IOException {
 
@@ -56,13 +64,13 @@ public class Checker {
 	public static PresentationEvaluationBuilder presentation() { return new PresentationEvaluationBuilder(); }
 	
 	public Checker with(EvaluationBuilder builder) {
-		Evaluation evaluation = builder.with(this.document);
+		Evaluation evaluation = builder.with(this.document,url);
 		occurrencesMap.put(evaluation.type(), evaluation.check());
 		return this;
 	}
 	
 	public Checker with(SpecificRecommendation evaluation){
-		evaluation.with(document);
+		evaluation.with(document,url);
 		
 		if(occurrencesMap.get(evaluation.type())!=null)
 			occurrencesMap.get(evaluation.type()).addAll(evaluation.check());

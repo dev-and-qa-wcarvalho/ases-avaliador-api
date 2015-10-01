@@ -9,15 +9,21 @@ import br.com.checker.emag.OccurrenceClassification;
 public abstract class SpecificRecommendation {
 	
 	protected Source document ;
+	protected String url ;
 	
 	protected void with(Source document) {this.document = document;}
+	
+	protected void with(Source document,String url) {
+		this.document = document;
+		this.url = url;
+	}
 		
 	protected abstract List<Occurrence> check();
 	protected abstract OccurrenceClassification type();
 	
 	protected static abstract class MarkRecommendation extends SpecificRecommendation {
 		
-		protected MarkEvaluation getEvaluation() { return new MarkEvaluation.MarkEvaluationBuilder().with(document);}
+		protected MarkEvaluation getEvaluation() { return new MarkEvaluation.MarkEvaluationBuilder().with(document,url);}
 		protected OccurrenceClassification type () { return OccurrenceClassification.MARK;}
 	}
 	
@@ -41,13 +47,13 @@ public abstract class SpecificRecommendation {
 	
 	protected static abstract class ContentRecommendation extends SpecificRecommendation {
 		
-		protected ContentEvaluation getEvaluation() { return new ContentEvaluation.ContentEvaluationBuilder().with(document);}
+		protected ContentEvaluation getEvaluation() { return new ContentEvaluation.ContentEvaluationBuilder().with(document,url);}
 		protected OccurrenceClassification type () { return OccurrenceClassification.CONTENT_INFORMATION; }
 	}
 	
 	protected static abstract class PresentationRecommendation extends SpecificRecommendation {
 		
-		protected PresentationEvaluation getEvaluation() { return new PresentationEvaluation.PresentationEvaluationBuilder().with(document);}
+		protected PresentationEvaluation getEvaluation() { return new PresentationEvaluation.PresentationEvaluationBuilder().with(document,url);}
 		protected OccurrenceClassification type () { return OccurrenceClassification.PRESENTATION_DESIGN; }
 	}
 }
