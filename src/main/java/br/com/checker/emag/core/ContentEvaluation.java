@@ -283,8 +283,8 @@ public class ContentEvaluation extends Evaluation{
 			
 			String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
 			
-			if(!IsMatch(href,regex))
-		    	return true;
+			//if(!IsMatch(href,regex))
+		    	//return true;
 			
 			try {
 				String[] test = href.split("\\../");
