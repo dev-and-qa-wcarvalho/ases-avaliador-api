@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang3.StringUtils;
@@ -265,14 +266,6 @@ public class ContentEvaluation extends Evaluation{
 	}
 	
 	
-	public static void main(String ...arg){
-		String href = "http://www.abc.com/../../Content/ABC/docs/Manual_SulSul_Final-Diagramado_Corrigido_23-04-2014.pdf";
-		
-		
-		
-		//System.out.println(url);
-	}
-	
 	private boolean isLinkUnavailable(Element link,String url){
 		
 		String href = link.getAttributeValue("href");
@@ -298,6 +291,8 @@ public class ContentEvaluation extends Evaluation{
 				String newurl="";
 				for(String tes : test)
 					newurl=newurl+tes.trim();
+				
+				newurl = newurl.replace(" ", "%20");
 				
 				URL u = new URL(newurl); 
 				HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
