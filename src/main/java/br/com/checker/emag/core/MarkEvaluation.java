@@ -195,7 +195,7 @@ public class MarkEvaluation extends Evaluation {
 			
 			linhasImg = new ArrayList<Integer>();
 			
-			tags = Arrays.asList("!doctype","script","meta","style","head","link","h1","h2","h3","h4","h5","h6","a","p");
+			tags = Arrays.asList("!doctype","script","meta","style","head","link","h1","h2","h3","h4","h5","h6","a","p","input");
 			
 			for (Element element : getDocument().getAllElements()) {
 				if(!tags.contains(element.getName())){

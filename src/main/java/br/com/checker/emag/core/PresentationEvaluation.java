@@ -158,15 +158,19 @@ public class PresentationEvaluation extends Evaluation{
 		
 		for (Element style : getDocument().getAllElements("style")) {
 			
-			if(!style.toString().contains("a:focus") && !style.toString().contains("a:hover"))
+			if(!style.toString().contains("a:focus") && !style.toString().contains("a:hover")){
 				occurrences.add(buildOccurrence("4.4", true, style.toString(), style, "1"));
+				break;
+			}	
 		}
 		
 		for (Element style : getDocument().getAllElements("a")) {
 			Attribute attribute = style.getAttributes().get("style");
 			if(attribute != null)
-				if(!attribute.toString().contains("a:focus") && !attribute.toString().contains("a:hover"))
+				if(!attribute.toString().contains("a:focus") && !attribute.toString().contains("a:hover")){
 					occurrences.add(buildOccurrence("4.4", true, style.toString(), style, "1"));
+					break;
+				}	
 		}
 		
 		
@@ -186,6 +190,7 @@ public class PresentationEvaluation extends Evaluation{
 					
 					 if (content!=null && !content.contains("a:hover") && !content.contains("a:focus")){
 						 occurrences.add(buildOccurrence("4.4", true, link.toString(), link, "1"));
+						 break;
 					 }
 				}
 				
