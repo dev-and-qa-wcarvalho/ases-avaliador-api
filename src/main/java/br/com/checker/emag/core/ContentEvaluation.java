@@ -274,7 +274,7 @@ public class ContentEvaluation extends Evaluation{
 			href = "http://"+href;
 		
 		if(href!=null && !href.startsWith("http") && url !=null)	
-			href = url+link.getAttributeValue("href");
+			href = url+"/"+link.getAttributeValue("href");
 		
 		if(link.getAttributeValue("href") != null && !link.getAttributeValue("href").equals("#") && !link.getAttributeValue("href").equals("/") && !link.getAttributeValue("href").contains("javascript")){
 			
