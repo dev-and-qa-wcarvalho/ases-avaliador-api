@@ -68,168 +68,131 @@ public class PresentationEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation29() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
+		String[] attributes = {"class","id", "bgcolor"};
 		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
-		Color color = null;
 		
-		int foreground = Integer.parseInt("000000", 16);
-		int background = Integer.parseInt("ffffff", 16);
+		for (Element body : getDocument().getAllElements("body")) {
+			for (Element element : body.getAllElements()) {
 		
-		//verificar css in-line
-		for (Element element : getDocument().getAllElements()) {
-			
-			if(element != null){
-				String style = element.getAttributeValue("style");
+				Color foreground = null; 
+				Color background = null;
+				boolean achou_foreground = false;
+				boolean achou_background = false;
 				
-				if(style != null){
-					if(isContrastInferior(style)){
-						occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"1"));
-					}			
-				}
-			}
-		}
-		
-		//verificar css in-line
-		boolean isValid = false;
-		for (Element element : getDocument().getAllElements("body")) {
-			if(element != null){
-				String style = element.getAttributeValue("style");
-				
-				if(style != null){
-					if(isContrastInferior(style)){
-						occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"1"));
-						isValid = true;
-					}			
-				}
-		
-				if(!isValid)
-				for (Element body : getDocument().getAllElements("body")) {
-					Attribute bgc = body.getAttributes().get("bgcolor");
-					if(bgc != null){
+				if(element != null ){
 						
-						background = Integer.parseInt(bgc.getValue().trim().replaceFirst("^#",""), 16);
+						for (String attribute : attributes) {
+								//System.out.println("Verificando: "+attribute);
 						
-						avaliadorContraste.setCores(new Color(background), new Color(foreground));
-						avaliadorContraste.avaliar();
-						
-						if(avaliadorContraste.getContraste() < new Double("4.5")){
-							occurrences.add(buildOccurrence("4.1", true, body.getStartTag().toString(), body,"1"));
-							isValid = true;
-						}	
-					}
-					
-					if(body.getName().equals("font")){
-						String cor = element.getAttributeValue("color");
-						Color foregroundV = null;
-						 if(!isTextCor(cor)){
-					        if(cor.contains("rgb")){
-				        		String  str = cor.replaceAll("[^-?0-9]+", " "); 
-				        		
-				        		foregroundV = new Color(
-				        				Integer.parseInt(str.trim().split(" ")[0]),
-				        				Integer.parseInt(str.trim().split(" ")[1]),
-				        				Integer.parseInt(str.trim().split(" ")[2]));
-				        		
-				        	}else foregroundV = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
-					     
-					        background = Integer.parseInt(bgc.getValue().trim().replaceFirst("^#",""), 16);
-							
-							avaliadorContraste.setCores(new Color(background), foregroundV);
-							avaliadorContraste.avaliar();
-							
-							if(avaliadorContraste.getContraste() < new Double("4.5")){
-								occurrences.add(buildOccurrence("4.1", true, body.getStartTag().toString(), body,"1"));
-								isValid = true;
-							}	
-						 
-						 }
-					}
-				}
-			}
-		}
-		
-		//verificar css interno
-		for (Element css : getDocument().getAllElements("style")) {
+								//Verificar IN-LINE
+								String styleInline = element.getAttributeValue("style");
+								if(styleInline != null){
+									
+									foreground = getColor(styleInline, "color:(.*?)\\;");
+									background = getColor(styleInline, "background:(.*?)\\;");
+									background = getColor(styleInline, "background-color:(.*?)\\;");
+									
 			
-			if(css != null){
-				if(isContrastInferior(css.getContent().toString())){
-					occurrences.add(buildOccurrence("4.1", true, css.toString(), css,"1"));
-					isValid = true;
+									if(foreground != null) achou_foreground = true;
+									if(background != null) achou_background = true;
+									
+									
+								}
+						
+								if(achou_foreground== false || achou_background == false){
+									
+									String valor_class = element.getAttributeValue("class");
+									
+									if(valor_class != null){
+										
+										//Verificar css interno
+										for (Element style : getDocument().getAllElements("style")){
+											foreground = getColor(style.toString(), "color:(.*?)\\;");
+											background = getColor(style.toString(), "background:(.*?)\\;");
+											background = getColor(style.toString(), "background-color:(.*?)\\;");
+											
+			
+											if(foreground != null) achou_foreground = true;
+											if(background != null) achou_background = true;
+										}
+										
+										if(achou_foreground== false || achou_background == false){
+											
+											//verificar css externo
+											String href = null;
+											boolean avalia = false;
+											for(Element link : getDocument().getAllElements("link")) {
+												href = link.getAttributeValue("href");
+												if(href.startsWith("www"))href= "http://"+href;
+												
+												avalia = getUrl()!=null || href.startsWith("http");
+												
+												if(href.contains(".css") && avalia) {
+													
+													
+													if(!href.startsWith("http")) href = getUrl()+"/"+href; 
+													
+													
+													String content = WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent();
+													foreground = getColor(content, "color:(.*?)\\;");
+													background = getColor(content, "background:(.*?)\\;");
+													background = getColor(content, "background-color:(.*?)\\;");
+													
+			
+													if(foreground != null) achou_foreground = true;
+													if(background != null) achou_background = true;
+													
+												}
+											}
+										}
+										
+									}
+								}
+						
+								
+								if(achou_foreground== true && achou_background == true){
+									
+									avaliadorContraste.setCores(foreground, background);
+									avaliadorContraste.avaliar();
+									
+									if(avaliadorContraste.getContraste() < new Double("4.5")){
+										occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"1"));
+										break;
+									}
+									
+								
+								}else if(achou_foreground== true && achou_background == false){
+									
+									avaliadorContraste.setCores(foreground, new Color(Integer.parseInt("ffffff", 16)));
+									avaliadorContraste.avaliar();
+									
+									if(avaliadorContraste.getContraste() < new Double("4.5")){
+										occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"1"));
+										break;
+									}
+									
+								
+								}else if(achou_foreground== false && achou_background == true){
+									
+									avaliadorContraste.setCores(new Color(Integer.parseInt("000000", 16)), background);
+									avaliadorContraste.avaliar();
+									
+									if(avaliadorContraste.getContraste() < new Double("4.5")){
+										occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"1"));
+										break;
+									}
+								
+								}
+						
+					}
 				}		
-			}	
-		
-		}
-	
-		//verificar css externo
-		String href = null;
-		boolean avalia = false;
-		for(Element link : getDocument().getAllElements("link")) {
-			href = link.getAttributeValue("href");
-			if(href.startsWith("www"))href= "http://"+href;
-			
-			avalia = getUrl()!=null || href.startsWith("http");
-			
-			if(href.contains(".css") && avalia) {
-				
-				if(!href.startsWith("http")) href = getUrl()+"/"+href;
-				
-				String content = WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent();
-				if(isContrastInferior(content)){
-					occurrences.add(buildOccurrence("4.1", true, link.toString(), link,"1"));
-					isValid = true;
-				}
 			}
 		}
 		
 		
 		
+		/*AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
-		/*boolean temBgcolor = false;
-		for (Element bgcolor : getDocument().getAllElements("body")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				
-				background = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
-				
-				avaliadorContraste.setCores(new Color(background), new Color(foreground));
-				avaliadorContraste.avaliar();
-				
-				if(avaliadorContraste.getContraste() < new Double("4.5"))
-					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"3"));
-				
-				temBgcolor = true;
-			}
-		}	
-		
-		for (Element bgcolor : getDocument().getAllElements("table")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-
-				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
-				color = new Color(rgb);
-				avaliadorContraste.setCores(color, color);
-				avaliadorContraste.avaliar();
-				
-				if(avaliadorContraste.getContraste() < new Double("4.5"))
-					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
-				
-				temBgcolor = true;
-			}
-		}
-		for (Element bgcolor : getDocument().getAllElements("td")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				
-				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
-				color = new Color(rgb);
-				avaliadorContraste.setCores(color, color);
-				avaliadorContraste.avaliar();
-				
-				if(avaliadorContraste.getContraste() < new Double("4.5"))
-					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
-				
-				temBgcolor = true;
-			}
-		}
 		for (Element bgcolor : getDocument().getAllElements("tr")) {
 			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
 			if(bgc != null){
@@ -248,10 +211,49 @@ public class PresentationEvaluation extends Evaluation{
 		
 		/*if(!temBgcolor)
 			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));*/
+					
+		
 		Collections.sort(occurrences);
 		return occurrences;
 			
 	}
+	
+	
+	private Color getColor(String css, String pattern){
+		
+		Color color = null; 
+		
+		Pattern value = Pattern.compile(pattern);
+		
+		Matcher match = value.matcher(css);
+		while (match.find()){
+	    	String cor = match.group(1);
+	    	
+	    	System.out.println(cor);
+	    	try {
+		    	if(!isTextCor(match.group(1)) && !cor.contains("url")){
+			        
+		        	if(cor.contains("rgb")){
+		        		//System.out.println("RGB: "+match.group(1));
+		        		
+		        		String  str = cor.replaceAll("[^-?0-9]+", " "); 
+		        		color = new Color(
+		        				Integer.parseInt(str.trim().split(" ")[0]),
+		        				Integer.parseInt(str.trim().split(" ")[1]),
+		        				Integer.parseInt(str.trim().split(" ")[2]));
+		        	}else{
+		        		//System.out.println("EXADECIMAL: "+match.group(1));
+		        		color = new Color(Integer.parseInt(match.group(1).trim().replaceFirst("^#",""), 16));
+		        	}	
+		        }
+	    	} catch (Exception e) {
+				return null;
+			}
+	    }	
+		
+		return color;
+	}
+	
 	
 	private boolean isTextCor(String cor){
 		return cor.matches("[a-zA-Z\\s]+");  
@@ -289,7 +291,7 @@ public class PresentationEvaluation extends Evaluation{
 	        				Integer.parseInt(str.trim().split(" ")[1]),
 	        				Integer.parseInt(str.trim().split(" ")[2]));
 	        		
-	        	}else foregroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
+	        	}else if(isTextCor(cor.trim().replaceFirst("^#","")))foregroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
 	        	
 	        }else  	isProces = false;
 	    }
@@ -310,7 +312,7 @@ public class PresentationEvaluation extends Evaluation{
 	        				Integer.parseInt(str.trim().split(" ")[0]),
 	        				Integer.parseInt(str.trim().split(" ")[1]),
 	        				Integer.parseInt(str.trim().split(" ")[2]));
-	    	   }else  backgroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
+	    	   }else  if(isTextCor(cor.trim().replaceFirst("^#",""))) backgroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
 	    	   
 	       }else isProces = false;
 	           
@@ -333,7 +335,7 @@ public class PresentationEvaluation extends Evaluation{
 	        				Integer.parseInt(str.trim().split(" ")[0]),
 	        				Integer.parseInt(str.trim().split(" ")[1]),
 	        				Integer.parseInt(str.trim().split(" ")[2]));
-	        	}else backgroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
+	        	}else  if(isTextCor(cor.trim().replaceFirst("^#",""))) backgroundColor = new Color(Integer.parseInt(cor.trim().replaceFirst("^#",""), 16));
 	        
 	        }else isProces = false;
 	    }
@@ -396,7 +398,7 @@ public class PresentationEvaluation extends Evaluation{
 				
 				if(href.contains(".css") && avalia) {
 					
-					if(!href.startsWith("http")) href = getUrl()+href;
+					if(!href.startsWith("http")) href = getUrl()+"/"+href;
 					
 					 String content = WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent();
 					
