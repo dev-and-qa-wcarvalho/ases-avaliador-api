@@ -229,7 +229,6 @@ public class PresentationEvaluation extends Evaluation{
 		while (match.find()){
 	    	String cor = match.group(1);
 	    	
-	    	System.out.println(cor);
 	    	try {
 		    	if(!isTextCor(match.group(1)) && !cor.contains("url")){
 			        
