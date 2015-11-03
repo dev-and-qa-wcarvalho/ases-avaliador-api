@@ -71,6 +71,7 @@ public class PresentationEvaluation extends Evaluation{
 		String[] attributes = {"class","id", "bgcolor"};
 		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
+		System.out.println("Processado verificação de cor...");
 		for (Element body : getDocument().getAllElements("body")) {
 			for (Element element : body.getAllElements()) {
 		
@@ -189,7 +190,7 @@ public class PresentationEvaluation extends Evaluation{
 			}
 		}
 		
-		
+		System.out.println("Verificação terminada.");	
 		
 		/*AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
