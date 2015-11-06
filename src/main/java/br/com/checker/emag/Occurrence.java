@@ -58,11 +58,11 @@ public @Setter @Getter  class Occurrence implements Comparable<Occurrence>{
 	
 	
 	public boolean isCssEvaluation(){
-		return this.tag!=null && this.tag.startsWith("www") && this.criterio.equals("2");
+		return (this.tag!=null && this.criterio.equals("2")) && (this.tag.startsWith("www") || this.tag.startsWith("http")) ;
 	}
 	
 	public boolean isHtmlEvaluation(){
-		return this.tag!=null && this.tag.startsWith("www") && this.criterio.equals("1");
+		return (this.tag!=null && this.criterio.equals("1")) && (this.tag.startsWith("www") || this.tag.startsWith("http")) ;
 	}
 	
 	public String getTag() {

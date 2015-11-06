@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
@@ -18,13 +19,14 @@ import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
 import br.com.checker.emag.util.WebAgent;
 
-import com.jcabi.w3c.Defect;
-import com.jcabi.w3c.ValidationResponse;
-import com.jcabi.w3c.ValidatorBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class MarkEvaluation extends Evaluation {
 	
-
+	private static String CSS_VALIDATOR_URL = "http://www.css-validator.org/validator?uri=#{url}&warning=0&output=soap12";
+	private static String HTML_VALIDATOR_URL = "https://validator.w3.org/nu/?doc=#{url}&out=json";
+	
 	private MarkEvaluation(Source document) { super(document); }
 	
 	private MarkEvaluation(Source document,String url) { 
@@ -102,17 +104,28 @@ public class MarkEvaluation extends Evaluation {
 		return getOccurrences();
 	}
 	
+	
 	private List<Occurrence> checkRecommendation1() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		if(getUrl()!=null){		
-			String url = getUrl().substring(7);
-			occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement(), "1"));
-		}
 		
-		if(getUrl()!=null){		
-			String url = getUrl().substring(7);
-			occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement().getFirstElement(), "2"));
+		String url = getUrl();
+		if(url!=null){		
+			
+			int[] errosWarningsCss = getErrorCount(true, url);
+			int[] errosWarningsHtml = getErrorCount(false, url);
+			
+			if(errosWarningsHtml[1] > 0)
+				occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement(), "1"));
+			
+			if(errosWarningsCss[1] > 0)
+				occurrences.add(buildOccurrence("1.1", false, url, getDocument().getFirstElement().getFirstElement(), "2"));
+			
+			if(errosWarningsHtml[0] > 0)
+				occurrences.add(buildOccurrence("1.1", true, url, getDocument().getFirstElement(), "1"));
+			
+			if(errosWarningsCss[0] > 0)
+				occurrences.add(buildOccurrence("1.1", true, url, getDocument().getFirstElement().getFirstElement(), "2"));
 		}
 		
 		for (Element element : getDocument().getAllElements()) {
@@ -770,5 +783,88 @@ public class MarkEvaluation extends Evaluation {
 		return super.buildOccurrence(code, error, tag, element, OccurrenceClassification.MARK,criterio);
 	}
 	
+	public int[] getErrorCount(boolean isCss,String url){
+		int errors = 0;
+		int warnings = 0;
+		
+		try{
+			if(isCss){
+				String content = WebAgent.from(CSS_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
+				Matcher m = Pattern.compile("<m:errorcount>(\\d)*</m:errorcount>",Pattern.MULTILINE).matcher(content);
+				if(m.find())
+					errors =  Integer.valueOf(m.group(0).replace("<m:errorcount>", "").replace("</m:errorcount>", ""));
+				
+				m = Pattern.compile("<m:warningcount>(\\d)*</m:warningcount>",Pattern.MULTILINE).matcher(content);
+				
+				if(m.find())
+					warnings =  Integer.valueOf(m.group(0).replace("<m:warningcount>", "").replace("</m:warningcount>", ""));
+				
+			}else{
+				
+				String content = WebAgent.from(HTML_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
+				Gson g = new GsonBuilder().create();
+				HtmlValidation a =  g.fromJson(content, HtmlValidation.class);
+				int[] errorsWarnings = a.getQtdWarningsErros();
+				errors = errorsWarnings[1];
+				warnings = errorsWarnings[0];
+				
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return new int[]{errors,warnings};
+	}
+	
 	public OccurrenceClassification type () { return OccurrenceClassification.MARK;}
+	
+	public class HtmlValidation {
+
+		List<Message> messages = new ArrayList<HtmlValidation.Message>();
+		
+		
+		public List<Message> getMessages() {
+			return messages;
+		}
+		
+		public void setMessages(List<Message> messages) {
+			this.messages = messages;
+		}
+		
+		public int[] getQtdWarningsErros(){
+			int warnings=0;
+			int erros = 0;
+			for(Message message: this.messages ){
+				if(message.isError())
+					erros++;
+				else if (message.isWarning())
+					warnings++;
+			}
+				
+			return new int[]{warnings,erros};
+		}
+		
+		public HtmlValidation(){}
+		
+		public class Message{
+			
+			private String type;
+			
+			private String subType;
+			
+			public String getType() { return type; }
+			
+			public void setType(String type) { this.type = type; }
+			
+			public String getSubType() { return subType; }
+			
+			public void setSubType(String subType) { this.subType = subType; }
+			
+			public boolean isWarning(){ return "info".equals(type) && "warning".equals(this.subType); }
+			
+			public boolean isError(){ return "error".equals(this.type);}
+			
+		}
+	}
+	
 }
