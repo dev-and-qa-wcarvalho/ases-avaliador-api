@@ -92,8 +92,8 @@ public class MarkEvaluationTest {
 				warnings++;
 		}
 		
-		assertEquals("Should return 4 erros",4,erros);
-		assertEquals("Should return 10 warning",10,warnings);
+		assertEquals("Should return 1 erros",1,erros);
+		assertEquals("Should return 1 warning",1,warnings);
 		
 	}
 	

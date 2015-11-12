@@ -146,7 +146,7 @@ public class ContentEvaluationTest {
 		Map<OccurrenceClassification,List<Occurrence>> occurrences = from(html.toString())
 				  													.with(content().recommendation21()).check();
 		
-		assertEquals("Should return 11 occurrences", 11,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+		assertEquals("Should return 10 occurrences", 10,occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
 	}
 	
 	@Test
