@@ -68,7 +68,8 @@ public class PresentationEvaluation extends Evaluation{
 	private List<Occurrence> checkRecommendation29() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
-		String[] attributes = {"class","id", "bgcolor"};
+		// Implementação comentada, em virtude de comprometimento da performance do avaliador. Lyandro Santana - 12/11/2015
+		/*String[] attributes = {"class","id", "bgcolor"};
 		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
 		System.out.println("Processando verificação de cor...");
@@ -190,31 +191,20 @@ public class PresentationEvaluation extends Evaluation{
 			}
 		}
 		
-		System.out.println("Verificação terminada.");	
+		System.out.println("Verificação terminada.");	*/
 		
-		/*AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
-		for (Element bgcolor : getDocument().getAllElements("tr")) {
-			Attribute bgc = bgcolor.getAttributes().get("bgcolor");
-			if(bgc != null){
-				
-				int rgb = Integer.parseInt(bgc.getValue().replaceFirst("^#",""), 16);
-				color = new Color(rgb);
-				avaliadorContraste.setCores(color, color);
-				avaliadorContraste.avaliar();
-				
-				if(avaliadorContraste.getContraste() < new Double("4.5"))
-					occurrences.add(buildOccurrence("4.1", true, bgcolor.toString(), bgcolor,"1"));
-				
-				temBgcolor = true;
-			}
-		}	*/
 		
 		/*if(!temBgcolor)
 			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));*/
+		
 					
 		
-		Collections.sort(occurrences);
+		///Collections.sort(occurrences);
+		
+		//Término da rotina de Avaliação de contraste
+		
+		occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
 		return occurrences;
 			
 	}
@@ -371,7 +361,6 @@ public class PresentationEvaluation extends Evaluation{
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		
 		for (Element style : getDocument().getAllElements("style")) {
-			
 			if(!style.toString().contains("a:focus") && !style.toString().contains("a:hover")){
 				occurrences.add(buildOccurrence("4.4", true, style.toString(), style, "1"));
 				break;
