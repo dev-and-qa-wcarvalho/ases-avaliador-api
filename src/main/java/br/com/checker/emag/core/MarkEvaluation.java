@@ -24,7 +24,8 @@ import com.google.gson.GsonBuilder;
 
 public class MarkEvaluation extends Evaluation {
 	
-	private static String CSS_VALIDATOR_URL = "http://www.css-validator.org/validator?uri=#{url}&warning=0&output=soap12";
+	//private static String CSS_VALIDATOR_URL = "http://www.css-validator.org/validator?uri=#{url}&warning=0&output=soap12";
+	private static String CSS_VALIDATOR_URL = "http://jigsaw.w3.org/css-validator/validator?uri=#{url}&warning=0&output=soap12";
 	private static String HTML_VALIDATOR_URL = "https://validator.w3.org/nu/?doc=#{url}&out=json";
 	
 	private MarkEvaluation(Source document) { super(document); }

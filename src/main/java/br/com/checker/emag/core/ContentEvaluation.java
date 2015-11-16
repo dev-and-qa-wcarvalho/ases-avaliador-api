@@ -497,6 +497,7 @@ public class ContentEvaluation extends Evaluation{
 				parts = value.toString().split("/");
 				contAlt = alt.getValue();  
 			
+				if(parts.length > 0)
 				if(parts[parts.length-1].toString().equals(contAlt))
 					occurrences.add(buildOccurrence("3.6", true, img.toString(), img, "3"));
 			}
