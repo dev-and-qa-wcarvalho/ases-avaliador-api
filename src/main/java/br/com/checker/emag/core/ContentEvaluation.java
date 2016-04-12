@@ -410,10 +410,12 @@ public class ContentEvaluation extends Evaluation {
 				&& !link.getAttributeValue("href").substring(0, 1).equals("/")
 				&& !link.getAttributeValue("href").contains("javascript")) {
 
-			int[] codErro = { 400, 401, 402, 403, 404, 405, 406, 407, 408, 409,
+			/*int[] codErro = { 400, 401, 402, 403, 404, 405, 406, 407, 408, 409,
 					410, 411, 412, 414, 415, 416, 417, 418, 422, 423, 424, 425,
-					426, 450, 499, 500, 501, 502, 503, 504, 505 };
+					426, 450, 499, 500, 501, 502, 503, 504, 505 };*/
 			int codResponse = 0;
+			
+			int[] codErro = {404};
 
 			String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]+$";
 
@@ -445,11 +447,13 @@ public class ContentEvaluation extends Evaluation {
 			 * if(huc.getResponseCode() != HttpURLConnection.HTTP_OK)
 			 * System.out.println(link.toString());
 			 */
-			for (int cod : codErro)
+			for (int cod : codErro)				
+			{				
 				if (codResponse == cod) {
 					return true;
 				}
-
+			
+			}
 		}
 
 		return false;
@@ -835,16 +839,16 @@ public class ContentEvaluation extends Evaluation {
 		 * table, "1")); }
 		 */
 
-		for (Element table : getDocument().getAllElements("table")) {
+		/*for (Element table : getDocument().getAllElements("table")) {
 			for (Element caption : table.getAllElements("caption")) {
 				if (caption == null || caption.isEmpty())
 					occurrences.add(buildOccurrence("3.10", true, table
 							.getStartTag().toString(), table, "1"));
 			}
-		}
+		}*/
 
 		for (Element table : getDocument().getAllElements("table")) {
-			Attribute summary = table.getAttributes().get("summary");
+			//Attribute summary = table.getAttributes().get("summary");
 
 			boolean THusaScope = false;
 			boolean THusaId = false;
@@ -856,9 +860,9 @@ public class ContentEvaluation extends Evaluation {
 			boolean usaTfoot = false;
 			boolean usaTbody = false;
 
-			if (summary == null || summary.getValue().equals(""))
+			/*if (summary == null || summary.getValue().equals(""))
 				occurrences.add(buildOccurrence("3.10", true, table
-						.getStartTag().toString(), table, "1"));
+						.getStartTag().toString(), table, "1"));*/
 
 			for (Element thead : table.getAllElements("thead")) {
 				if (thead != null)

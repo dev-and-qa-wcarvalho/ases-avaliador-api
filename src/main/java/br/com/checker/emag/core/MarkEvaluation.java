@@ -217,13 +217,22 @@ public class MarkEvaluation extends Evaluation {
 			}
 		}
 
-		for (Element element : getDocument().getAllElements("script")) {
-			// if(element.getAttributeValue("src") ==null)
-			if (element != null)
-				occurrences.add(this.buildOccurrence("1.1", false,
-						element.toString(), element, "6"));
+		for (Element element : getDocument().getAllElements("script")) {					
+		
+					
+			if (element != null )
+			{				
+				
+				if (!element.getContent().getTextExtractor().toString().trim().equalsIgnoreCase("")) {
+					occurrences.add(this.buildOccurrence("1.1", false,
+							element.toString(), element, "6"));
+					
+				}
+				
+				
+			}
 		}
-
+		
 		this.oder(occurrences);
 
 		return occurrences;
