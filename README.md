@@ -1,4 +1,4 @@
 emag-checker
 ============
 
-Emag Web Accessibility Checker
+E-mag Web Accessibility Checker
