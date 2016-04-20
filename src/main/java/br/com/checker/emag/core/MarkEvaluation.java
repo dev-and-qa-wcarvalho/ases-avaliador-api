@@ -27,7 +27,7 @@ public class MarkEvaluation extends Evaluation {
 	// private static String CSS_VALIDATOR_URL =
 	// "http://www.css-validator.org/validator?uri=#{url}&warning=0&output=soap12";
 	private static String CSS_VALIDATOR_URL = "http://jigsaw.w3.org/css-validator/validator?uri=#{url}&warning=0&output=soap12";
-	private static String HTML_VALIDATOR_URL = "https://validator.w3.org/nu/?doc=#{url}&out=json";
+	private static String HTML_VALIDATOR_URL = "https://validator.w3.org/check?uri=#{url}&output=json";
 
 	private MarkEvaluation(Source document) {
 		super(document);
@@ -217,22 +217,20 @@ public class MarkEvaluation extends Evaluation {
 			}
 		}
 
-		for (Element element : getDocument().getAllElements("script")) {					
-		
-					
-			if (element != null )
-			{				
-				
-				if (!element.getContent().getTextExtractor().toString().trim().equalsIgnoreCase("")) {
+		for (Element element : getDocument().getAllElements("script")) {
+
+			if (element != null) {
+
+				if (!element.getContent().getTextExtractor().toString().trim()
+						.equalsIgnoreCase("")) {
 					occurrences.add(this.buildOccurrence("1.1", false,
 							element.toString(), element, "6"));
-					
+
 				}
-				
-				
+
 			}
 		}
-		
+
 		this.oder(occurrences);
 
 		return occurrences;
@@ -273,6 +271,7 @@ public class MarkEvaluation extends Evaluation {
 							linhasImg.add(this.getRow(img));
 						}
 					} else {
+
 						if (element.getContent().toString().isEmpty()
 								|| element.getContent().toString().trim()
 										.equals("")) {
@@ -283,7 +282,6 @@ public class MarkEvaluation extends Evaluation {
 					}
 				}
 			}
-
 		}
 
 		linhasImg = new ArrayList<Integer>();
@@ -314,15 +312,17 @@ public class MarkEvaluation extends Evaluation {
 							linhasImg.add(this.getRow(img));
 						}
 
-					} else {
-						if (element.getContent().toString().isEmpty()
-								|| element.getContent().toString().trim()
-										.equals("")) {
-							occurrences.add(this.buildOccurrence("1.2", false,
-									element.getStartTag().toString() + endTag,
-									element, "1"));
-						}
+					} else {						
+						if (!element.getStartTag().toString().replace(" ", "").equalsIgnoreCase("<br>") && !element.getStartTag().toString().replace(" ", "").equalsIgnoreCase("</br>")) {
 
+							if (element.getContent().toString().isEmpty()
+									|| element.getContent().toString().trim()
+											.equals("")) {
+								occurrences.add(this.buildOccurrence("1.2",
+										false, element.getStartTag().toString()
+												+ endTag, element, "1"));
+							}
+						}
 					}
 				}
 			}
@@ -352,14 +352,15 @@ public class MarkEvaluation extends Evaluation {
 
 		// CRITERIO 4
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		int count = 0;
 
-		for (Element element : getDocument().getAllElements("h1")) {
-			if (count > 0) {
+		int count = getDocument().getAllElements("h1").size();
+
+		if (count > 1) {
+			for (Element element : getDocument().getAllElements("h1")) {
+
 				occurrences.add(this.buildOccurrence("1.3", true,
 						element.toString(), element, "4"));
-			} else
-				count++;
+			}
 		}
 
 		/*
@@ -748,17 +749,17 @@ public class MarkEvaluation extends Evaluation {
 		boolean existeAncora = false;
 		String href = link.getAttributeValue("href");
 		String ancora = href.substring(1, href.length());
-			
-			for (Element a : getDocument().getAllElements()) {
-				if (a.getAttributeValue("id") != null
-						&& a.getAttributeValue("id").equals(ancora)) {
-					existeAncora = true;
-				}
-				if (a.getAttributeValue("name") != null
-						&& a.getAttributeValue("name").equals(ancora)) {
-					existeAncora = true;
-				}
-			}		
+
+		for (Element a : getDocument().getAllElements()) {
+			if (a.getAttributeValue("id") != null
+					&& a.getAttributeValue("id").equals(ancora)) {
+				existeAncora = true;
+			}
+			if (a.getAttributeValue("name") != null
+					&& a.getAttributeValue("name").equals(ancora)) {
+				existeAncora = true;
+			}
+		}
 
 		return existeAncora;
 	}
@@ -861,7 +862,7 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		Element firstElement = this.getDocument().getFirstElement();
 
-		if (firstElement.toString().equals("<!DOCTYPE html>")) {
+		if (firstElement.toString().replace(" ", "").equals("<!DOCTYPEhtml>")) {
 
 			Element header = getDocument().getFirstElement("header");
 			Element nav = getDocument().getFirstElement("nav");
