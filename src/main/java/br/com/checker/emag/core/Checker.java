@@ -27,17 +27,33 @@ import br.com.checker.emag.core.PresentationEvaluation.PresentationEvaluationBui
 public class Checker {
 	
 	private Source document;
+	
+	public Source getDocument() {
+		return document;
+	}
+
+	public void setDocument(Source document) {
+		this.document = document;
+	}
+
+	
+
 	private Map<OccurrenceClassification,List<Occurrence>> occurrencesMap = new HashMap<OccurrenceClassification, List<Occurrence>>();;
 	private String url;
 	
 	private Checker(String html) { 
 		
+		
 		this.document = new Source(html);
+		setDocument(this.document);
 		this.document.fullSequentialParse();
 	}
 	
 	private Checker(String html,String url) { 
 		this(html);
+
+		this.document = new Source(html);
+		setDocument(this.document);
 		this.url = url;
 	}
 	
