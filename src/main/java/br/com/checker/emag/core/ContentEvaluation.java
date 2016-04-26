@@ -496,8 +496,22 @@ public class ContentEvaluation extends Evaluation {
 	}
 
 	private boolean hasContent(Element link) {
-		return StringUtils.isNotBlank(link.getContent().getTextExtractor()
-				.toString());
+		
+		int quantidadeElementosDentroLink = 0;
+		boolean temConteudo;
+		
+		quantidadeElementosDentroLink = link.getAllElements().size();
+		//Verifica se há elementos como img, span e outros dentro do link. o valor 1 já está atribuído a tag <a> (link avaliado)
+		if(quantidadeElementosDentroLink > 1)	
+		{
+		temConteudo = true;
+		}
+		//avalia apenas o texto dentro do link ex: <a>texto entre o link</a>
+		else
+		{
+			temConteudo = StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
+		}
+		return temConteudo;
 	}
 
 	private boolean hasTitle(Element link) {
