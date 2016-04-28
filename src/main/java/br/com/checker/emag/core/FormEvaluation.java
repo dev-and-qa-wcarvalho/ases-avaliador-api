@@ -75,10 +75,15 @@ public class FormEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation39());
 		getOccurrences().addAll(checkRecommendation40());
 		getOccurrences().addAll(checkRecommendation41());
-		getOccurrences().addAll(checkRecommendation42());
-		getOccurrences().addAll(checkRecommendation43());
+		
+		//Metodos não são utilizados, porque requerem validação humana
+		//getOccurrences().addAll(checkRecommendation42());
+		//getOccurrences().addAll(checkRecommendation43());
+		
 		getOccurrences().addAll(checkRecommendation44());
-		getOccurrences().addAll(checkRecommendation45());
+		
+		//Métodos não são utilizados, porque requerem validação humana
+		//getOccurrences().addAll(checkRecommendation45());
 		
 		return getOccurrences();
 	}
