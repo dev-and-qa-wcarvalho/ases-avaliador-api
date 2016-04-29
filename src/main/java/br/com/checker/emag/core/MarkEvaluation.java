@@ -310,7 +310,7 @@ public class MarkEvaluation extends Evaluation {
 
 							if (!linhasImg.contains(this.getRow(img))) {
 								occurrences.add(this.buildOccurrence("1.2",
-										false, img.toString(), img, "3")); //"1"));
+										false, img.toString(), img, "2")); //"1"));
 							}
 
 							linhasImg.add(this.getRow(img));
@@ -324,7 +324,7 @@ public class MarkEvaluation extends Evaluation {
 											.equals("")) {
 								occurrences.add(this.buildOccurrence("1.2",
 										false, element.getStartTag().toString()
-												+ endTag, element,  "3"));//"1"));
+												+ endTag, element,  "2"));//"1"));
 							}
 						}
 					}
@@ -581,7 +581,7 @@ public class MarkEvaluation extends Evaluation {
 			if (contLink != null && contLink.length() > 1
 					&& contLink.substring(0, 1).equals("#")) {
 				occurrences.add(this.buildOccurrence("1.5", false,
-						link.toString(), link, "10"));//"4"));
+						link.toString(), link, "9"));//"4"));
 				break;
 			}
 
