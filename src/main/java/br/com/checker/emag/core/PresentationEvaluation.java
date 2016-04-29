@@ -55,7 +55,7 @@ public class PresentationEvaluation extends Evaluation{
 	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
-		getOccurrences().addAll(checkRecommendation29());
+		//getOccurrences().addAll(checkRecommendation29());
 		getOccurrences().addAll(checkRecommendation30());
 		getOccurrences().addAll(checkRecommendation31());
 		getOccurrences().addAll(checkRecommendation32());

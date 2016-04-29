@@ -66,9 +66,9 @@ public class BehaviorEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation11());
 		getOccurrences().addAll(checkRecommendation12());
 		getOccurrences().addAll(checkRecommendation13());
-		getOccurrences().addAll(checkRecommendation14());
+		//getOccurrences().addAll(checkRecommendation14()); comentado por Gibran
 		getOccurrences().addAll(checkRecommendation15());
-		getOccurrences().addAll(checkRecommendation16());
+		//getOccurrences().addAll(checkRecommendation16()); comentado por Gibran
 		
 		return getOccurrences();
 	}
@@ -107,28 +107,28 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 			}
 			
 			if(dbclick!=null){
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "6"));//"2"));
 			}
 			
 			if(ondblclick!=null){
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "6"));//"2"));
 			}
 			
 			if (onmousedown != null && onkeydown == null) {
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));//"1"));
 			}
 			
 			if (onmouseup != null && onkeyup == null) {
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));//"1"));
 			}
 			/*if (onclick != null && onkeypress == null) {
 				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
 			}*/
 			if (onmouseover != null && onfocus == null) {
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));//"1"));
 			}
 			if (onmouseout != null && onblur == null) {
-				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "1"));
+				occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "2"));//"1"));
 			}
 		}
 		
@@ -145,7 +145,7 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 				if(element != null){
 					for(String attribute : attributes){
 						if (element.getAttributeValue(attribute) != null) {
-							occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "3"));	
+							occurrences.add(this.buildOccurrence("2.1", true, element.toString(), element, "8"));//"3"));	
 						}
 					}
 				}

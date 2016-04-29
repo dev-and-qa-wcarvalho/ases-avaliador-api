@@ -185,11 +185,11 @@ public class ContentEvaluation extends Evaluation {
 		getOccurrences().addAll(checkRecommendation17());
 		getOccurrences().addAll(checkRecommendation18());
 		getOccurrences().addAll(checkRecommendation19());
-		getOccurrences().addAll(checkRecommendation20());
+		//getOccurrences().addAll(checkRecommendation20()); comentado por Gibran
 		getOccurrences().addAll(checkRecommendation21());
 		getOccurrences().addAll(checkRecommendation22());
 		getOccurrences().addAll(checkRecommendation23());
-		getOccurrences().addAll(checkRecommendation24());
+		//getOccurrences().addAll(checkRecommendation24());
 		getOccurrences().addAll(checkRecommendation25());
 		getOccurrences().addAll(checkRecommendation26());
 		getOccurrences().addAll(checkRecommendation27());
@@ -245,16 +245,16 @@ public class ContentEvaluation extends Evaluation {
 
 			if (lang == null && (xmlLang != null || xmlns != null)) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "2"));
+						html, "3"));//"2"));
 			} else if (lang != null && lang.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "2"));
+						html, "3"));//"2"));
 			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "2"));
+						html, "3"));//"2"));
 			} else if (xmlns != null && xmlns.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "2"));
+						html, "3"));//"2"));
 			}
 
 			/*
@@ -349,7 +349,9 @@ public class ContentEvaluation extends Evaluation {
 
 	private List<Occurrence> checkRecommendation21() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-
+		
+		Element LinkComImg;
+		
 		for (Element link : getDocument().getAllElements("a")) {
 			String href = link.getAttributeValue("href");
 			String title = link.getAttributeValue("title");
@@ -358,18 +360,34 @@ public class ContentEvaluation extends Evaluation {
 			if (hasEqualsContentHref(link) && isRegistroBr(content))
 				occurrences.add(this.buildOccurrence("3.5", false,
 						link.toString(), link, "1"));
-
-			if (!hasContent(link))
-				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "2"));
-			else if (hasImgWithoutAlt(link))
-				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "2"));
+			
+			
+			LinkComImg = link.getFirstElement("img");
+			
+			if(LinkComImg == null)
+			{
+				if (!hasContent(link))
+				{
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "3"));//"2"));
+				}
+			}
+			else
+			{
+				if (hasLinkComImgWithoutAlt(link))
+				{
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "3"));//"2"));
+				}
+			}
+			
+			
+				
 
 			// if(hasTitle(link) && isNotAlt(link))
 			if (hasTitle(link) && !hasContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "3"));
+						link.toString(), link, "4"));//"3"));
 
 			/*
 			 * if(!hasTitle(link) && !hasContent(link) &&
@@ -380,31 +398,31 @@ public class ContentEvaluation extends Evaluation {
 
 			if (hasImgWithoutAlt(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "4"));
+						link.toString(), link, "5"));//"4"));
 
 			if (hasLeiaMaisDescription(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "5"));
+						link.toString(), link, "6"));//"5"));
 
 			if (hasDiferenteContentSameLink(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "6"));
+						link.toString(), link, "10"));//"6"));
 
 			if (isTitleEqualsContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "8"));
+						link.toString(), link, "12"));//"8"));
 
 			if (hasSameContentDiferentLink(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "7"));
+						link.toString(), link, "11"));//"7"));
 
 			if (link != null && hasLongContent(link))
 				occurrences.add(this.buildOccurrence("3.5", false,
-						link.toString(), link, "9"));
+						link.toString(), link, "13"));//"9"));
 
 			if (link != null && isLinkUnavailable(link, getUrl()))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "10"));
+						link.toString(), link, "14"));//"10"));
 
 		}
 		return occurrences;
@@ -494,13 +512,29 @@ public class ContentEvaluation extends Evaluation {
 		return link.getContent().getTextExtractor().toString().length() > 500 ? true
 				: false;
 	}
-
+	
+	
 	private boolean hasContent(Element link) {
-		
-		int quantidadeElementosDentroLink = 0;
+				
 		boolean temConteudo;
 		
-		quantidadeElementosDentroLink = link.getAllElements().size();
+		
+		temConteudo = StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
+		
+		if(!temConteudo)
+		{
+			for (Element elemento : link.getAllElements()) {
+				temConteudo = StringUtils.isNotBlank(elemento.getContent().getTextExtractor().toString());
+				
+				if(temConteudo)
+				{
+					break;
+				}
+			}		
+		}
+		return temConteudo;
+		
+/*		quantidadeElementosDentroLink = link.getAllElements().size();
 		//Verifica se há elementos como img, span e outros dentro do link. o valor 1 já está atribuído a tag <a> (link avaliado)
 		if(quantidadeElementosDentroLink > 1)	
 		{
@@ -511,12 +545,34 @@ public class ContentEvaluation extends Evaluation {
 		{
 			temConteudo = StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
 		}
-		return temConteudo;
+		return temConteudo;*/
 	}
 
 	private boolean hasTitle(Element link) {
 		String title = link.getAttributeValue("title");
 		return title != null && StringUtils.isNotBlank(title);
+	}
+
+	
+
+	private boolean hasLinkComImgWithoutAlt(Element link) {
+		
+		boolean temImgSemAlt = false;
+		
+			String alt;
+			
+			for (Element elementoImagem : link.getAllElements("img")) {
+				
+				alt = elementoImagem.getAttributeValue("alt");
+				temImgSemAlt = (alt == null || StringUtils.isBlank(alt));
+				if(!temImgSemAlt)
+				{
+				break;
+				}
+			}
+		
+				
+		return temImgSemAlt;
 	}
 
 	private boolean hasImgWithoutAlt(Element link) {
@@ -526,7 +582,7 @@ public class ContentEvaluation extends Evaluation {
 		String alt = img.getAttributeValue("alt");
 		return alt == null || StringUtils.isBlank(alt);
 	}
-
+	
 	private boolean hasLeiaMaisDescription(Element link) {
 		String title = link.getAttributeValue("title");
 		String content = link.getContent().getTextExtractor().toString();
@@ -746,7 +802,7 @@ public class ContentEvaluation extends Evaluation {
 																"3.6",
 																false,
 																imgA.toString(),
-																imgA, "5"));
+																imgA, "7"));//"5"));
 												aMap.put(srcAtt.getValue(), img);
 												isVerificado = true;
 											}
@@ -762,7 +818,7 @@ public class ContentEvaluation extends Evaluation {
 
 				if (isVerificado)
 					occurrences.add(buildOccurrence("3.6", false,
-							img.toString(), img, "5"));
+							img.toString(), img, "7"));//"5"));
 			}
 		}
 
@@ -788,7 +844,7 @@ public class ContentEvaluation extends Evaluation {
 			if (alt != null && title != null) {
 				if (title.getValue().equals(alt.getValue()))
 					occurrences.add(buildOccurrence("3.6", true,
-							img.toString(), img, "6"));
+							img.toString(), img, "8"));//"6"));
 			}
 		}
 
@@ -974,9 +1030,9 @@ public class ContentEvaluation extends Evaluation {
 			 * paragrafo.toString(), paragrafo, "1")); }
 			 */
 
-			if (paragrafo.getContent().length() > 1000)
+			/*if (paragrafo.getContent().length() > 1000)
 				occurrences.add(this.buildOccurrence("3.11", false,
-						paragrafo.toString(), paragrafo, "1"));
+						paragrafo.toString(), paragrafo, "1"));*/ //comentado por Gibran
 
 			String align = paragrafo.getAttributeValue("align");
 			if ("justify".equals(align))
