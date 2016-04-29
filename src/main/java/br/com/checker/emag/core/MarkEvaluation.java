@@ -270,7 +270,7 @@ public class MarkEvaluation extends Evaluation {
 							if (!linhasImg.contains(this.getRow(img))) {
 								occurrences.add(this.buildOccurrence("1.2",
 										true, img.getStartTag().toString(),
-										img, "1"));
+										img, "3"));//"1"));
 							}
 							linhasImg.add(this.getRow(img));
 						}
@@ -281,7 +281,7 @@ public class MarkEvaluation extends Evaluation {
 										.equals("")) {
 							occurrences.add(this.buildOccurrence("1.2", true,
 									element.getStartTag().toString() + endTag,
-									element, "1"));
+									element, "3"));//"1"));
 						}
 					}
 				}
