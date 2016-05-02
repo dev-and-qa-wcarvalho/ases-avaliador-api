@@ -382,12 +382,24 @@ public class ContentEvaluation extends Evaluation {
 			}
 			
 			
-				
-
-			// if(hasTitle(link) && isNotAlt(link))
-			if (hasTitle(link) && !hasContent(link))
-				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "4"));//"3"));
+			if(LinkComImg == null)
+			{
+				// if(hasTitle(link) && isNotAlt(link))
+				if (hasTitle(link) 
+						&& !hasContent(link))
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "4"));//"3"));
+			}
+			else
+			{
+				// if(hasTitle(link) && isNotAlt(link))
+				if (hasTitle(link) 
+						&& !hasContent(link)
+						&& hasLinkComImgWithoutAlt(link))
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "4"));//"3"));
+			}
+			
 
 			/*
 			 * if(!hasTitle(link) && !hasContent(link) &&
@@ -438,10 +450,12 @@ public class ContentEvaluation extends Evaluation {
 		if (href != null && !href.startsWith("http") && url != null)
 			href = url + "/" + link.getAttributeValue("href");
 
-		if (link.getAttributeValue("href") != null
+		if (link.getAttributeValue("href") != null 
+				&& !link.getAttributeValue("href").toString().trim().equalsIgnoreCase("")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("#")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("/")
-				&& !link.getAttributeValue("href").contains("javascript")) {
+				&& !link.getAttributeValue("href").contains("javascript")
+				&& !link.getAttributeValue("href").contains("@")) {
 
 			/*
 			 * int[] codErro = { 400, 401, 402, 403, 404, 405, 406, 407, 408,
@@ -466,6 +480,7 @@ public class ContentEvaluation extends Evaluation {
 				newurl = newurl.replace(" ", "%20");
 
 				URL u = new URL(newurl);
+			
 				HttpURLConnection huc = (HttpURLConnection) u.openConnection();
 				huc.setRequestMethod("GET");
 				// huc.setRequestMethod("HEAD");
