@@ -404,12 +404,12 @@ public class MarkEvaluation extends Evaluation {
 
 		List<Element> elementsObj = getDocument().getAllElements();
 
-		int anterior = 1;
+		int anterior = 0;
 		for (Element htmlElement : elementsObj) {
 			if (htmlElement.getName().matches("h[1-6]")) {
 				int tagId = Integer
 						.parseInt(htmlElement.getName().substring(1));
-				if (!(tagId <= anterior)) {
+				if (!(tagId <= anterior) || (tagId < anterior))  {
 					if (!(tagId == anterior + 1))
 						occurrences.add(this.buildOccurrence("1.3", true,
 								htmlElement.toString(), htmlElement, "2"));
@@ -417,14 +417,11 @@ public class MarkEvaluation extends Evaluation {
 				anterior = tagId;
 			}
 		}
+		
+		
 
 		if (!hasH())
-			occurrences
-					.add(this
-							.buildOccurrence(
-									"1.3",
-									true,
-									"Observa&ccedil;&atilde;o - Sem fonte (os n&iacute;veis de t&iacute;tulo n&atilde;o foram utilizados)",
+			occurrences.add(this.buildOccurrence("1.3",	true, "Observa&ccedil;&atilde;o - Sem fonte (os n&iacute;veis de t&iacute;tulo n&atilde;o foram utilizados)",
 									getDocument().getFirstElement(), "1"));
 
 		// Sorting
