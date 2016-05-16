@@ -577,12 +577,12 @@ public class MarkEvaluation extends Evaluation {
 		for (Element link : getDocument().getAllElements("a")) {
 			String contLink = link.getAttributeValue("href");
 			if (contLink != null && contLink.length() > 1
-					&& contLink.substring(0, 1).equals("#")) {
-				occurrences.add(this.buildOccurrence("1.5", false,
-						link.toString(), link, "9"));//"4"));
-				break;
+					&& !contLink.substring(0, 1).equals("#")) {
+				occurrences.add(this.buildOccurrence("1.5", true,
+						link.toString(), link, "9"));//"4"));				
 			}
-
+							
+			break;
 		}
 
 		/*
