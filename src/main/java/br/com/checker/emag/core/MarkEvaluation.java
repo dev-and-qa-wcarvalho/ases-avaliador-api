@@ -408,14 +408,18 @@ public class MarkEvaluation extends Evaluation {
 		int anterior = 0;
 		for (Element htmlElement : elementsObj) {
 			if (htmlElement.getName().matches("h[1-6]")) {
-				int tagId = Integer
-						.parseInt(htmlElement.getName().substring(1));
-				if (!(tagId <= anterior) || (tagId < anterior))  {
-					if (!(tagId == anterior + 1))
+				int tagId = Integer.parseInt(htmlElement.getName().substring(1));
+				if (!(tagId <= anterior))  {
+					if (!(tagId -1 == anterior))
+					{
 						occurrences.add(this.buildOccurrence("1.3", true,
 								htmlElement.toString(), htmlElement, "2"));
+					}					
+						
 				}
-				anterior = tagId;
+					anterior = tagId;
+				
+				
 			}
 		}
 		
