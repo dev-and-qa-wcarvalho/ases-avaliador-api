@@ -165,23 +165,74 @@ public class MarkEvaluation extends Evaluation {
 
 			int[] errosWarningsCss = getErrorCount(true, url);
 			int[] errosWarningsHtml = getErrorCount(false, url);
-
-			if (errosWarningsHtml[1] > 0)
+			int avisoHtml = 0;
+			int errosHtml = 0;
+			int avisoCss = 0;
+			int errosCss = 0;
+			
+			
+			avisoHtml = errosWarningsHtml[1];
+			
+			if (avisoHtml > 0)	
+			{
+				for(;avisoHtml > 0; avisoHtml--)
+				{
 				occurrences.add(buildOccurrence("1.1", false, url,
-						getDocument().getFirstElement(), "1"));
+						getDocument().getFirstElement(), "7"));//"1"));
+				}
+			}
+				
+			/*if (errosWarningsHtml[1] > 0)
+				System.out.println(errosWarningsHtml[1]);
+			
+				occurrences.add(buildOccurrence("1.1", false, url,
+						getDocument().getFirstElement(), "1"));*/
 
-			if (errosWarningsCss[1] > 0)
+			avisoCss = errosWarningsCss[1];
+			
+			if (avisoCss > 0)	
+			{
+				for(;avisoCss > 0; avisoCss--)
+				{
+					occurrences.add(buildOccurrence("1.1", false, url, 
+							getDocument().getFirstElement().getFirstElement(), "8"));//"2"));
+				}
+			}
+			/*if (errosWarningsCss[1] > 0)
+				System.out.println(errosWarningsCss[1]);
 				occurrences
 						.add(buildOccurrence("1.1", false, url, getDocument()
-								.getFirstElement().getFirstElement(), "2"));
+								.getFirstElement().getFirstElement(), "2"));*/
 
-			if (errosWarningsHtml[0] > 0)
+			errosHtml = errosWarningsHtml[0];
+			
+			if (errosHtml > 0)	
+			{
+				for(;errosHtml > 0; errosHtml--)
+				{
+					occurrences.add(buildOccurrence("1.1", true, url, getDocument()
+							.getFirstElement(), "1"));
+				}
+			}
+			/*if (errosWarningsHtml[0] > 0)
+				System.out.println(errosWarningsHtml[0]);
 				occurrences.add(buildOccurrence("1.1", true, url, getDocument()
-						.getFirstElement(), "1"));
+						.getFirstElement(), "1"));*/
 
-			if (errosWarningsCss[0] > 0)
+			errosCss = errosWarningsCss[0];
+			
+			if (errosCss > 0)	
+			{
+				for(;errosCss > 0; errosCss--)
+				{
+					occurrences.add(buildOccurrence("1.1", true, url, getDocument()
+							.getFirstElement().getFirstElement(), "2"));
+				}
+			}
+			/*if (errosWarningsCss[0] > 0)
+				System.out.println(errosWarningsCss[0]);
 				occurrences.add(buildOccurrence("1.1", true, url, getDocument()
-						.getFirstElement().getFirstElement(), "2"));
+						.getFirstElement().getFirstElement(), "2"));*/
 		}
 
 		for (Element element : getDocument().getAllElements()) {
@@ -1010,30 +1061,21 @@ public class MarkEvaluation extends Evaluation {
 
 		try {
 			if (isCss) {
-				String content = WebAgent
-						.from(CSS_VALIDATOR_URL.replace("#{url}", url))
-						.withGetRequest().execute().getContent();
-				Matcher m = Pattern.compile(
-						"<m:errorcount>(\\d)*</m:errorcount>",
-						Pattern.MULTILINE).matcher(content);
+				String content = WebAgent.from(CSS_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
+				
+				
+				Matcher m = Pattern.compile("<m:errorcount>(\\d)*</m:errorcount>",Pattern.MULTILINE).matcher(content);
 				if (m.find())
-					errors = Integer.valueOf(m.group(0)
-							.replace("<m:errorcount>", "")
-							.replace("</m:errorcount>", ""));
+					errors = Integer.valueOf(m.group(0).replace("<m:errorcount>", "").replace("</m:errorcount>", ""));
 
-				m = Pattern.compile("<m:warningcount>(\\d)*</m:warningcount>",
-						Pattern.MULTILINE).matcher(content);
+				m = Pattern.compile("<m:warningcount>(\\d)*</m:warningcount>", Pattern.MULTILINE).matcher(content);
 
 				if (m.find())
-					warnings = Integer.valueOf(m.group(0)
-							.replace("<m:warningcount>", "")
-							.replace("</m:warningcount>", ""));
+					warnings = Integer.valueOf(m.group(0).replace("<m:warningcount>", "").replace("</m:warningcount>", ""));
 
 			} else {
 
-				String content = WebAgent
-						.from(HTML_VALIDATOR_URL.replace("#{url}", url))
-						.withGetRequest().execute().getContent();
+				String content = WebAgent.from(HTML_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
 				Gson g = new GsonBuilder().create();
 				HtmlValidation a = g.fromJson(content, HtmlValidation.class);
 				int[] errorsWarnings = a.getQtdWarningsErros();
