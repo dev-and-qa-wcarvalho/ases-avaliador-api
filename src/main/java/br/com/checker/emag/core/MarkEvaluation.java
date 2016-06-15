@@ -928,39 +928,19 @@ public class MarkEvaluation extends Evaluation {
 			Element footer = getDocument().getFirstElement("footer");		
 
 			if (header == null)
-				occurrences
-						.add(this
-								.buildOccurrence(
-										"1.8",
-										false,
-										"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <HEADER>)",
+				occurrences.add(this.buildOccurrence("1.8",false,"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <HEADER>)",
 										getDocument().getFirstElement(), "3"));//"1"));
 
 			if (nav == null)
-				occurrences
-						.add(this
-								.buildOccurrence(
-										"1.8",
-										false,
-										"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <NAV>)",
+				occurrences.add(this.buildOccurrence("1.8",false,"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <NAV>)",
 										getDocument().getFirstElement(), "3"));//"1"));
 
 			if (section == null)
-				occurrences
-						.add(this
-								.buildOccurrence(
-										"1.8",
-										false,
-										"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <SECTION>)",
+				occurrences.add(this.buildOccurrence("1.8",false,"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <SECTION>)",
 										getDocument().getFirstElement(), "3"));//"1"));
 
 			if (footer == null)
-				occurrences
-						.add(this
-								.buildOccurrence(
-										"1.8",
-										false,
-										"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <FOOTER>)",
+				occurrences.add(this.buildOccurrence("1.8",false,"Observa&ccedil;&atilde;o - Sem fonte (N&atilde;o existe tag <FOOTER>)",
 										getDocument().getFirstElement(), "3"));//"1"));
 
 		} else {
@@ -1062,7 +1042,6 @@ public class MarkEvaluation extends Evaluation {
 		try {
 			if (isCss) {
 				String content = WebAgent.from(CSS_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
-				
 				
 				Matcher m = Pattern.compile("<m:errorcount>(\\d)*</m:errorcount>",Pattern.MULTILINE).matcher(content);
 				if (m.find())
