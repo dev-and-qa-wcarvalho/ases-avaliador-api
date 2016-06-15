@@ -1,9 +1,10 @@
 package br.com.checker.emag.core;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,14 +16,19 @@ import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.Source;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
 
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.ContentRecommendation;
+import br.com.checker.emag.util.UrlSemArquiNoFinal;
 
 public class ContentEvaluation extends Evaluation {
 
@@ -49,7 +55,6 @@ public class ContentEvaluation extends Evaluation {
 		public SpecificRecommendation recommendation17() {
 			return new EvaluationRecommendation17();
 		}
-
 		public SpecificRecommendation recommendation18() {
 			return new EvaluationRecommendation18();
 		}
@@ -300,13 +305,12 @@ public class ContentEvaluation extends Evaluation {
 		
 		String titulo_site = "";
 		
-		if (titulo != null) {
-			titulo_site = titulo.getContent().getTextExtractor().toString();			
+		if (titulo != null) {					
+				
+				titulo_site = titulo.getContent().getTextExtractor().toString();			
 		} 
-		
+					
 		return titulo_site;
-		
-
 	}
 
 	private List<Occurrence> checkRecommendation19() {
@@ -321,12 +325,7 @@ public class ContentEvaluation extends Evaluation {
 		// if(head != null) {
 		Element title = getDocument().getFirstElement("title");
 		if (title == null) {
-			occurrences
-					.add(this
-							.buildOccurrence(
-									"3.3",
-									true,
-									" Observa&ccedil;&atilde;o â€“ Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)",
+			occurrences.add(this.buildOccurrence("3.3",true," Observa&ccedil;&atilde;o â€“ Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)",
 									getDocument().getFirstElement(), "1"));
 			// occurrences.add(new Occurrence("3.3", true,
 			// "Sem fonte (nï¿½o existe tï¿½tulo na pï¿½gina)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
@@ -349,9 +348,13 @@ public class ContentEvaluation extends Evaluation {
 
 	private List<Occurrence> checkRecommendation21() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
+		UrlSemArquiNoFinal objetoUrlSemArquiNoFinal = new UrlSemArquiNoFinal();
+		
+		String urlSemArquiNoFinal = objetoUrlSemArquiNoFinal.urlSemArquivoNoFinal(getUrl());
 		
 		Element LinkComImg;
 		
+				
 		for (Element link : getDocument().getAllElements("a")) {
 			String href = link.getAttributeValue("href");
 			String title = link.getAttributeValue("title");
@@ -431,32 +434,47 @@ public class ContentEvaluation extends Evaluation {
 			if (link != null && hasLongContent(link))
 				occurrences.add(this.buildOccurrence("3.5", false,
 						link.toString(), link, "13"));//"9"));
-
-			if (link != null && isLinkUnavailable(link, getUrl()))
-				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "14"));//"10"));
-
+			
+			String retorno = "";
+			if (link != null)
+				retorno = isLinkUnavailable(link, urlSemArquiNoFinal);
+				if(retorno.equalsIgnoreCase("erro"))
+						{
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "14"));//"10"));
+						}else if(retorno.equalsIgnoreCase("aviso"))
+						{
+							occurrences.add(this.buildOccurrence("3.5", false,
+									link.toString(), link, "15"));//"10"));
+						}
+			
 		}
 		return occurrences;
 	}
-
-	private boolean isLinkUnavailable(Element link, String url) {
+		
+	private String isLinkUnavailable(Element link, String url) {
 
 		String href = link.getAttributeValue("href");
-
+		
 		if (href != null && href.startsWith("www"))
+		{
 			href = "http://" + href;
+		}
 
 		if (href != null && !href.startsWith("http") && url != null)
+		{
 			href = url + "/" + link.getAttributeValue("href");
-
+			
+		}
+		
 		if (link.getAttributeValue("href") != null 
 				&& !link.getAttributeValue("href").toString().trim().equalsIgnoreCase("")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("#")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("/")
 				&& !link.getAttributeValue("href").contains("javascript")
 				&& !link.getAttributeValue("href").contains("@")) {
-
+			
+				
 			
 			/*
 			 * int[] codErro = { 400, 401, 402, 403, 404, 405, 406, 407, 408,
@@ -472,6 +490,9 @@ public class ContentEvaluation extends Evaluation {
 			// if(!IsMatch(href,regex))
 			// return true;
 
+			HttpMethod metodoRequisicaoGET = null;
+			HttpClient clienteHTTPJakartaCommons;
+			URL UrlConvertida;
 			try {
 				String[] test = href.split("\\../");
 				String newurl = "";
@@ -479,19 +500,41 @@ public class ContentEvaluation extends Evaluation {
 					newurl = newurl + tes.trim();
 
 				newurl = newurl.replace(" ", "%20");
-
-				URL u = new URL(newurl);
-			
-				HttpURLConnection huc = (HttpURLConnection) u.openConnection();
-				huc.setRequestMethod("GET");
-				// huc.setRequestMethod("HEAD");
-				huc.connect();
-				codResponse = huc.getResponseCode();
-				huc.disconnect();
-			} catch (MalformedURLException e) {
-				return true;
+				
+				//UrlConvertida = new URL(newurl);
+				
+				
+				System.out.println(newurl);
+				//CÃ³digo copiado da classe WebAgent.java para garantir o acesso 
+				//aos links da pÃ¡gina por meio do cliente da API Jakarta Commons VErsÃ£o 3.1 
+				clienteHTTPJakartaCommons = new HttpClient();
+				clienteHTTPJakartaCommons.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,false));
+				clienteHTTPJakartaCommons.getParams().setParameter("http.protocol.allow-circular-redirects", true); 
+				
+				metodoRequisicaoGET = new GetMethod(URLEncoder.encode(newurl, "UTF-8"));
+				metodoRequisicaoGET.setRequestHeader("http.agent", "Jakarta Commons-HttpClient/3.1");
+				metodoRequisicaoGET.setFollowRedirects(true);
+				
+				codResponse = clienteHTTPJakartaCommons.executeMethod(metodoRequisicaoGET);
+				
+			} catch (MalformedURLException e) {				
+				e.printStackTrace();
+				return "aviso";
+				
 			} catch (IOException e) {
-				return true;
+				e.printStackTrace();
+				return "aviso";
+				
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				return "aviso";
+			
+			} finally {
+				
+				if (metodoRequisicaoGET != null){
+					metodoRequisicaoGET.releaseConnection();
+				}
+							
 			}
 
 			/*
@@ -500,13 +543,13 @@ public class ContentEvaluation extends Evaluation {
 			 */
 			for (int cod : codErro) {
 				if (codResponse == cod) {
-					return true;
+					return "erro";
 				}
 
 			}
 		}
 
-		return false;
+		return "false";
 	}
 
 	private static boolean IsMatch(String s, String pattern) {
@@ -551,7 +594,7 @@ public class ContentEvaluation extends Evaluation {
 		return temConteudo;
 		
 /*		quantidadeElementosDentroLink = link.getAllElements().size();
-		//Verifica se há elementos como img, span e outros dentro do link. o valor 1 já está atribuído a tag <a> (link avaliado)
+		//Verifica se hï¿½ elementos como img, span e outros dentro do link. o valor 1 jï¿½ estï¿½ atribuï¿½do a tag <a> (link avaliado)
 		if(quantidadeElementosDentroLink > 1)	
 		{
 		temConteudo = true;
@@ -934,89 +977,47 @@ public class ContentEvaluation extends Evaluation {
 
 	private List<Occurrence> checkRecommendation26() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-
-		/*
-		 * for (Element table : getDocument().getAllElements("table")) {
-		 * occurrences.add(buildOccurrence("3.10", false, table.toString(),
-		 * table, "1")); }
-		 */
-
-		/*
-		 * for (Element table : getDocument().getAllElements("table")) { for
-		 * (Element caption : table.getAllElements("caption")) { if (caption ==
-		 * null || caption.isEmpty()) occurrences.add(buildOccurrence("3.10",
-		 * true, table .getStartTag().toString(), table, "1")); } }
-		 */
-
+		boolean temAssociacao = false;
+		
 		for (Element table : getDocument().getAllElements("table")) {
 			// Attribute summary = table.getAttributes().get("summary");
 
-			boolean THusaScope = false;
-			boolean THusaId = false;
-			boolean THusaHeaders = false;
-			boolean TDusaScope = false;
-			boolean TDusaId = false;
-			boolean TDusaHeaders = false;
-			boolean usaThead = false;
-			boolean usaTfoot = false;
-			boolean usaTbody = false;
-
-			/*
-			 * if (summary == null || summary.getValue().equals(""))
-			 * occurrences.add(buildOccurrence("3.10", true, table
-			 * .getStartTag().toString(), table, "1"));
-			 */
-
-			for (Element thead : table.getAllElements("thead")) {
-				if (thead != null)
-					usaThead = true;
+			temAssociacao = false;
+	
+			if(table.getAllElements("thead").size() > 0 && table.getAllElements("tbody").size() > 0)
+			{
+				temAssociacao = true;
 			}
-
-			for (Element tfoot : table.getAllElements("tfoot")) {
-				if (tfoot != null)
-					usaTfoot = true;
+			else
+			{				
+				for (Element coluna : table.getAllElements("td")) {
+					if(coluna.getAttributes().get("id") != null || coluna.getAttributes().get("headers") != null || 
+							coluna.getAttributes().get("scope") != null || coluna.getAttributes().get("axis") != null)
+					{
+						temAssociacao = true;
+					}
+					
+				}
+				if(!temAssociacao)
+				{				
+					for (Element coluna : table.getAllElements("th")) {
+						if(coluna.getAttributes().get("id") != null || coluna.getAttributes().get("headers") != null || 
+							coluna.getAttributes().get("scope") != null || coluna.getAttributes().get("axis") != null)
+						{
+							temAssociacao = true;
+						}
+					
+					}
+				}
 			}
-
-			for (Element tbody : table.getAllElements("tbody")) {
-				if (tbody != null)
-					usaTbody = true;
+					
+			if(!temAssociacao)
+			{
+				occurrences.add(this.buildOccurrence("3.10", true, table.getStartTag().toString(), table, "1"));
 			}
-
-			/*
-			 * if(!usaThead && !usaTbody && !usaTfoot){
-			 * 
-			 * //occurrences.add(this.buildOccurrence("3.10", true,
-			 * table.getAllStartTags("table").get(0).toString(), table, "1"));
-			 * 
-			 * for (Element th : table.getAllElements("th")) { Attribute scope =
-			 * th.getAttributes().get("scope"); Attribute headers =
-			 * th.getAttributes().get("headers"); Attribute id =
-			 * th.getAttributes().get("id"); if (scope != null &&
-			 * !scope.getValue().equals("")) { THusaScope = true; } else if
-			 * (headers != null && !headers.getValue().equals("")) {
-			 * THusaHeaders = true; } else if (id != null &&
-			 * !id.getValue().equals("")) { THusaId = true; }
-			 * 
-			 * if(!THusaScope && !THusaHeaders && !THusaId){
-			 * occurrences.add(this.buildOccurrence("3.10", true, th.toString(),
-			 * th, "1")); } }
-			 * 
-			 * for (Element td : table.getAllElements("td")) { Attribute tdscope
-			 * = td.getAttributes().get("scope"); Attribute tdheaders =
-			 * td.getAttributes().get("headers"); Attribute tdid =
-			 * td.getAttributes().get("id"); if (tdscope != null &&
-			 * !tdscope.getValue().equals("")) { TDusaScope = true; } else if
-			 * (tdheaders != null && !tdheaders.getValue().equals("")) {
-			 * TDusaHeaders = true; } else if (tdid != null &&
-			 * !tdid.getValue().equals("")) { TDusaId = true; }
-			 * 
-			 * if(!TDusaScope && !TDusaHeaders && !TDusaId){
-			 * occurrences.add(this.buildOccurrence("3.10", true, td.toString(),
-			 * td, "1")); } }
-			 * 
-			 * }
-			 */
+			
 		}
+				
 		// Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
 			public int compare(Occurrence occurrence1, Occurrence occurrence2) {
