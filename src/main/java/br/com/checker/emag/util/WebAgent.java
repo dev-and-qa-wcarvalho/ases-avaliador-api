@@ -41,7 +41,8 @@ public class WebAgent {
 	
 	public WebAgent withGetRequest() {
 		this.method = new GetMethod(this.url);
-		this.method.setRequestHeader("user-agent", "Mozilla/5.0");
+		//this.method.setRequestHeader("user-agent", "Mozilla/5.0");
+		this.method.setRequestHeader("http.agent", "Jakarta Commons-HttpClient/3.1");
 		this.method.setFollowRedirects(true);
 		return this;
 	}
