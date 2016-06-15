@@ -305,6 +305,7 @@ public class ContentEvaluation extends Evaluation {
 		
 		String titulo_site = "";
 		
+		
 		if (titulo != null) {					
 				
 				titulo_site = titulo.getContent().getTextExtractor().toString();			
