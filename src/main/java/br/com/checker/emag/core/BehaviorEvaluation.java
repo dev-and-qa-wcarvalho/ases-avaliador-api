@@ -322,6 +322,8 @@ List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		tagsForm.add("option");
 		tagsForm.add("optgroup");
 		tagsForm.add("button");
+		tagsForm.add("a");
+		
 		
 		if(element != null)
 			return tagsForm.contains(element.getName());
