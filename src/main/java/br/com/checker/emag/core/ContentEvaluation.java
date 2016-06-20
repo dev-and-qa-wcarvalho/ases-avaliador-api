@@ -961,7 +961,7 @@ public class ContentEvaluation extends Evaluation {
 		for (Element table : getDocument().getAllElements("table")) {
 			Attribute summary = table.getAttributes().get("summary");
 
-			if (!doctype.equals("<!DOCTYPEhtml>")) {
+			if (!doctype.equalsIgnoreCase("<!DOCTYPEhtml>")) {
 				if (summary == null || summary.getValue().equals(""))
 					occurrences.add(buildOccurrence("3.9", false, table
 							.getStartTag().toString(), table, "1"));
