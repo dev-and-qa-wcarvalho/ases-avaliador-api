@@ -421,7 +421,7 @@ public class ContentEvaluation extends Evaluation {
 						link.toString(), link, "6"));//"5"));
 
 			if (hasDiferenteContentSameLink(link))
-				occurrences.add(this.buildOccurrence("3.5", true,
+				occurrences.add(this.buildOccurrence("3.5", false,
 						link.toString(), link, "10"));//"6"));
 
 			if (isTitleEqualsContent(link))
