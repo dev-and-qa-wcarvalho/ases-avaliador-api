@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
 
+
+
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.MarkRecommendation;
@@ -193,7 +195,7 @@ public class MarkEvaluation extends Evaluation {
 			if (avisoCss > 0)	
 			{
 				for(;avisoCss > 0; avisoCss--)
-				{
+				{					
 					occurrences.add(buildOccurrence("1.1", false, url, 
 							getDocument().getFirstElement().getFirstElement(), "8"));//"2"));
 				}
@@ -290,7 +292,27 @@ public class MarkEvaluation extends Evaluation {
 		return occurrences;
 	}
 
-	
+	private boolean hasContent(Element elementoHTML) {
+		
+		boolean temConteudo;
+		
+		
+		temConteudo = StringUtils.isNotBlank(elementoHTML.getContent().getTextExtractor().toString());
+		
+		if(!temConteudo)
+		{
+			for (Element elemento : elementoHTML.getAllElements()) {
+				temConteudo = StringUtils.isNotBlank(elemento.getContent().getTextExtractor().toString());
+				
+				if(temConteudo)
+				{
+					break;
+				}
+			}		
+		}
+		return temConteudo;		
+
+	}
 	
 	private List<Occurrence> checkRecommendation2() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
@@ -307,7 +329,7 @@ public class MarkEvaluation extends Evaluation {
 				 * occurrences.add(this.buildOccurrence("1.2", true,
 				 * element.toString(), element, "1")); else
 				 */
-
+			
 				if (element != null) {
 					String endTag = element.getEndTag() == null ? "" : element
 							.getEndTag().toString();
@@ -328,12 +350,12 @@ public class MarkEvaluation extends Evaluation {
 						}
 					} else {
 
-						if (element.getContent().toString().isEmpty()
-								|| element.getContent().toString().trim()
-										.equals("")) {
+						if (!hasContent(element)) {
 							occurrences.add(this.buildOccurrence("1.2", true,
-									element.getStartTag().toString() + endTag,
+									element.toString(),
 									element, "3"));//"1"));
+									//element.getStartTag().toString() + endTag,
+									//element, "3"));//"1"));
 						}
 					}
 				}
@@ -371,12 +393,12 @@ public class MarkEvaluation extends Evaluation {
 					} else {						
 						if (!element.getStartTag().toString().replace(" ", "").equalsIgnoreCase("<br>") && !element.getStartTag().toString().replace(" ", "").equalsIgnoreCase("</br>")) {
 
-							if (element.getContent().toString().isEmpty()
-									|| element.getContent().toString().trim()
-											.equals("")) {
+							if (!hasContent(element)) {
 								occurrences.add(this.buildOccurrence("1.2",
-										false, element.getStartTag().toString()
-												+ endTag, element,  "2"));//"1"));
+										false, element.toString(), element,  "2"));
+										//+ endTag, element,  "2"));//"1"));
+										//element.getStartTag().toString()
+												//+ endTag, element,  "2"));//"1"));
 							}
 						}
 					}
