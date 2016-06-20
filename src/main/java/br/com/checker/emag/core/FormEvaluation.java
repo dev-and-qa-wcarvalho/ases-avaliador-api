@@ -76,13 +76,13 @@ public class FormEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation40());
 		getOccurrences().addAll(checkRecommendation41());
 		
-		//Metodos não são utilizados, porque requerem validação humana
+		//Metodos nï¿½o sï¿½o utilizados, porque requerem validaï¿½ï¿½o humana
 		//getOccurrences().addAll(checkRecommendation42());
 		//getOccurrences().addAll(checkRecommendation43());
 		
 		getOccurrences().addAll(checkRecommendation44());
 		
-		//Métodos não são utilizados, porque requerem validação humana
+		//Mï¿½todos nï¿½o sï¿½o utilizados, porque requerem validaï¿½ï¿½o humana
 		//getOccurrences().addAll(checkRecommendation45());
 		
 		return getOccurrences();
@@ -174,7 +174,7 @@ public class FormEvaluation extends Evaluation{
 				}
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
-					System.out.println("TAG COMPLETA: "+input.toString());
+					
 					occurrences.add(this.buildOccurrence("6.2", true,input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
@@ -195,7 +195,7 @@ public class FormEvaluation extends Evaluation{
 				
 				Attribute attrId = input.getAttributes().get("id");
 				if (attrId == null || attrId.getValue().isEmpty()) {
-					System.out.println("TAG COMPLETA: "+input.toString());
+					
 					occurrences.add(this.buildOccurrence("6.2", true, input.toString(), input,"1"));
 				} else {
 					boolean temLabelEquivalente = false;
