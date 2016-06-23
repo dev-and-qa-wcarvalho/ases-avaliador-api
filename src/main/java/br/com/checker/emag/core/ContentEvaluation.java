@@ -502,17 +502,17 @@ public class ContentEvaluation extends Evaluation {
 
 				newurl = newurl.replace(" ", "%20");
 				
-				//UrlConvertida = new URL(newurl);
+				UrlConvertida = new URL(newurl);
 				
 				
-				System.out.println(newurl);
 				//Código copiado da classe WebAgent.java para garantir o acesso 
 				//aos links da página por meio do cliente da API Jakarta Commons VErsão 3.1 
 				clienteHTTPJakartaCommons = new HttpClient();
 				clienteHTTPJakartaCommons.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,false));
 				clienteHTTPJakartaCommons.getParams().setParameter("http.protocol.allow-circular-redirects", true); 
 				
-				metodoRequisicaoGET = new GetMethod(URLEncoder.encode(newurl, "UTF-8"));
+				metodoRequisicaoGET = new GetMethod(UrlConvertida.toExternalForm());//URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"));
+			
 				metodoRequisicaoGET.setRequestHeader("http.agent", "Jakarta Commons-HttpClient/3.1");
 				metodoRequisicaoGET.setFollowRedirects(true);
 				
