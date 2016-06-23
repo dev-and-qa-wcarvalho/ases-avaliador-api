@@ -14,6 +14,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.text.html.HTML;
 
+import org.hamcrest.core.IsNull;
+
 import com.oracle.webservices.internal.api.EnvelopeStyle.Style;
 
 import net.htmlparser.jericho.Attribute;
@@ -67,7 +69,7 @@ public class PresentationEvaluation extends Evaluation{
 	
 	public List<Occurrence> check() {
 		getOccurrences().clear();
-		//getOccurrences().addAll(checkRecommendation29()); //comentado por Gibran
+		getOccurrences().addAll(checkRecommendation29()); //comentado por Gibran
 		//getOccurrences().addAll(checkRecommendation30()); comentado por Gibran
 		//getOccurrences().addAll(checkRecommendation31()); comentado por Gibran
 		getOccurrences().addAll(checkRecommendation32());
@@ -86,7 +88,8 @@ public class PresentationEvaluation extends Evaluation{
 		String href = null;
 		boolean avalia = false;
 				
-		List<String> lsContent = new ArrayList<String>();
+		//Adiciona todo css externo em uma lista
+		List<String> lsCssExterno = new ArrayList<String>();
 		
 		for(Element link2 : getDocument().getAllElements("link")) {
 			href = link2.getAttributeValue("href");
@@ -100,9 +103,12 @@ public class PresentationEvaluation extends Evaluation{
 				if(!href.startsWith("http")) href = urlSemArquiNoFinal + "/" + href; 
 				
 				
-				lsContent.add(WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent());
+				lsCssExterno.add(WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent());
+			
 			}
 		}
+		//Fim Adiciona todo css externo em uma lista
+		
 		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
 		
 		Color corAvaliar = null;
@@ -111,16 +117,16 @@ public class PresentationEvaluation extends Evaluation{
 		boolean achou_foreground = false;
 		boolean achou_background = false;
 		String styleInline = "";
-		String valor_id = "";
-		String valor_class = "";
-		List<Attribute> lsAttribute = new ArrayList<Attribute>();
+		String procurarPorId = "";
+		String procurarPorClasse = "";
+		String cssParaBuscarCor = "";
+				
+		List<Element> lsCssInterno = new ArrayList<Element>();
 		
 		//pega css interno caso tenha
 		for (Element head : getDocument().getAllElements("head")) {	
-			for (Element estilo : head.getAllElements("style")) {
-					for (Attribute atribute : estilo.getAttributes()) {
-					lsAttribute.add(atribute);
-					}				
+			for (Element estilo : head.getAllElements("style")) {					
+				lsCssInterno.add(estilo);								
 				}
 			}
 			
@@ -129,9 +135,28 @@ public class PresentationEvaluation extends Evaluation{
 		for (Element body : getDocument().getAllElements("body")) {	
 			for (Element element : body.getAllElements()) {
 				
+				//verificar se o "body" possui o atributo "bgcolor"
+				if(element.getStartTag().getName().equalsIgnoreCase("body"))
+				{
+					if(element.toString().contains("bgcolor"))
+					{
+						try {
+							corAvaliar = new Color(Integer.parseInt(element.getAttributeValue("bgcolor").trim().replaceFirst("#",""), 16));
+							if(corAvaliar != null)
+							{										
+								background = corAvaliar;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				
 				//Primeiro verificar se tem css in-line
 				styleInline = element.getAttributeValue("style");
 				if(styleInline != null){
+					
+					
 					//pega o valor da cor, mesmo que no final não seja atribuido o ";"									
 					corAvaliar = getColor(styleInline, "color:(.*?)\\Z");
 					if(corAvaliar != null)
@@ -176,387 +201,301 @@ public class PresentationEvaluation extends Evaluation{
 								
 			}else
 			{
+				procurarPorId = "#" + element.getStartTag().getAttributeValue("id");
+				procurarPorClasse = "." + element.getStartTag().getAttributeValue("class");	
 				
-				//verifica css interno ou externo 
-				
+				//verifica css interno 
+				 
 				//Verifica se tem #id
-				valor_id = element.getAttributeValue("id");
-				if(valor_id != null)
-				{
-					for (Attribute style : lsAttribute){
+				for (Element style : lsCssInterno) {
+					
+					//String pattern = "";
+					
+											
+						//Coloca todo css em apenas uma linha, depois separa por blocos
+						String texto = style.toString().replace("\n","");												
+						texto = texto.replace(">", ">\n").replace("*/", "\n").replace(" {", "{").replace("}", " }\n").replace(" :", ":");
+						cssParaBuscarCor = "";
 						
-						//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-						System.out.println("#"+ style);
-						if(style.toString().equalsIgnoreCase("#"+ element.toString()))
-						{
-							corAvaliar = getColor(style.toString(), "color:(.*?)\\Z");
-							if(corAvaliar != null)
-							{										
-								foreground = corAvaliar;
-							}
-							
-							corAvaliar = getColor(style.toString(), "color:(.*?)\\;");
-							if(corAvaliar != null)
-							{										
-								foreground = corAvaliar;
-							}
-																									
-							//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-							corAvaliar = getColor(style.toString(), "background:(.*?)\\Z");
-							if(corAvaliar != null)
-							{												
-								background = corAvaliar;
-							}
-							
-							corAvaliar = getColor(style.toString(), "background:(.*?)\\;");
-							if(corAvaliar != null)
-							{												
-								background = corAvaliar;
-							}
-							
-							//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-							corAvaliar = getColor(style.toString(), "background-color:(.*?)\\Z");
-							if(corAvaliar != null)
-							{												
-								background = corAvaliar;
-							}
-
-							corAvaliar = getColor(style.toString(), "background-color:(.*?)\\;");
-							if(corAvaliar != null)
-							{												
-								background = corAvaliar;
-							}
-							
-							if(foreground != null) achou_foreground = true;
-							if(background != null) achou_background = true;
+						
+						//vevifica 1º pelo "id"
+						if(!procurarPorId.equalsIgnoreCase("#null"))
+						{							
+							cssParaBuscarCor = getElementoCss(texto, procurarPorId);																				
 						}
 						
+						//Se não encontrar pelo "id" verifica pela classe e elemento
+						if(cssParaBuscarCor.isEmpty() && !procurarPorClasse.equalsIgnoreCase(".null"))
+						{
+							cssParaBuscarCor = getElementoCss(texto, procurarPorClasse + element.getStartTag().getName());
+						}
+						
+						//Se não encontrar pela classe e elemento, verifica pela classe
+						if(cssParaBuscarCor.isEmpty() && !procurarPorClasse.equalsIgnoreCase(".null"))
+						{
+							cssParaBuscarCor = getElementoCss(texto, procurarPorClasse);
+						}
+						//Se não encontrar pela classe, verifica pelo elemento
+						if(cssParaBuscarCor.isEmpty())
+						{
+							cssParaBuscarCor = getElementoCss(texto, element.getStartTag().getName());
+						}
+						
+						
+						
+						if(!cssParaBuscarCor.isEmpty())
+						{
+							if(cssParaBuscarCor.contains("color:"))
+							{
+								corAvaliar = getColor(cssParaBuscarCor, "color:(.*?)\\Z");
+								if(corAvaliar != null)
+								{										
+								foreground = corAvaliar;								
+								
+								}
+							
+								corAvaliar = getColor(cssParaBuscarCor, "color:(.*?)\\;");
+								if(corAvaliar != null)
+								{										
+								foreground = corAvaliar;									
+								}
+							}
+							
+							if(cssParaBuscarCor.contains("background:") || cssParaBuscarCor.contains("background-color:"))
+							{
+								//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
+								corAvaliar = getColor(cssParaBuscarCor, "background:(.*?)\\Z");
+								if(corAvaliar != null)
+								{										
+									background = corAvaliar;
+								}
+							
+								corAvaliar = getColor(cssParaBuscarCor, "background:(.*?)\\;");
+								if(corAvaliar != null)
+								{										
+									background = corAvaliar;
+								}
+								//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
+								corAvaliar = getColor(cssParaBuscarCor, "background-color:(.*?)\\Z");
+								if(corAvaliar != null)
+								{										
+									background = corAvaliar;
+								}
+																
+								corAvaliar = getColor(cssParaBuscarCor, "background-color:(.*?)\\;");
+								if(corAvaliar != null)
+								{										
+									background = corAvaliar;
+								}										
+							}
+							
+							if(foreground != null)
+								{
+								achou_foreground = true;								
+								}
+							
+							if(background != null)
+								{
+								achou_background = true;	
+								}							
+							
+							if(achou_foreground || achou_background)
+								{
+								break;
+								}												 
+															
+					}
 					
-				}
-				
-				
-			}else
-			{
-				valor_class = element.getAttributeValue("class");
-				
-			}
-				
 				
 				corAvaliar = null;
 				foreground = null; 
 				background = null;
-				achou_foreground = false;
-				achou_background = false;
-			
+				cssParaBuscarCor = "";
 		
-			}		
-			}
-		}
-		return occurrences;
-	}
-
-	
-	
-	
-	private List<Occurrence> checkRecommendation292() {
-		List<Occurrence> occurrences = new ArrayList<Occurrence>();
-		
-		UrlSemArquiNoFinal objetoUrlSemArquiNoFinal = new UrlSemArquiNoFinal();
-		
-		String urlSemArquiNoFinal = objetoUrlSemArquiNoFinal.urlSemArquivoNoFinal(getUrl());
-		//verificar css externo
-		String href = null;
-		boolean avalia = false;
+			}	
 				
-		List<String> lsContent = new ArrayList<String>();
-		
-		for(Element link2 : getDocument().getAllElements("link")) {
-			href = link2.getAttributeValue("href");
-			if(href.startsWith("www"))href= "http://"+ href;
-			
-			avalia = getUrl() != null || href.startsWith("http");
-			
-			if(href.contains(".css") && avalia) {
-				
-				
-				if(!href.startsWith("http")) href = urlSemArquiNoFinal + "/" + href; 
-				
-				
-				lsContent.add(WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent());
-			}
-		}
-			
-		//List<String> tags = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6","a", "p","select", "option", "textarea", "button", "datalist", "keygen",
-		//		"output", "input","label", "select","optgroup", "form","fieldset","legend");
-		
-		
-		// Implementação comentada, em virtude de comprometimento da performance do avaliador. Lyandro Santana - 12/11/2015
-		String[] attributes = {"bgcolor","h1", "h2", "h3", "h4", "h5", "h6","a", "p","select", "option", "textarea", "button", "datalist", "keygen",
-				"output", "input","label", "select","optgroup", "form","fieldset","legend"};
-		
-		AvaliadorContraste avaliadorContraste = new AvaliadorContraste();
-		
-		System.out.println("Processando verificação de cor...");
-		for (Element body : getDocument().getAllElements("body")) {	
-			for (String atributo : attributes) {
-						
-				for (Element element : body.getAllElements(atributo)) {
-		
-				Color corAvaliar = null;
-				Color foreground = null; 
-				Color background = null;
-				boolean achou_foreground = false;
-				boolean achou_background = false;
-				
-				if(element != null ){
-						
+				if(!achou_foreground && !achou_background)
+				{
+					//verifica css externo 
 					
-						//for (String attribute : attributes) {
-								//System.out.println("Verificando: "+attribute);
-						
-								//Verificar IN-LINE
-								String styleInline = element.getAttributeValue("style");
-								if(styleInline != null){
-									//pega o valor da cor, mesmo que no final não seja atribuido o ";"									
-									corAvaliar = getColor(styleInline, "color:(.*?)\\Z");
-									if(corAvaliar != null)
-									{										
-										foreground = corAvaliar;
-									}
-									
-									corAvaliar = getColor(styleInline, "color:(.*?)\\;");
-									if(corAvaliar != null)
-									{										
-										foreground = corAvaliar;
-									}
-									
-									
-									//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-									corAvaliar = getColor(styleInline, "background:(.*?)\\Z");
-									if(corAvaliar != null)
-									{										
-										background = corAvaliar;
-									}
-									
-									corAvaliar = getColor(styleInline, "background:(.*?)\\;");
-									if(corAvaliar != null)
-									{										
-										background = corAvaliar;
-									}
-									//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-									corAvaliar = getColor(styleInline, "background-color:(.*?)\\Z");
-									if(corAvaliar != null)
-									{										
-										background = corAvaliar;
-									}
-																		
-									corAvaliar = getColor(styleInline, "background-color:(.*?)\\;");
-									if(corAvaliar != null)
-									{										
-										background = corAvaliar;
-									}				
-			
-									if(foreground != null) achou_foreground = true;
-									if(background != null) achou_background = true;
-									
-									
-								}
-						
-								if(achou_foreground== false || achou_background == false){
-									
-									String valor_class = element.getAttributeValue("class");
-									
-									if(valor_class != null){
+					//Verifica se tem #id
+					for (String style : lsCssExterno) {
 										
-										//Verificar css interno
-										for (Element style : getDocument().getAllElements("style")){
-											
-											//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-											corAvaliar = getColor(style.toString(), "color:(.*?)\\Z");
-											if(corAvaliar != null)
-											{										
-												foreground = corAvaliar;
-											}
-											
-											corAvaliar = getColor(style.toString(), "color:(.*?)\\;");
-											if(corAvaliar != null)
-											{										
-												foreground = corAvaliar;
-											}
-											
-											//foreground = getColor(style.toString(), "color:(.*?)\\;");
-											//background = getColor(style.toString(), "background:(.*?)\\;");
-											//background = getColor(style.toString(), "background-color:(.*?)\\;");
-																						
-											//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-											corAvaliar = getColor(style.toString(), "background:(.*?)\\Z");
-											if(corAvaliar != null)
-											{												
-												background = corAvaliar;
-											}
-											
-											corAvaliar = getColor(style.toString(), "background:(.*?)\\;");
-											if(corAvaliar != null)
-											{												
-												background = corAvaliar;
-											}
-											
-											//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-											corAvaliar = getColor(style.toString(), "background-color:(.*?)\\Z");
-											if(corAvaliar != null)
-											{												
-												background = corAvaliar;
-											}
-			
-											corAvaliar = getColor(style.toString(), "background-color:(.*?)\\;");
-											if(corAvaliar != null)
-											{												
-												background = corAvaliar;
-											}
-											
-											if(foreground != null) achou_foreground = true;
-											if(background != null) achou_background = true;
-										}
-										
-										if(achou_foreground== false || achou_background == false){
-											
-											//verificar css externo
-											
-											
-											/*String href = null;
-											boolean avalia = false;
-											for(Element link : getDocument().getAllElements("link")) {
-												href = link.getAttributeValue("href");
-												if(href.startsWith("www"))href= "http://"+href;
-												
-												avalia = getUrl()!=null || href.startsWith("http");
-												
-												if(href.contains(".css") && avalia) {
-													
-													
-													if(!href.startsWith("http")) href = getUrl()+"/"+href; 
-													
-													
-													String content = WebAgent.from(href.replace(" ", "%20")).withGetRequest().execute().getContent();
-													*/
-											for (String content : lsContent) {
-																					
-													//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-													corAvaliar = getColor(content.toString(), "color:(.*?)\\Z");
-													if(corAvaliar != null)
-													{										
-														foreground = corAvaliar;
-													}
-													
-													corAvaliar = getColor(content.toString(), "color:(.*?)\\;");
-													if(corAvaliar != null)
-													{										
-														foreground = corAvaliar;
-													}
-													
-													//foreground = getColor(content, "color:(.*?)\\;");
-													//background = getColor(content, "background:(.*?)\\;");
-													//background = getColor(content, "background-color:(.*?)\\;");
-													
-													//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-													corAvaliar = getColor(content, "background:(.*?)\\Z");
-													if(corAvaliar != null)
-													{														
-														background = corAvaliar;
-													}
-													
-													corAvaliar = getColor(content, "background:(.*?)\\;");
-													if(corAvaliar != null)
-													{														
-														background = corAvaliar;
-													}
-													
-													//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
-													corAvaliar = getColor(content, "background-color:(.*?)\\Z");
-													if(corAvaliar != null)
-													{
+						
+						if(element.getAttributeValue("id") != null || element.getAttributeValue("class") != null)
+						{						
+							//Coloca todo css em apenas uma linha, depois separa por blocos
+							String texto = style.toString().replace("\n","");												
+							texto = texto.replace(">", ">\n").replace("*/", "\n").replace(" {", "{").replace("}", " }\n").replace(" :", ":");
+							cssParaBuscarCor = "";
+							
+							//vevifica 1º pelo "id"
+							if(!procurarPorId.equalsIgnoreCase("#null"))
+							{							
+								cssParaBuscarCor = getElementoCss(texto, procurarPorId);																				
+							}
+							
+							//Se não encontrar pelo "id" verifica pela classe e elemento
+							if(cssParaBuscarCor.isEmpty() && !procurarPorClasse.equalsIgnoreCase(".null"))
+							{
+								cssParaBuscarCor = getElementoCss(texto, procurarPorClasse + element.getStartTag().getName());
+							}
+							
+							//Se não encontrar pela classe e elemento, verifica pela classe
+							if(cssParaBuscarCor.isEmpty() && !procurarPorClasse.equalsIgnoreCase(".null"))
+							{
+								cssParaBuscarCor = getElementoCss(texto, procurarPorClasse);
+							}
+							//Se não encontrar pela classe, verifica pelo elemento
+							if(cssParaBuscarCor.isEmpty())
+							{
+								cssParaBuscarCor = getElementoCss(texto, element.getStartTag().getName());
+							}
+							
 														
-														background = corAvaliar;
-													}
-													
-													corAvaliar = getColor(content, "background-color:(.*?)\\;");
-													if(corAvaliar != null)
-													{
-														
-														background = corAvaliar;
-													}
-			
-													if(foreground != null) achou_foreground = true;
-													if(background != null) achou_background = true;
-													
-												}
-											}
-										}
-										
+							
+							if(!cssParaBuscarCor.isEmpty())
+							{
+								if(cssParaBuscarCor.contains("color:"))
+								{
+									corAvaliar = getColor(cssParaBuscarCor, "color:(.*?)\\Z");
+									if(corAvaliar != null)
+									{										
+										foreground = corAvaliar;								
+									
 									}
-								}
-						
 								
-								if(achou_foreground== true && achou_background == true){
-									
-									avaliadorContraste.setCores(foreground, background);
-									avaliadorContraste.avaliar();
-									
-									if(avaliadorContraste.getContraste() < new Double("4.5")){
-										occurrences.add(buildOccurrence("4.1", true, element.toString(), element,"2"));
-										break;
+									corAvaliar = getColor(cssParaBuscarCor, "color:(.*?)\\;");
+									if(corAvaliar != null)
+									{										
+										foreground = corAvaliar;									
 									}
-									
-								
-								}else if(achou_foreground == false && achou_background == true){
-									
-									//avaliadorContraste.setCores(foreground, new Color(Integer.parseInt("ffffff", 16)));
-									//avaliadorContraste.avaliar();
-									
-									//if(avaliadorContraste.getContraste() < new Double("4.5")){
-										occurrences.add(buildOccurrence("4.1", false, element.toString(), element,"3"));
-										break;
-									//}
-									
-								
-								}else if(achou_foreground== true && achou_background == false){
-									
-									//avaliadorContraste.setCores(foreground, new Color(Integer.parseInt("ffffff", 16)));
-									//avaliadorContraste.avaliar();
-									
-									//if(avaliadorContraste.getContraste() < new Double("4.5")){
-										occurrences.add(buildOccurrence("4.1", false, element.toString(), element,"3"));
-										break;
-									//}									
 								
 								}
+								
+								if(cssParaBuscarCor.contains("background:") || cssParaBuscarCor.contains("background-color:"))
+								{
+									//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
+									corAvaliar = getColor(cssParaBuscarCor, "background:(.*?)\\Z");
+									if(corAvaliar != null)
+									{										
+										background = corAvaliar;
+									}
+								
+									corAvaliar = getColor(cssParaBuscarCor, "background:(.*?)\\;");
+									if(corAvaliar != null)
+									{										
+										background = corAvaliar;
+									}
+									//pega o valor da cor, mesmo que no final não seja atribuido o ";"	
+									corAvaliar = getColor(cssParaBuscarCor, "background-color:(.*?)\\Z");
+									if(corAvaliar != null)
+									{										
+										background = corAvaliar;
+									}
+																	
+									corAvaliar = getColor(cssParaBuscarCor, "background-color:(.*?)\\;");
+									if(corAvaliar != null)
+									{										
+										background = corAvaliar;
+									}										
+								}
+								
+								if(foreground != null)
+									{
+									achou_foreground = true;								
+									}
+								
+								if(background != null)
+									{
+									achou_background = true;	
+									}							
+								
+								if(achou_foreground || achou_background)
+									{
+									break;
+									}												 
+																
+						}
 						
 					}
-				}		
+								
+					
+					corAvaliar = null;
+					foreground = null; 
+					background = null;					
+					cssParaBuscarCor = "";
+									
+			
+				}	
+				}
+				
+				
 			}
-		System.out.println("Verificação terminada.");	
+				procurarPorId = "";
+				procurarPorClasse = "";
+				
+				if(achou_foreground== true && achou_background == true){
+					
+					avaliadorContraste.setCores(foreground, background);
+					avaliadorContraste.avaliar();
+					
+					if(avaliadorContraste.getContraste() < new Double("4.5")){
+						occurrences.add(buildOccurrence("4.1", false, element.toString(), element,"2"));
+					
+					}
+					achou_foreground = false;
+					achou_background = false;
+				
+				}
+				
+				//Caso seja encontrado um "foreground" e não "background" e vice-versa, será adicionado um aviso para que seja avaliado manualmente
+				/*if((achou_foreground== true && achou_background == false) || (achou_foreground== false && achou_background == true)){
+					
+						occurrences.add(buildOccurrence("4.1", false, element.toString(), element,"2"));
+				
+					achou_foreground = false;
+					achou_background = false;
+				
+				}*/
+			}
+		}
 		return occurrences;
 		}
-	//}
-		
-		
-		
-		
-		
-		/*if(!temBgcolor)
-			occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));*/
-		
-					
-		
-		///Collections.sort(occurrences);
-		
-		//Término da rotina de Avaliação de contraste
-		
-	//	occurrences.add(new Occurrence("4.1", false, getDocument().getFirstElement().toString(),OccurrenceClassification.PRESENTATION_DESIGN));
-		
-			
-	//}
 	
+
+	private String getElementoCss(String css, String procurarPor){
+		
+		 	String regex = "\\W" + procurarPor + "\\{.*\\}";
+		    String retorno = "";
+		   		    
+		    try {
+		    	 Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+				    
+				    Matcher matcher = pattern.matcher(css);
+			        if(matcher.find()){
+			        	retorno = matcher.group();	            
+			        } else {
+			        	
+			        	regex = procurarPor + ",.*\\}";
+			        	
+			        	pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+			        	
+			        	matcher = pattern.matcher(css);
+			        	
+			        	  if(matcher.find()){
+					        	retorno = matcher.group();	            
+					        } else {
+					        	retorno = "";
+					        }
+			        }
+			} catch (Exception e) {
+				retorno = "";
+			}
+		   
+	        
+	        return retorno;
+	}
 	
 	private Color getColor(String css, String pattern){
 		
@@ -564,7 +503,7 @@ public class PresentationEvaluation extends Evaluation{
 		
 		Pattern value = Pattern.compile(pattern);
 		
-		Matcher match = value.matcher(css);
+		Matcher match = value.matcher(css.replace(";", "\n").replace("}", "").replace("!important", ""));
 		while (match.find()){
 	    	String cor = match.group(1);
 	    	
@@ -582,8 +521,11 @@ public class PresentationEvaluation extends Evaluation{
 		        		break;
 		        	}else{
 		        		//System.out.println("EXADECIMAL: "+match.group(1));
-		        		color = new Color(Integer.parseInt(match.group(1).trim().replaceFirst("#",""), 16));
-		        		break;
+		        		if(css.replaceAll(" ", "").contains(":#"))
+		        			{
+		        			color = new Color(Integer.parseInt(match.group(1).trim().replaceFirst("#",""), 16));
+			        		break;		        			
+		        			}		        		
 		        	}	
 		        }
 	    	} catch (Exception e) {
