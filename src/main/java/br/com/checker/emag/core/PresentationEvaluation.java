@@ -16,6 +16,8 @@ import javax.swing.text.html.HTML;
 
 import org.hamcrest.core.IsNull;
 
+import sun.misc.FpUtils;
+
 import com.oracle.webservices.internal.api.EnvelopeStyle.Style;
 
 import net.htmlparser.jericho.Attribute;
@@ -113,7 +115,8 @@ public class PresentationEvaluation extends Evaluation{
 		
 		Color corAvaliar = null;
 		Color foreground = null; 
-		Color background = null;
+		Color background = null;	
+		Color backgroundDoBody = null;
 		boolean achou_foreground = false;
 		boolean achou_background = false;
 		String styleInline = "";
@@ -128,20 +131,19 @@ public class PresentationEvaluation extends Evaluation{
 			for (Element estilo : head.getAllElements("style")) {					
 				lsCssInterno.add(estilo);								
 				}
-			}
+			}		
 			
-		
 		//Pega todos elementos do "body"
 		for (Element body : getDocument().getAllElements("body")) {	
 			for (Element element : body.getAllElements()) {
 				
 				//verificar se o "body" possui o atributo "bgcolor"
 				if(element.getStartTag().getName().equalsIgnoreCase("body"))
-				{
+				{					
 					if(element.toString().contains("bgcolor"))
 					{
 						try {
-							corAvaliar = new Color(Integer.parseInt(element.getAttributeValue("bgcolor").trim().replaceFirst("#",""), 16));
+							corAvaliar = new Color(Integer.parseInt(element.getStartTag().getAttributeValue("bgcolor").trim().replaceFirst("#",""), 16));
 							if(corAvaliar != null)
 							{										
 								background = corAvaliar;
@@ -153,7 +155,7 @@ public class PresentationEvaluation extends Evaluation{
 				}
 				
 				//Primeiro verificar se tem css in-line
-				styleInline = element.getAttributeValue("style");
+				styleInline = element.getStartTag().getAttributeValue("style");
 				if(styleInline != null){
 					
 					
@@ -196,8 +198,21 @@ public class PresentationEvaluation extends Evaluation{
 						background = corAvaliar;
 					}				
 
-					if(foreground != null) achou_foreground = true;
-					if(background != null) achou_background = true;
+					if(foreground != null)
+						{
+						achou_foreground = true;							
+						}
+					
+					if(background != null) {
+						achou_background = true;	
+						
+							if(element.getStartTag().getName().equalsIgnoreCase("body"))
+							{
+								backgroundDoBody = 	background;					
+							}
+					}
+					
+					
 								
 			}else
 			{
@@ -290,21 +305,25 @@ public class PresentationEvaluation extends Evaluation{
 							}
 							
 							if(foreground != null)
-								{
-								achou_foreground = true;								
-								}
+							{
+							achou_foreground = true;								
+							}
+						
+							if(background != null) {
+							achou_background = true;	
 							
-							if(background != null)
+								if(element.getStartTag().getName().equalsIgnoreCase("body"))
 								{
-								achou_background = true;	
-								}							
+									backgroundDoBody = 	background;					
+								}
+							}					
 							
 							if(achou_foreground || achou_background)
 								{
 								break;
 								}												 
 															
-					}
+						}
 					
 				
 				corAvaliar = null;
@@ -322,7 +341,7 @@ public class PresentationEvaluation extends Evaluation{
 					for (String style : lsCssExterno) {
 										
 						
-						if(element.getAttributeValue("id") != null || element.getAttributeValue("class") != null)
+						if(element.getStartTag().getAttributeValue("id") != null || element.getStartTag().getAttributeValue("class") != null)
 						{						
 							//Coloca todo css em apenas uma linha, depois separa por blocos
 							String texto = style.toString().replace("\n","");												
@@ -402,14 +421,18 @@ public class PresentationEvaluation extends Evaluation{
 								}
 								
 								if(foreground != null)
-									{
-									achou_foreground = true;								
-									}
+								{
+								achou_foreground = true;									
+								}
+							
+								if(background != null) {
+								achou_background = true;	
 								
-								if(background != null)
+									if(element.getStartTag().getName().equalsIgnoreCase("body"))
 									{
-									achou_background = true;	
-									}							
+										backgroundDoBody = 	background;					
+									}
+								}									
 								
 								if(achou_foreground || achou_background)
 									{
@@ -441,13 +464,26 @@ public class PresentationEvaluation extends Evaluation{
 					avaliadorContraste.avaliar();
 					
 					if(avaliadorContraste.getContraste() < new Double("4.5")){
-						occurrences.add(buildOccurrence("4.1", false, element.toString(), element,"2"));
+						occurrences.add(buildOccurrence("4.1", false, element.getStartTag().toString(), element,"2"));
 					
 					}
 					achou_foreground = false;
 					achou_background = false;
 				
-				}
+				}//Caso não ache o background, usará o padrão encontrado no body
+				else if (achou_foreground == true && achou_background == false && backgroundDoBody != null)
+				{
+					avaliadorContraste.setCores(foreground, backgroundDoBody);
+					avaliadorContraste.avaliar();
+					
+					if(avaliadorContraste.getContraste() < new Double("4.5")){
+						occurrences.add(buildOccurrence("4.1", false, element.getStartTag().toString(), element,"2"));
+					
+					}
+					achou_foreground = false;
+					achou_background = false;
+				}//Caso não ache o foreground, usará o padrão encontrado no body
+				
 				
 				//Caso seja encontrado um "foreground" e não "background" e vice-versa, será adicionado um aviso para que seja avaliado manualmente
 				/*if((achou_foreground== true && achou_background == false) || (achou_foreground== false && achou_background == true)){
@@ -501,9 +537,9 @@ public class PresentationEvaluation extends Evaluation{
 		
 		Color color = null; 
 		
-		Pattern value = Pattern.compile(pattern);
-		
-		Matcher match = value.matcher(css.replace(";", "\n").replace("}", "").replace("!important", ""));
+		Pattern value = Pattern.compile("\\s" + pattern);
+		String cssModificado = css.replace(";", ";\n").replace("}", "").replace("!important", "");
+		Matcher match = value.matcher(cssModificado);
 		while (match.find()){
 	    	String cor = match.group(1);
 	    	
