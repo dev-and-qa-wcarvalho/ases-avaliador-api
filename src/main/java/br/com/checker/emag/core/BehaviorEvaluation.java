@@ -13,6 +13,7 @@ import br.com.checker.emag.core.SpecificRecommendation.BehaviorRecommendation;
 
 public class BehaviorEvaluation extends Evaluation{
 
+	
 	private BehaviorEvaluation(Source document) { super(document); }
 	
 	public static class BehaviorEvaluationBuilder extends EvaluationBuilder {
