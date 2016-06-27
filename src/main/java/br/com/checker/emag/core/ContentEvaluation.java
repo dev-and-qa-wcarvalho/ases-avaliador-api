@@ -240,7 +240,7 @@ public class ContentEvaluation extends Evaluation {
 			}
 
 			// Caso seja diferente de html5
-			if (!doctype.equals("<!DOCTYPEhtml>")) {
+			if (!doctype.equalsIgnoreCase("<!DOCTYPEhtml>")) {
 
 				if (xmlLang == null) {
 					occurrences.add(this.buildOccurrence("3.1", true, tagHtml,

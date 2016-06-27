@@ -942,7 +942,7 @@ public class MarkEvaluation extends Evaluation {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		Element firstElement = this.getDocument().getFirstElement();
 
-		if (firstElement.toString().replace(" ", "").equals("<!DOCTYPEhtml>")) {
+		if (firstElement.toString().replace(" ", "").equalsIgnoreCase("<!DOCTYPEhtml>")) {
 
 			Element header = getDocument().getFirstElement("header");
 			Element nav = getDocument().getFirstElement("nav");
