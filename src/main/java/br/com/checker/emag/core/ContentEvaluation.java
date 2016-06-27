@@ -513,6 +513,7 @@ public class ContentEvaluation extends Evaluation {
 				
 				metodoRequisicaoGET = new GetMethod(UrlConvertida.toExternalForm());//URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"));
 			
+				metodoRequisicaoGET.setRequestHeader("user-agent", "NewUseAgent/1.0");
 				metodoRequisicaoGET.setRequestHeader("http.agent", "Jakarta Commons-HttpClient/3.1");
 				metodoRequisicaoGET.setFollowRedirects(true);
 				
