@@ -340,7 +340,8 @@ public class PresentationEvaluation extends Evaluation{
 					//Verifica se tem #id
 					for (String style : lsCssExterno) {
 										
-						
+						if(style != null)
+						{
 						if(element.getStartTag().getAttributeValue("id") != null || element.getStartTag().getAttributeValue("class") != null)
 						{						
 							//Coloca todo css em apenas uma linha, depois separa por blocos
@@ -442,7 +443,7 @@ public class PresentationEvaluation extends Evaluation{
 						}
 						
 					}
-								
+				}		
 					
 					corAvaliar = null;
 					foreground = null; 
