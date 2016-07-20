@@ -22,8 +22,10 @@ import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
+
 
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
@@ -55,6 +57,7 @@ public class ContentEvaluation extends Evaluation {
 		public SpecificRecommendation recommendation17() {
 			return new EvaluationRecommendation17();
 		}
+
 		public SpecificRecommendation recommendation18() {
 			return new EvaluationRecommendation18();
 		}
@@ -190,11 +193,12 @@ public class ContentEvaluation extends Evaluation {
 		getOccurrences().addAll(checkRecommendation17());
 		getOccurrences().addAll(checkRecommendation18());
 		getOccurrences().addAll(checkRecommendation19());
-		//getOccurrences().addAll(checkRecommendation20()); comentado por Gibran
+		// getOccurrences().addAll(checkRecommendation20()); comentado por
+		// Gibran
 		getOccurrences().addAll(checkRecommendation21());
 		getOccurrences().addAll(checkRecommendation22());
 		getOccurrences().addAll(checkRecommendation23());
-		//getOccurrences().addAll(checkRecommendation24());
+		// getOccurrences().addAll(checkRecommendation24());
 		getOccurrences().addAll(checkRecommendation25());
 		getOccurrences().addAll(checkRecommendation26());
 		getOccurrences().addAll(checkRecommendation27());
@@ -250,16 +254,16 @@ public class ContentEvaluation extends Evaluation {
 
 			if (lang == null && (xmlLang != null || xmlns != null)) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "3"));//"2"));
+						html, "3"));// "2"));
 			} else if (lang != null && lang.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "3"));//"2"));
+						html, "3"));// "2"));
 			} else if (xmlLang != null && xmlLang.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "3"));//"2"));
+						html, "3"));// "2"));
 			} else if (xmlns != null && xmlns.getValue().isEmpty()) {
 				occurrences.add(this.buildOccurrence("3.1", false, tagHtml,
-						html, "3"));//"2"));
+						html, "3"));// "2"));
 			}
 
 			/*
@@ -300,17 +304,16 @@ public class ContentEvaluation extends Evaluation {
 	}
 
 	public String retornarTituloSiteAvaliado() {
-		
+
 		Element titulo = getDocument().getFirstElement("title");
-		
+
 		String titulo_site = "";
-		
-		
-		if (titulo != null) {					
-				
-				titulo_site = titulo.getContent().getTextExtractor().toString();			
-		} 
-					
+
+		if (titulo != null) {
+
+			titulo_site = titulo.getContent().getTextExtractor().toString();
+		}
+
 		return titulo_site;
 	}
 
@@ -326,7 +329,12 @@ public class ContentEvaluation extends Evaluation {
 		// if(head != null) {
 		Element title = getDocument().getFirstElement("title");
 		if (title == null) {
-			occurrences.add(this.buildOccurrence("3.3",true," Observa&ccedil;&atilde;o – Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)",
+			occurrences
+					.add(this
+							.buildOccurrence(
+									"3.3",
+									true,
+									" Observa&ccedil;&atilde;o – Sem Fonte (N&atilde;o existe t&iacute;tulo na p&aacute;gina)",
 									getDocument().getFirstElement(), "1"));
 			// occurrences.add(new Occurrence("3.3", true,
 			// "Sem fonte (n�o existe t�tulo na p�gina)",OccurrenceClassification.CONTENT_INFORMATION,"1"));
@@ -350,60 +358,46 @@ public class ContentEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation21() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		UrlSemArquiNoFinal objetoUrlSemArquiNoFinal = new UrlSemArquiNoFinal();
-		
+
 		String urlSemArquiNoFinal = objetoUrlSemArquiNoFinal.urlSemArquivoNoFinal(getUrl());
-		
+
 		Element LinkComImg;
-		
-				
+
 		for (Element link : getDocument().getAllElements("a")) {
 			String href = link.getAttributeValue("href");
 			String title = link.getAttributeValue("title");
 			String content = link.getContent().toString();
-
+			
 			if (hasEqualsContentHref(link) && isRegistroBr(content))
 				occurrences.add(this.buildOccurrence("3.5", false,
 						link.toString(), link, "1"));
-			
-			
+
 			LinkComImg = link.getFirstElement("img");
-			
-			if(LinkComImg == null)
-			{
-				if (!hasContent(link))
-				{
+
+			if (LinkComImg == null) {
+				if (!hasContent(link)) {
 					occurrences.add(this.buildOccurrence("3.5", true,
-							link.toString(), link, "3"));//"2"));
+							link.toString(), link, "3"));// "2"));
+				}
+			} else {
+				if (hasLinkComImgWithoutAlt(link)) {
+					occurrences.add(this.buildOccurrence("3.5", true,
+							link.toString(), link, "3"));// "2"));
 				}
 			}
-			else
-			{
-				if (hasLinkComImgWithoutAlt(link))
-				{
-					occurrences.add(this.buildOccurrence("3.5", true,
-							link.toString(), link, "3"));//"2"));
-				}
-			}
-			
-			
-			if(LinkComImg == null)
-			{
+
+			if (LinkComImg == null) {
 				// if(hasTitle(link) && isNotAlt(link))
-				if (hasTitle(link) 
-						&& !hasContent(link))
+				if (hasTitle(link) && !hasContent(link))
 					occurrences.add(this.buildOccurrence("3.5", true,
-							link.toString(), link, "4"));//"3"));
-			}
-			else
-			{
+							link.toString(), link, "4"));// "3"));
+			} else {
 				// if(hasTitle(link) && isNotAlt(link))
-				if (hasTitle(link) 
-						&& !hasContent(link)
+				if (hasTitle(link) && !hasContent(link)
 						&& hasLinkComImgWithoutAlt(link))
 					occurrences.add(this.buildOccurrence("3.5", true,
-							link.toString(), link, "4"));//"3"));
+							link.toString(), link, "4"));// "3"));
 			}
-			
 
 			/*
 			 * if(!hasTitle(link) && !hasContent(link) &&
@@ -414,69 +408,64 @@ public class ContentEvaluation extends Evaluation {
 
 			if (hasImgWithoutAlt(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "5"));//"4"));
+						link.toString(), link, "5"));// "4"));
 
 			if (hasLeiaMaisDescription(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "6"));//"5"));
+						link.toString(), link, "6"));// "5"));
 
 			if (hasDiferenteContentSameLink(link))
 				occurrences.add(this.buildOccurrence("3.5", false,
-						link.toString(), link, "10"));//"6"));
+						link.toString(), link, "10"));// "6"));
 
 			if (isTitleEqualsContent(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "12"));//"8"));
+						link.toString(), link, "12"));// "8"));
 
 			if (hasSameContentDiferentLink(link))
 				occurrences.add(this.buildOccurrence("3.5", true,
-						link.toString(), link, "11"));//"7"));
+						link.toString(), link, "11"));// "7"));
 
 			if (link != null && hasLongContent(link))
 				occurrences.add(this.buildOccurrence("3.5", false,
-						link.toString(), link, "13"));//"9"));
-			
+						link.toString(), link, "13"));// "9"));
+
 			String retorno = "";
 			if (link != null)
 				retorno = isLinkUnavailable(link, urlSemArquiNoFinal);
-				if(retorno.equalsIgnoreCase("erro"))
-						{
-					occurrences.add(this.buildOccurrence("3.5", true,
-							link.toString(), link, "14"));//"10"));
-						}else if(retorno.equalsIgnoreCase("aviso"))
-						{
-							occurrences.add(this.buildOccurrence("3.5", false,
-									link.toString(), link, "15"));//"10"));
-						}
-			
+			if (retorno.equalsIgnoreCase("erro")) {
+				occurrences.add(this.buildOccurrence("3.5", true,
+						link.toString(), link, "14"));// "10"));
+			} else if (retorno.equalsIgnoreCase("aviso")) {
+				occurrences.add(this.buildOccurrence("3.5", false,
+						link.toString(), link, "15"));// "10"));
+			}
+
 		}
 		return occurrences;
 	}
-		
+
 	private String isLinkUnavailable(Element link, String url) {
 
 		String href = link.getAttributeValue("href");
-		
-		if (href != null && href.startsWith("www"))
-		{
+
+		if (href != null && href.startsWith("www")) {
 			href = "http://" + href;
 		}
 
-		if (href != null && !href.startsWith("http") && url != null)
-		{
+		if (href != null && !href.startsWith("http") && url != null) {
 			href = url + "/" + link.getAttributeValue("href");
-			
+
 		}
-		
-		if (link.getAttributeValue("href") != null 
-				&& !link.getAttributeValue("href").toString().trim().equalsIgnoreCase("")
+
+		if (link.getAttributeValue("href") != null
+				&& !link.getAttributeValue("href").toString().trim()
+						.equalsIgnoreCase("")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("#")
 				&& !link.getAttributeValue("href").substring(0, 1).equals("/")
 				&& !link.getAttributeValue("href").contains("javascript")
 				&& !link.getAttributeValue("href").contains("@")) {
-			
-				
-			
+
 			/*
 			 * int[] codErro = { 400, 401, 402, 403, 404, 405, 406, 407, 408,
 			 * 409, 410, 411, 412, 414, 415, 416, 417, 418, 422, 423, 424, 425,
@@ -494,50 +483,57 @@ public class ContentEvaluation extends Evaluation {
 			HttpMethod metodoRequisicaoGET = null;
 			HttpClient clienteHTTPJakartaCommons;
 			URL UrlConvertida;
-			try {
-				String[] test = href.split("\\../");
-				String newurl = "";
-				for (String tes : test)
-					newurl = newurl + tes.trim();
+			// try {
+			
 
-				newurl = newurl.replace(" ", "%20");
-				
-				UrlConvertida = new URL(newurl);
-				
-				
-				//Código copiado da classe WebAgent.java para garantir o acesso 
-				//aos links da página por meio do cliente da API Jakarta Commons VErsão 3.1 
-				clienteHTTPJakartaCommons = new HttpClient();
-				clienteHTTPJakartaCommons.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3,false));
-				clienteHTTPJakartaCommons.getParams().setParameter("http.protocol.allow-circular-redirects", true); 
-				
-				metodoRequisicaoGET = new GetMethod(UrlConvertida.toExternalForm());//URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"));
-			
-				metodoRequisicaoGET.setRequestHeader("user-agent", "NewUseAgent/1.0");
-				metodoRequisicaoGET.setRequestHeader("http.agent", "Jakarta Commons-HttpClient/3.1");
-				metodoRequisicaoGET.setFollowRedirects(true);
-				
-				codResponse = clienteHTTPJakartaCommons.executeMethod(metodoRequisicaoGET);
-				
-			} catch (MalformedURLException e) {				
-				e.printStackTrace();
-				return "aviso";
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-				return "aviso";
-				
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				return "aviso";
-			
-			} finally {
-				
-				if (metodoRequisicaoGET != null){
-					metodoRequisicaoGET.releaseConnection();
+			// Código copiado da classe WebAgent.java para garantir o acesso
+			// aos links da página por meio do cliente da API Jakarta Commons
+			// VErsão 3.1
+			/*
+			 * clienteHTTPJakartaCommons = new HttpClient();
+			 * clienteHTTPJakartaCommons
+			 * .getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new
+			 * DefaultHttpMethodRetryHandler(3,false));
+			 * clienteHTTPJakartaCommons
+			 * .getParams().setParameter("http.protocol.allow-circular-redirects"
+			 * , true); clienteHTTPJakartaCommons.getParams().setParameter(
+			 * HttpConnectionParams.CONNECTION_TIMEOUT, new Integer(2000));
+			 * 
+			 * metodoRequisicaoGET = new
+			 * GetMethod(UrlConvertida.toExternalForm()
+			 * );//URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"));
+			 * 
+			 * metodoRequisicaoGET.setRequestHeader("user-agent",
+			 * "NewUseAgent/1.0");
+			 * metodoRequisicaoGET.setRequestHeader("http.agent",
+			 * "Jakarta Commons-HttpClient/3.1");
+			 * metodoRequisicaoGET.setFollowRedirects(true);
+			 */
+
+			codResponse = verificarConexao(href, "user-agent","NewUseAgent/1.0");
+			if (codResponse != 200) {
+				codResponse = verificarConexao(href, "http.agent", "Jakarta Commons-HttpClient/3.1");
+				if (codResponse == -1) {
+					return "aviso";
 				}
-							
 			}
+
+			/*
+			 * } catch (MalformedURLException e) { e.printStackTrace(); return
+			 * "aviso";
+			 * 
+			 * } catch (IOException e) { e.printStackTrace(); return "aviso";
+			 * 
+			 * } catch (IllegalArgumentException e) { e.printStackTrace();
+			 * return "aviso";
+			 * 
+			 * } finally {
+			 * 
+			 * if (metodoRequisicaoGET != null){
+			 * metodoRequisicaoGET.releaseConnection(); }
+			 * 
+			 * }
+			 */
 
 			/*
 			 * if(huc.getResponseCode() != HttpURLConnection.HTTP_OK)
@@ -548,10 +544,66 @@ public class ContentEvaluation extends Evaluation {
 					return "erro";
 				}
 
+				// }
+
+				
 			}
 		}
-
 		return "false";
+	}
+
+	private Integer verificarConexao(String href, String usuario,	String agente) {
+		
+		HttpMethod metodoRequisicaoGET = null;
+		HttpClient clienteHTTPJakartaCommons;
+		URL UrlConvertida;
+		try {
+			
+			String[] test = href.split("\\../");
+			String newurl = "";
+			for (String tes : test)
+				newurl = newurl + tes.trim();
+
+			newurl = newurl.replace(" ", "%20");
+
+			UrlConvertida = new URL(newurl);
+			
+			// Código copiado da classe WebAgent.java para garantir o acesso
+			// aos links da página por meio do cliente da API Jakarta Commons
+			// VErsão 3.1
+			clienteHTTPJakartaCommons = new HttpClient();
+			clienteHTTPJakartaCommons.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new DefaultHttpMethodRetryHandler(3, false));
+			clienteHTTPJakartaCommons.getParams().setParameter("http.protocol.allow-circular-redirects", true);
+			clienteHTTPJakartaCommons.getParams().setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, new Integer(2000));
+
+			metodoRequisicaoGET = new GetMethod(UrlConvertida.toExternalForm());// URLEncoder.encode(UrlConvertida.toExternalForm(),
+																				// "UTF-8"));
+
+			metodoRequisicaoGET.setRequestHeader(usuario, agente);
+			metodoRequisicaoGET.setFollowRedirects(true);
+
+			return clienteHTTPJakartaCommons.executeMethod(metodoRequisicaoGET);
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return -1;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return -1;
+
+		} finally {
+
+			if (metodoRequisicaoGET != null) {
+				metodoRequisicaoGET.releaseConnection();
+			}
+
+		}
+
 	}
 
 	private static boolean IsMatch(String s, String pattern) {
@@ -573,40 +625,36 @@ public class ContentEvaluation extends Evaluation {
 		return link.getContent().getTextExtractor().toString().length() > 500 ? true
 				: false;
 	}
-	
-	
+
 	private boolean hasContent(Element link) {
-				
+
 		boolean temConteudo;
-		
-		
-		temConteudo = StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
-		
-		if(!temConteudo)
-		{
+
+		temConteudo = StringUtils.isNotBlank(link.getContent()
+				.getTextExtractor().toString());
+
+		if (!temConteudo) {
 			for (Element elemento : link.getAllElements()) {
-				temConteudo = StringUtils.isNotBlank(elemento.getContent().getTextExtractor().toString());
-				
-				if(temConteudo)
-				{
+				temConteudo = StringUtils.isNotBlank(elemento.getContent()
+						.getTextExtractor().toString());
+
+				if (temConteudo) {
 					break;
 				}
-			}		
+			}
 		}
 		return temConteudo;
-		
-/*		quantidadeElementosDentroLink = link.getAllElements().size();
-		//Verifica se h� elementos como img, span e outros dentro do link. o valor 1 j� est� atribu�do a tag <a> (link avaliado)
-		if(quantidadeElementosDentroLink > 1)	
-		{
-		temConteudo = true;
-		}
-		//avalia apenas o texto dentro do link ex: <a>texto entre o link</a>
-		else
-		{
-			temConteudo = StringUtils.isNotBlank(link.getContent().getTextExtractor().toString());
-		}
-		return temConteudo;*/
+
+		/*
+		 * quantidadeElementosDentroLink = link.getAllElements().size();
+		 * //Verifica se h� elementos como img, span e outros dentro do link. o
+		 * valor 1 j� est� atribu�do a tag <a> (link avaliado)
+		 * if(quantidadeElementosDentroLink > 1) { temConteudo = true; }
+		 * //avalia apenas o texto dentro do link ex: <a>texto entre o link</a>
+		 * else { temConteudo =
+		 * StringUtils.isNotBlank(link.getContent().getTextExtractor
+		 * ().toString()); } return temConteudo;
+		 */
 	}
 
 	private boolean hasTitle(Element link) {
@@ -614,25 +662,21 @@ public class ContentEvaluation extends Evaluation {
 		return title != null && StringUtils.isNotBlank(title);
 	}
 
-	
-
 	private boolean hasLinkComImgWithoutAlt(Element link) {
-		
+
 		boolean temImgSemAlt = false;
-		
-			String alt;
-			
-			for (Element elementoImagem : link.getAllElements("img")) {
-				
-				alt = elementoImagem.getAttributeValue("alt");
-				temImgSemAlt = (alt == null || StringUtils.isBlank(alt));
-				if(!temImgSemAlt)
-				{
+
+		String alt;
+
+		for (Element elementoImagem : link.getAllElements("img")) {
+
+			alt = elementoImagem.getAttributeValue("alt");
+			temImgSemAlt = (alt == null || StringUtils.isBlank(alt));
+			if (!temImgSemAlt) {
 				break;
-				}
 			}
-		
-				
+		}
+
 		return temImgSemAlt;
 	}
 
@@ -643,7 +687,7 @@ public class ContentEvaluation extends Evaluation {
 		String alt = img.getAttributeValue("alt");
 		return alt == null || StringUtils.isBlank(alt);
 	}
-	
+
 	private boolean hasLeiaMaisDescription(Element link) {
 		String title = link.getAttributeValue("title");
 		String content = link.getContent().getTextExtractor().toString();
@@ -789,8 +833,7 @@ public class ContentEvaluation extends Evaluation {
 
 		String[] parts = null;
 
-		String[] descricoes = { "figura", "imagem", "alt", "descrição",
-				"foto" };
+		String[] descricoes = { "figura", "imagem", "alt", "descrição", "foto" };
 
 		for (Element img : getDocument().getAllElements("img")) {
 			Attribute alt = img.getAttributes().get("alt");
@@ -863,7 +906,7 @@ public class ContentEvaluation extends Evaluation {
 																"3.6",
 																false,
 																imgA.toString(),
-																imgA, "7"));//"5"));
+																imgA, "7"));// "5"));
 												aMap.put(srcAtt.getValue(), img);
 												isVerificado = true;
 											}
@@ -879,7 +922,7 @@ public class ContentEvaluation extends Evaluation {
 
 				if (isVerificado)
 					occurrences.add(buildOccurrence("3.6", false,
-							img.toString(), img, "7"));//"5"));
+							img.toString(), img, "7"));// "5"));
 			}
 		}
 
@@ -905,7 +948,7 @@ public class ContentEvaluation extends Evaluation {
 			if (alt != null && title != null) {
 				if (title.getValue().equals(alt.getValue()))
 					occurrences.add(buildOccurrence("3.6", true,
-							img.toString(), img, "8"));//"6"));
+							img.toString(), img, "8"));// "6"));
 			}
 		}
 
@@ -980,46 +1023,45 @@ public class ContentEvaluation extends Evaluation {
 	private List<Occurrence> checkRecommendation26() {
 		List<Occurrence> occurrences = new ArrayList<Occurrence>();
 		boolean temAssociacao = false;
-		
+
 		for (Element table : getDocument().getAllElements("table")) {
 			// Attribute summary = table.getAttributes().get("summary");
 
 			temAssociacao = false;
-	
-			if(table.getAllElements("thead").size() > 0 && table.getAllElements("tbody").size() > 0)
-			{
+
+			if (table.getAllElements("thead").size() > 0
+					&& table.getAllElements("tbody").size() > 0) {
 				temAssociacao = true;
-			}
-			else
-			{				
+			} else {
 				for (Element coluna : table.getAllElements("td")) {
-					if(coluna.getAttributes().get("id") != null || coluna.getAttributes().get("headers") != null || 
-							coluna.getAttributes().get("scope") != null || coluna.getAttributes().get("axis") != null)
-					{
+					if (coluna.getAttributes().get("id") != null
+							|| coluna.getAttributes().get("headers") != null
+							|| coluna.getAttributes().get("scope") != null
+							|| coluna.getAttributes().get("axis") != null) {
 						temAssociacao = true;
 					}
-					
+
 				}
-				if(!temAssociacao)
-				{				
+				if (!temAssociacao) {
 					for (Element coluna : table.getAllElements("th")) {
-						if(coluna.getAttributes().get("id") != null || coluna.getAttributes().get("headers") != null || 
-							coluna.getAttributes().get("scope") != null || coluna.getAttributes().get("axis") != null)
-						{
+						if (coluna.getAttributes().get("id") != null
+								|| coluna.getAttributes().get("headers") != null
+								|| coluna.getAttributes().get("scope") != null
+								|| coluna.getAttributes().get("axis") != null) {
 							temAssociacao = true;
 						}
-					
+
 					}
 				}
 			}
-					
-			if(!temAssociacao)
-			{
-				occurrences.add(this.buildOccurrence("3.10", true, table.getStartTag().toString(), table, "1"));
+
+			if (!temAssociacao) {
+				occurrences.add(this.buildOccurrence("3.10", true, table
+						.getStartTag().toString(), table, "1"));
 			}
-			
+
 		}
-				
+
 		// Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
 			public int compare(Occurrence occurrence1, Occurrence occurrence2) {
@@ -1049,9 +1091,11 @@ public class ContentEvaluation extends Evaluation {
 			 * paragrafo.toString(), paragrafo, "1")); }
 			 */
 
-			/*if (paragrafo.getContent().length() > 1000)
-				occurrences.add(this.buildOccurrence("3.11", false,
-						paragrafo.toString(), paragrafo, "1"));*/ //comentado por Gibran
+			/*
+			 * if (paragrafo.getContent().length() > 1000)
+			 * occurrences.add(this.buildOccurrence("3.11", false,
+			 * paragrafo.toString(), paragrafo, "1"));
+			 */// comentado por Gibran
 
 			String align = paragrafo.getAttributeValue("align");
 			if ("justify".equals(align))
