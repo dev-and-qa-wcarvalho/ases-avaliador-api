@@ -509,10 +509,10 @@ public class ContentEvaluation extends Evaluation {
 			 * "Jakarta Commons-HttpClient/3.1");
 			 * metodoRequisicaoGET.setFollowRedirects(true);
 			 */
-
-			codResponse = verificarConexao(href, "user-agent","NewUseAgent/1.0");
+			
+			codResponse = verificarConexao(href, "http.agent", "Jakarta Commons-HttpClient/3.1");
 			if (codResponse != 200) {
-				codResponse = verificarConexao(href, "http.agent", "Jakarta Commons-HttpClient/3.1");
+				codResponse = verificarConexao(href, "user-agent","NewUseAgent/1.0");
 				if (codResponse == -1) {
 					return "aviso";
 				}
@@ -557,6 +557,8 @@ public class ContentEvaluation extends Evaluation {
 		HttpMethod metodoRequisicaoGET = null;
 		HttpClient clienteHTTPJakartaCommons;
 		URL UrlConvertida;
+		int codResponse = -1;
+		
 		try {
 			
 			String[] test = href.split("\\../");
@@ -580,9 +582,9 @@ public class ContentEvaluation extends Evaluation {
 																				// "UTF-8"));
 
 			metodoRequisicaoGET.setRequestHeader(usuario, agente);
-			metodoRequisicaoGET.setFollowRedirects(true);
+			//metodoRequisicaoGET.setFollowRedirects(true);
 
-			return clienteHTTPJakartaCommons.executeMethod(metodoRequisicaoGET);
+			codResponse = clienteHTTPJakartaCommons.executeMethod(metodoRequisicaoGET);
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -603,6 +605,7 @@ public class ContentEvaluation extends Evaluation {
 			}
 
 		}
+		return codResponse;
 
 	}
 

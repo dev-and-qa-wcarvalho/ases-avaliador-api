@@ -1,6 +1,8 @@
 package br.com.checker.emag.core;
 
 
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,10 +16,6 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Document;
-
-
-
 
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
@@ -39,6 +37,7 @@ public class MarkEvaluation extends Evaluation {
 	}
 
 	private MarkEvaluation(Source document, String url) {
+				
 		super(document, url);
 	}
 
@@ -164,15 +163,15 @@ public class MarkEvaluation extends Evaluation {
 
 		String url = getUrl();
 		if (url != null) {
-
+			
 			int[] errosWarningsCss = getErrorCount(true, url);
 			int[] errosWarningsHtml = getErrorCount(false, url);
 			int avisoHtml = 0;
 			int errosHtml = 0;
 			int avisoCss = 0;
 			int errosCss = 0;
-			
-			
+					
+						
 			avisoHtml = errosWarningsHtml[1];
 			
 			if (avisoHtml > 0)	
@@ -1057,13 +1056,21 @@ public class MarkEvaluation extends Evaluation {
 				OccurrenceClassification.MARK, criterio);
 	}
 
+	
+	
 	public int[] getErrorCount(boolean isCss, String url) {
 		int errors = 0;
 		int warnings = 0;
+		URL UrlConvertida;
+		
 
 		try {
+			UrlConvertida = new URL(url);			
+			
+			
 			if (isCss) {
-				String content = WebAgent.from(CSS_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
+				
+				String content = WebAgent.from(CSS_VALIDATOR_URL.replace("#{url}", URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"))).withGetRequest().execute().getContent();
 				
 				Matcher m = Pattern.compile("<m:errorcount>(\\d)*</m:errorcount>",Pattern.MULTILINE).matcher(content);
 				if (m.find())
@@ -1076,7 +1083,7 @@ public class MarkEvaluation extends Evaluation {
 
 			} else {
 
-				String content = WebAgent.from(HTML_VALIDATOR_URL.replace("#{url}", url)).withGetRequest().execute().getContent();
+				String content = WebAgent.from(HTML_VALIDATOR_URL.replace("#{url}", URLEncoder.encode(UrlConvertida.toExternalForm(), "UTF-8"))).withGetRequest().execute().getContent();
 				Gson g = new GsonBuilder().create();
 				HtmlValidation a = g.fromJson(content, HtmlValidation.class);
 				int[] errorsWarnings = a.getQtdWarningsErros();
