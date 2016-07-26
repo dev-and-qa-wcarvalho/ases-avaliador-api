@@ -162,13 +162,16 @@ public class FormEvaluation extends Evaluation{
 			}*/
 			
 			for (Element input : form.getAllElements("input")) {
-				Attribute type = input.getAttributes().get("type");
-				if (type != null) {
-					if (type.getValue().equals("submit") ||
-						type.getValue().equals("reset") ||
-						type.getValue().equals("button") ||
-						type.getValue().equals("image") ||
-						type.getValue().equals("hidden")) {
+				String type = input.getAttributeValue("type");
+				
+				
+				if (type != null) {			
+					
+					if (type.equalsIgnoreCase("submit") ||
+						type.equalsIgnoreCase("reset") ||
+						type.equalsIgnoreCase("button") ||
+						type.equalsIgnoreCase("image") ||
+						type.equalsIgnoreCase("hidden")) {						
 						continue;
 					}
 				}
