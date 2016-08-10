@@ -57,7 +57,7 @@ public class MultimediaEvaluation extends Evaluation{
 		getOccurrences().addAll(checkRecommendation34());
 		getOccurrences().addAll(checkRecommendation35());
 		getOccurrences().addAll(checkRecommendation36());
-		//O método não é utilizado, porque requisição é validação humana (5.5.1 Animação é executada automaticamente sem opções para pausar)
+
 		//getOccurrences().addAll(checkRecommendation37());
 		
 		return getOccurrences();

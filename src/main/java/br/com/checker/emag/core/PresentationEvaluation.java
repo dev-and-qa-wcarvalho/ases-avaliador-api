@@ -16,10 +16,6 @@ import javax.swing.text.html.HTML;
 
 import org.hamcrest.core.IsNull;
 
-import sun.misc.FpUtils;
-
-import com.oracle.webservices.internal.api.EnvelopeStyle.Style;
-
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -32,7 +28,7 @@ import br.com.checker.emag.util.UrlSemArquiNoFinal;
 
 
 
-public class PresentationEvaluation extends Evaluation{
+public class PresentationEvaluation extends Evaluation {
 	
 	private PresentationEvaluation(Source document) { super(document); } 
 	

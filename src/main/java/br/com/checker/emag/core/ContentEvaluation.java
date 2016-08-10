@@ -1166,7 +1166,7 @@ public class ContentEvaluation extends Evaluation {
 	private String[] leiaMais = { "clique aqui", "leia mais", "saiba mais",
 			"veja mais", "acesse a lista", "mais" };
 
-	private List<Occurrence> oder(List occurrences) {
+	private List<Occurrence> oder(List<Occurrence> occurrences) {
 		// Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
 			public int compare(Occurrence occurrence1, Occurrence occurrence2) {

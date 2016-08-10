@@ -1040,7 +1040,7 @@ public class MarkEvaluation extends Evaluation {
 		return occurrences;
 	}
 
-	private List<Occurrence> oder(List occurrences) {
+	private List<Occurrence> oder(List<Occurrence> occurrences) {
 		// Sorting
 		Collections.sort(occurrences, new Comparator<Occurrence>() {
 			public int compare(Occurrence occurrence1, Occurrence occurrence2) {
