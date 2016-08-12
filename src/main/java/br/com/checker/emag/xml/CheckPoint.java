@@ -2,9 +2,10 @@ package br.com.checker.emag.xml;
 
 import lombok.Data;
 
-public @Data class CheckPoint {
+@Data
+public class CheckPoint {
     
-    private String description;
-    private int totalErrors;
-    private int totalWarnings;
+  private String description;
+  private int totalErrors;
+  private int totalWarnings;
 }
