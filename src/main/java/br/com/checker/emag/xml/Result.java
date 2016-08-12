@@ -1,11 +1,11 @@
 package br.com.checker.emag.xml;
 
+import lombok.Data;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import lombok.Data;
-import lombok.Getter;
 
 public @Data class Result{
     

@@ -12,10 +12,10 @@ public enum OccurrenceClassification {
     FORM("2.6","Formulários",38,45);
     
     OccurrenceClassification(String code,String description,int start,int end) {
-        this.code = code;
-        this.description = description;
-        this.start = start;
-        this.end = end;
+      this.code = code;
+      this.description = description;
+      this.start = start;
+      this.end = end;
     }
     
     @Getter private final String code;

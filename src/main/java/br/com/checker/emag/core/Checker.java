@@ -29,11 +29,11 @@ public class Checker {
     private Source document;
     
     public Source getDocument() {
-        return document;
+      return document;
     }
 
     public void setDocument(Source document) {
-        this.document = document;
+      this.document = document;
     }
 
     
@@ -42,19 +42,19 @@ public class Checker {
     private String url;
     
     private Checker(String html) { 
-        
-        
-        this.document = new Source(html);
-        setDocument(this.document);
-        this.document.fullSequentialParse();
+      
+      
+      this.document = new Source(html);
+      setDocument(this.document);
+      this.document.fullSequentialParse();
     }
     
     private Checker(String html,String url) { 
-        this(html);
+      this(html);
 
-        this.document = new Source(html);
-        setDocument(this.document);
-        this.url = url;
+      this.document = new Source(html);
+      setDocument(this.document);
+      this.url = url;
     }
     
     public static Checker from(String html) { return new Checker(html); }
@@ -63,14 +63,14 @@ public class Checker {
     
     public static Checker from(BufferedReader reader) throws IOException {
 
-        String html = "";   
-        String linha = "";  
-        while( ( linha = reader.readLine() ) != null )  
-            html += linha;  
-        
-        return new Checker(html);
+      String html = "";   
+      String linha = "";  
+      while( ( linha = reader.readLine() ) != null )  
+          html += linha;  
+      
+      return new Checker(html);
     }
-        
+      
     
     public static MarkEvaluationBuilder marking() { return new MarkEvaluationBuilder(); }
     public static FormEvaluationBuilder form() { return new FormEvaluationBuilder(); }
@@ -80,79 +80,79 @@ public class Checker {
     public static PresentationEvaluationBuilder presentation() { return new PresentationEvaluationBuilder(); }
     
     public Checker with(EvaluationBuilder builder) {
-        Evaluation evaluation = builder.with(this.document,url);
-        occurrencesMap.put(evaluation.type(), evaluation.check());
-        return this;
+      Evaluation evaluation = builder.with(this.document,url);
+      occurrencesMap.put(evaluation.type(), evaluation.check());
+      return this;
     }
     
     public Checker with(SpecificRecommendation evaluation){
-        evaluation.with(document,url);
-        
-        if(occurrencesMap.get(evaluation.type())!=null)
-            occurrencesMap.get(evaluation.type()).addAll(evaluation.check());
-        else
-            occurrencesMap.put(evaluation.type(), evaluation.check());
-        
-        return this;
+      evaluation.with(document,url);
+      
+      if(occurrencesMap.get(evaluation.type())!=null)
+          occurrencesMap.get(evaluation.type()).addAll(evaluation.check());
+      else
+          occurrencesMap.put(evaluation.type(), evaluation.check());
+      
+      return this;
     }
     
     public Map<OccurrenceClassification,List<Occurrence>> check() { return this.occurrencesMap; }
     
     public List<SummarizedOccurrence>  checkSumarized() {
+      
+      List<SummarizedOccurrence> list = new ArrayList<SummarizedOccurrence>();
         
-        List<SummarizedOccurrence> list = new ArrayList<SummarizedOccurrence>();
-         
-        for(Entry<OccurrenceClassification, List<Occurrence>> entry :this.occurrencesMap.entrySet()) {
-        
-            for(Entry<OccurrenceKey, List<Occurrence>> entryGroupedOccurrence :groupOccurrencesByCode(entry.getValue()).entrySet()) {
+      for(Entry<OccurrenceClassification, List<Occurrence>> entry :this.occurrencesMap.entrySet()) {
+      
+          for(Entry<OccurrenceKey, List<Occurrence>> entryGroupedOccurrence :groupOccurrencesByCode(entry.getValue()).entrySet()) {
+             
+             SummarizedOccurrence.Builder builder = new SummarizedOccurrence.Builder()
+                                      .setCheckPoint(entryGroupedOccurrence.getKey().getCode())
+                                      .setType(entry.getKey())
+                                      .setIsError(entryGroupedOccurrence.getKey().isError);
+                                
+             
+             for(Occurrence occurrence : entryGroupedOccurrence.getValue()){
+                builder.addLine(occurrence.getLine());
+                builder.addSourceCode(occurrence);
+             }
+             
+             list.add(builder.build());
                 
-                SummarizedOccurrence.Builder builder = new SummarizedOccurrence.Builder()
-                                                .setCheckPoint(entryGroupedOccurrence.getKey().getCode())
-                                                .setType(entry.getKey())
-                                                .setIsError(entryGroupedOccurrence.getKey().isError);
-                                        
-                
-                for(Occurrence occurrence : entryGroupedOccurrence.getValue()){
-                    builder.addLine(occurrence.getLine());
-                    builder.addSourceCode(occurrence);
-                }
-                
-                list.add(builder.build());
-                    
-            }
-        }
-        Collections.sort(list);
-        return list;
+          }
+      }
+      Collections.sort(list);
+      return list;
     }
     
     private Map<OccurrenceKey,List<Occurrence>> groupOccurrencesByCode(List<Occurrence> occurrences) {
-        
-        Map<OccurrenceKey,List<Occurrence>> map = new HashMap<OccurrenceKey, List<Occurrence>>();
-        OccurrenceKey occurrenceKey = null;
-        for(Occurrence occurrence : occurrences) {
-            occurrenceKey = new OccurrenceKey(occurrence);
-            
-            if(map.get(occurrenceKey) ==null) {
-                map.put(occurrenceKey, new ArrayList<Occurrence>());
-                map.get(occurrenceKey).add(occurrence);
-            }else {
-                map.get(occurrenceKey).add(occurrence);
-            }
-                
-        }
-        return map;
+      
+      Map<OccurrenceKey,List<Occurrence>> map = new HashMap<OccurrenceKey, List<Occurrence>>();
+      OccurrenceKey occurrenceKey = null;
+      for(Occurrence occurrence : occurrences) {
+          occurrenceKey = new OccurrenceKey(occurrence);
+          
+          if(map.get(occurrenceKey) ==null) {
+             map.put(occurrenceKey, new ArrayList<Occurrence>());
+             map.get(occurrenceKey).add(occurrence);
+          }else {
+             map.get(occurrenceKey).add(occurrence);
+          }
+             
+      }
+      return map;
     }
     
     
     @EqualsAndHashCode
     private @Getter class OccurrenceKey {
-        private String code;
-        private boolean isError;
-        
-        public OccurrenceKey (Occurrence occurrence) {
-            this.code = occurrence.getCode();
-            this.isError = occurrence.isError();
-        }
+      private String code;
+      private boolean isError;
+      
+      public OccurrenceKey (Occurrence occurrence) {
+          this.code = occurrence.getCode();
+          this.isError = occurrence.isError();
+      }
     }
 
 }
