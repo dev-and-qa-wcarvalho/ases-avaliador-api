@@ -126,7 +126,7 @@ public class ContentEvaluationTest {
     }
 
     @Test
-    public void shouldCheckRecommedation20WhenAltIsEmpty() {
+    public void shouldCheckRecommedation20ForImgElementWhenAltIsEmpty() {
 
         StringBuilder html = new StringBuilder("<html> ");
         html.append("<img alt=\"\"></img>");
@@ -139,12 +139,12 @@ public class ContentEvaluationTest {
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
         assertEquals("Should return Recommendation 20", "3.4",
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-        assertFalse("Recommendation 20 should be ERROR",
+        assertFalse("Recommendation 20 should not be ERROR",
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
     }
 
     @Test
-    public void shouldCheckRecommedation20WhenAltNotExists() {
+    public void shouldCheckRecommedation20ForImgElementWhenAltNotExists() {
 
         StringBuilder html = new StringBuilder("<html> ");
         html.append("<img></img>");
@@ -157,7 +157,43 @@ public class ContentEvaluationTest {
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
         assertEquals("Should return Recommendation 20", "3.4",
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
-        assertFalse("Recommendation 20 should be ERROR",
+        assertFalse("Recommendation 20 should not be ERROR",
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+    }
+
+    @Test
+    public void shouldCheckRecommedation20ForAreaElementWhenAltIsEmpty() {
+
+        StringBuilder html = new StringBuilder("<html> ");
+        html.append("<area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"\">");
+        html.append("</html>");
+
+        Map<OccurrenceClassification, List<Occurrence>> occurrences = from(html.toString())
+                .with(content().recommendation20()).check();
+
+        assertEquals("Should return 1 occurrences", 1,
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+        assertEquals("Should return Recommendation 20", "3.4",
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+        assertFalse("Recommendation 20 should not be ERROR",
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
+    }
+
+    @Test
+    public void shouldCheckRecommedation20ForAreaElementWhenAltNotExists() {
+
+        StringBuilder html = new StringBuilder("<html> ");
+        html.append("<area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">");
+        html.append("</html>");
+
+        Map<OccurrenceClassification, List<Occurrence>> occurrences = from(html.toString())
+                .with(content().recommendation20()).check();
+
+        assertEquals("Should return 1 occurrences", 1,
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+        assertEquals("Should return Recommendation 20", "3.4",
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).getCode());
+        assertFalse("Recommendation 20 should not be ERROR",
                 occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).get(0).isError());
     }
 
