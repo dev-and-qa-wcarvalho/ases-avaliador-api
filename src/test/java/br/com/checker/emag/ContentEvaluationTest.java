@@ -162,6 +162,20 @@ public class ContentEvaluationTest {
     }
 
     @Test
+    public void shouldCheckRecommedation20ForImgElementWhenAltExists() {
+
+        StringBuilder html = new StringBuilder("<html> ");
+        html.append("<img alt=\"testando\" />");
+        html.append("</html>");
+
+        Map<OccurrenceClassification, List<Occurrence>> occurrences = from(html.toString())
+                .with(content().recommendation20()).check();
+
+        assertEquals("Should return 0 occurrences", 0,
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+    }
+
+    @Test
     public void shouldCheckRecommedation20ForAreaElementWhenAltIsEmpty() {
 
         StringBuilder html = new StringBuilder("<html> ");
