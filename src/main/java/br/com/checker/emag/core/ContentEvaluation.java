@@ -323,11 +323,16 @@ public class ContentEvaluation extends Evaluation {
     private List<Occurrence> checkRecommendation20() {
         List<Occurrence> occurrences = new ArrayList<Occurrence>();
         List<Element> allImgs = getDocument().getAllElements("img");
-        for (Element img : allImgs) {
-            String alt = img.getAttributeValue("alt");
+        List<Element> allAreas = getDocument().getAllElements("area");
+        List<Element> allElements = new ArrayList<Element>();
+
+        allElements.addAll(allImgs);
+        allElements.addAll(allAreas);
+        for (Element element : allElements) {
+            String alt = element.getAttributeValue("alt");
             if (alt == null || alt.equals("")) {
                 occurrences.add(
-                        new Occurrence("3.4", false, img.toString(), OccurrenceClassification.CONTENT_INFORMATION));
+                        new Occurrence("3.4", false, element.toString(), OccurrenceClassification.CONTENT_INFORMATION));
             }
         }
         return occurrences;
