@@ -212,6 +212,19 @@ public class ContentEvaluationTest {
     }
 
     @Test
+    public void shouldCheckRecommedation20ForAreaElementWhenAltExists() {
+        StringBuilder html = new StringBuilder("<html> ");
+        html.append("<area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"sun\">");
+        html.append("</html>");
+
+        Map<OccurrenceClassification, List<Occurrence>> occurrences = from(html.toString())
+                .with(content().recommendation20()).check();
+
+        assertEquals("Should return 0 occurrences", 0,
+                occurrences.get(OccurrenceClassification.CONTENT_INFORMATION).size());
+    }
+
+    @Test
     public void shouldCheckRecommedation21() {
 
         StringBuilder html = new StringBuilder("<html> ");
