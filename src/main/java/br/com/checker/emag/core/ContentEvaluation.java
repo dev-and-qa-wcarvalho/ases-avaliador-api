@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import br.com.checker.emag.Occurrence;
 import br.com.checker.emag.OccurrenceClassification;
 import br.com.checker.emag.core.SpecificRecommendation.ContentRecommendation;
+import br.com.checker.emag.core.contentevaluation.EvaluationRecommendation17NewImplementation;
 import br.com.checker.emag.util.UrlSemArquiNoFinal;
 
 public class ContentEvaluation extends Evaluation {
@@ -55,6 +56,10 @@ public class ContentEvaluation extends Evaluation {
 
         public SpecificRecommendation recommendation17() {
             return new EvaluationRecommendation17();
+        }
+
+        public SpecificRecommendation recommendation17NewImplementation() {
+            return new EvaluationRecommendation17NewImplementation();
         }
 
         public SpecificRecommendation recommendation18() {
@@ -206,23 +211,6 @@ public class ContentEvaluation extends Evaluation {
 
             String tagHtml = getDocument().getFirstStartTag("html").toString();
             String doctype = getDocument().getFirstStartTag().toString().replace(" ", "");
-
-            /*
-             * if ( lang == null && xmlLang == null){
-             * occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html,
-             * "1")); }
-             * 
-             * if(xmlLang != null && !(lang == null || xmlLang == null)){
-             * occurrences.add(this.buildOccurrence("3.1", true, tagHtml, html,
-             * "1")); }else if (lang != null && lang.getValue().isEmpty()) {
-             * occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html,
-             * "2")); } else if (xmlLang != null &&
-             * xmlLang.getValue().isEmpty()) {
-             * occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html,
-             * "2")); }else if (xmlns != null && xmlns.getValue().isEmpty()) {
-             * occurrences.add(this.buildOccurrence("3.1", false, tagHtml, html,
-             * "2")); }
-             */
 
             // Caso seja diferente de html5
             if (!doctype.equalsIgnoreCase("<!DOCTYPEhtml>")) {
